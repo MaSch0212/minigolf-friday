@@ -1,0 +1,28 @@
+<p-menubar class="m-4" [model]="menuItems()">
+  <ng-template pTemplate="end">
+    <h3 class="truncate m-0">{{ translations.title() }}</h3>
+  </ng-template>
+</p-menubar>
+
+<div class="grow mx-4 min-h-0">
+  <router-outlet></router-outlet>
+</div>
+
+<footer class="px-4 py-1 bg-surface-50 text-xs flex flex-row justify-between flex-wrap gap-x-8">
+  <div class="truncate">
+    <span>{{ translations.footer_developedBy() }} Marc Schmidt </span>
+    <span class="whitespace-nowrap"
+      >(<a href="https://github.com/MaSch0212" target="_blank"
+        ><span class="mdi mdi-github">MaSch0212</span></a
+      >)</span
+    >
+  </div>
+  <div class="truncate">
+    <span>{{ translations.footer_basedOn() }} André Schmidt </span>
+    <span class="whitespace-nowrap"
+      >(<a href="https://github.com/AnSch1510" target="_blank"
+        ><span class="mdi mdi-github">AnSch1510</span></a
+      >)</span
+    >
+  </div>
+</footer>

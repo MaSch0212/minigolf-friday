@@ -1,0 +1,25 @@
+{
+  "title": "Minigolf Freitag Manager",
+  "footer": {
+    "developedBy": "Entwickelt mit ❤️ von",
+    "basedOn": "Basierend auf der Excel-App von"
+  },
+  "menu": {
+    "home": "Startseite",
+    "players": "Spieler",
+    "settings": "Einstellungen",
+    "theme": "Thema",
+    "language": "Sprache",
+    "useSystemTheme": "Systemthema verwenden",
+    "useSystemLanguage": "Systemsprache verwenden",
+    "darkTheme": "Dunkel",
+    "lightTheme": "Hell"
+  },
+  "players": {
+    "loadError": "Fehler beim Laden der Spieler."
+  },
+  "shared": {
+    "tryAgainLater": "Bitte versuche es später erneut.",
+    "add": "Hinzufügen"
+  }
+}

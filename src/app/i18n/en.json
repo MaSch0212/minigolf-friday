@@ -1,0 +1,25 @@
+{
+  "title": "Minigolf Friday Manager",
+  "footer": {
+    "developedBy": "Developed with ❤️ by",
+    "basedOn": "Based on the Excel app by"
+  },
+  "menu": {
+    "home": "Home",
+    "players": "Players",
+    "settings": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "useSystemTheme": "Use system theme",
+    "useSystemLanguage": "Use system language",
+    "darkTheme": "Dark",
+    "lightTheme": "Light"
+  },
+  "players": {
+    "loadError": "Failed to load players."
+  },
+  "shared": {
+    "tryAgainLater": "Please try again later.",
+    "add": "Add"
+  }
+}

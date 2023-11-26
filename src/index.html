@@ -1,13 +1,26 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>MinigolfFriday</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>MinigolfFriday</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <script>
+      let theme = localStorage.getItem('minigolf-friday-manager-theme');
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      const linkElement = document.createElement('link');
+      linkElement.id = 'app-theme';
+      linkElement.href = `${theme}-theme.css`;
+      linkElement.rel = 'stylesheet';
+      linkElement.type = 'text/css';
+      document.head.appendChild(linkElement);
+    </script>
+    <app-root></app-root>
+  </body>
 </html>

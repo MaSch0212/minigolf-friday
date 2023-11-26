@@ -1,1 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@mdi/font/css/materialdesignicons.css';
+@import 'primeng/resources/primeng.css';
+
+$flag-icons-included-countries: us, de;
+$flag-icons-path: '/assets/flags';
+@import 'flag-icons/sass/flag-icons';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+p-button[size='small'] .p-button-icon-only.p-button-rounded {
+  @apply w-8 h-8 p-0;
+}

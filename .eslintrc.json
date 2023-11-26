@@ -1,0 +1,9 @@
+{
+  "extends": ["@ngneers/eslint-config-angular"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "@angular-eslint/prefer-on-push-component-change-detection": "error"
+  }
+}
