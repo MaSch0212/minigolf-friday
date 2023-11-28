@@ -1,46 +1,70 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+import { Store } from '@ngrx/store';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MenubarModule } from 'primeng/menubar';
+import { ToastModule } from 'primeng/toast';
 
+import { selectAppTitle } from '../../+state/app';
 import { ThemeService } from '../../services/theme.service';
-import { TranslateService } from '../../services/translate.service';
+import { TranslateService, TranslationKey } from '../../services/translate.service';
+import { chainSignals } from '../../utils/signal.utils';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MenubarModule],
+  imports: [
+    BreadcrumbModule,
+    ConfirmDialogModule,
+    CommonModule,
+    RouterOutlet,
+    MenubarModule,
+    ToastModule,
+  ],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
+  private readonly _store = inject(Store);
   private readonly _translateService = inject(TranslateService);
   private readonly _themeService = inject(ThemeService);
 
   protected translations = this._translateService.translations;
+  protected title = chainSignals(this._store.selectSignal(selectAppTitle), title =>
+    computed(() =>
+      title().translate ? this.translations[title().title as TranslationKey]() : title().title
+    )
+  );
   protected menuItems = computed<MenuItem[]>(() => [
     {
-      label: this.translations.menu_home(),
       icon: 'mdi mdi-home',
       routerLink: '/home',
     },
     {
-      label: this.translations.menu_players(),
-      icon: 'mdi mdi-account-multiple',
-      routerLink: '/players',
+      label: this.translations.nav_manage(),
+      icon: 'mdi mdi-table-edit',
+      items: [
+        {
+          label: this.translations.nav_players(),
+          icon: 'mdi mdi-account-multiple',
+          routerLink: '/manage/players',
+        },
+      ],
     },
     {
-      label: this.translations.menu_settings(),
       icon: 'mdi mdi-cog',
       items: [
         {
-          label: this.translations.menu_theme(),
+          label: this.translations.settings_theme(),
           icon: 'mdi mdi-theme-light-dark',
           items: [
             {
-              label: `${this.translations.menu_useSystemTheme()} (${this.getThemeDisplay(
+              label: `${this.translations.settings_useSystemTheme()} (${this.getThemeDisplay(
                 this._themeService.isDarkColorSchemePrefered() ? 'dark' : 'light'
               )})`,
               icon: `mdi ${
@@ -52,12 +76,12 @@ export class AppComponent {
               separator: true,
             },
             {
-              label: this.translations.menu_darkTheme(),
+              label: this.translations.settings_darkTheme(),
               icon: `mdi ${this._themeService.isTheme('dark') ? 'mdi-check' : 'mdi-weather-night'}`,
               command: () => this._themeService.setTheme('dark'),
             },
             {
-              label: this.translations.menu_lightTheme(),
+              label: this.translations.settings_lightTheme(),
               icon: `mdi ${
                 this._themeService.isTheme('light') ? 'mdi-check' : 'mdi-weather-sunny'
               }`,
@@ -66,11 +90,11 @@ export class AppComponent {
           ],
         },
         {
-          label: this.translations.menu_language(),
+          label: this.translations.settings_language(),
           icon: 'mdi mdi-translate',
           items: [
             {
-              label: `${this.translations.menu_useSystemLanguage()} (${this.getLangDisplay(
+              label: `${this.translations.settings_useSystemLanguage()} (${this.getLangDisplay(
                 this._translateService.browserLanguage()
               )})`,
               icon: `mdi ${
@@ -111,9 +135,9 @@ export class AppComponent {
   private getThemeDisplay(theme: string) {
     switch (theme) {
       case 'dark':
-        return this.translations.menu_darkTheme();
+        return this.translations.settings_darkTheme();
       case 'light':
-        return this.translations.menu_lightTheme();
+        return this.translations.settings_lightTheme();
       default:
         throw new Error(`Unknown theme: ${theme}`);
     }

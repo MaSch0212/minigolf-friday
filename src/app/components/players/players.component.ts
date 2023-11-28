@@ -8,22 +8,19 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
-import {
-  PlayersFeatureSlice,
-  loadPlayersAction,
-  playerSelectors,
-  selectPlayersLoadState,
-} from '../../+state/players';
+import { loadPlayersAction, playerSelectors, selectPlayersLoadState } from '../../+state/players';
+import { interpolate } from '../../directives/interpolate.pipe';
 import { Player } from '../../models/player';
 import { TranslateService } from '../../services/translate.service';
 import { notNullish } from '../../utils/common.utils';
-import { injectStore } from '../../utils/store.utils';
 
 function playerMatchesFilter(
   player: Player | undefined,
@@ -53,8 +50,10 @@ function playerMatchesFilter(
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayersComponent implements OnInit {
-  private readonly _store = injectStore<PlayersFeatureSlice>();
+  private readonly _store = inject(Store);
   private readonly _allPlayers = this._store.selectSignal(playerSelectors.selectAll);
+  private readonly _confirmationService = inject(ConfirmationService);
+  private readonly _messageService = inject(MessageService);
 
   protected readonly translations = inject(TranslateService).translations;
   protected readonly filter = signal('');
@@ -68,6 +67,25 @@ export class PlayersComponent implements OnInit {
   }
 
   protected trackByPlayerId = (_: number, player: Player) => player.id;
+
+  protected deletePlayer(player: Player) {
+    this._confirmationService.confirm({
+      header: this.translations.players_deleteDialog_title(),
+      message: interpolate(this.translations.players_deleteDialog_text(), player),
+      acceptLabel: this.translations.players_deleteDialog_delete(),
+      acceptButtonStyleClass: 'p-button-danger',
+      acceptIcon: 'p-button-icon-left mdi mdi-delete-outline',
+      rejectLabel: this.translations.players_deleteDialog_cancel(),
+      accept: () => {
+        this._messageService.add({
+          severity: 'success',
+          summary: this.translations.players_playerDeleted_summary(),
+          detail: interpolate(this.translations.players_playerDeleted_detail(), player),
+          life: 2000,
+        });
+      },
+    });
+  }
 
   private filterPlayers(players: (Player | undefined)[], filter: string): Player[] {
     if (!filter) {

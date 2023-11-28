@@ -25,3 +25,7 @@ body {
 p-button[size='small'] .p-button-icon-only.p-button-rounded {
   @apply w-8 h-8 p-0;
 }
+
+p-menubar .p-menuitem-icon:has(+ .p-menuitem-text:empty) {
+  margin-right: 0;
+}

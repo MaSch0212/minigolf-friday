@@ -26,6 +26,7 @@ type TranslateKeys<T> = T extends object
                 : never;
             }[keyof T]
   : never;
+export type TranslationKey = TranslateKeys<typeof en>;
 
 const langLocalStorageKey = 'lang';
 
@@ -67,7 +68,7 @@ export function isFunctionKey(key: string): key is Extract<keyof Function, strin
 }
 export type TranslationsSignal<T> = Signal<T> &
   Readonly<{
-    [K in TranslateKeys<T>]: Signal<string>;
+    [K in TranslateKeys<T>]: Signal<string> & { key: K };
   }>;
 function toTranslationsSignal<T>(signal: Signal<T | undefined>): TranslationsSignal<T> {
   return new Proxy(signal, {
@@ -75,7 +76,9 @@ function toTranslationsSignal<T>(signal: Signal<T | undefined>): TranslationsSig
       if (typeof prop !== 'string' || isFunctionKey(prop)) {
         return target[prop];
       }
-      return computed(() => getDeepValue(target(), prop.split('_')));
+      const sig = computed(() => getDeepValue(target(), prop.split('_')));
+      Object.defineProperty(sig, 'key', { value: prop });
+      return sig;
     },
   }) as TranslationsSignal<T>;
 }

@@ -1,13 +1,16 @@
 {
-  "title": "Minigolf Friday Manager",
+  "title": "Minigolf Friday Planner",
   "footer": {
     "developedBy": "Developed with ❤️ by",
     "basedOn": "Based on the Excel app by"
   },
-  "menu": {
+  "nav": {
     "home": "Home",
+    "manage": "Manage",
     "players": "Players",
-    "settings": "Settings",
+    "settings": "Settings"
+  },
+  "settings": {
     "theme": "Theme",
     "language": "Language",
     "useSystemTheme": "Use system theme",
@@ -16,7 +19,17 @@
     "lightTheme": "Light"
   },
   "players": {
-    "loadError": "Failed to load players."
+    "loadError": "Failed to load players.",
+    "deleteDialog": {
+      "title": "Delete player",
+      "text": "Are you sure you want to delete player \"{{name}}\"?",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "playerDeleted": {
+      "summary": "Player deleted",
+      "detail": "Player \"{{name}}\" was deleted successfully."
+    }
   },
   "shared": {
     "tryAgainLater": "Please try again later.",

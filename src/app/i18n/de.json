@@ -1,13 +1,16 @@
 {
-  "title": "Minigolf Freitag Manager",
+  "title": "Minigolf Freitag Planer",
   "footer": {
     "developedBy": "Entwickelt mit ❤️ von",
     "basedOn": "Basierend auf der Excel-App von"
   },
-  "menu": {
+  "nav": {
     "home": "Startseite",
+    "manage": "Verwalten",
     "players": "Spieler",
-    "settings": "Einstellungen",
+    "settings": "Einstellungen"
+  },
+  "settings": {
     "theme": "Thema",
     "language": "Sprache",
     "useSystemTheme": "Systemthema verwenden",
@@ -16,7 +19,17 @@
     "lightTheme": "Hell"
   },
   "players": {
-    "loadError": "Fehler beim Laden der Spieler."
+    "loadError": "Fehler beim Laden der Spieler.",
+    "deleteDialog": {
+      "title": "Spieler löschen",
+      "text": "Möchtest du den Spieler \"{{name}}\" wirklich löschen?",
+      "cancel": "Abbrechen",
+      "delete": "Löschen"
+    },
+    "playerDeleted": {
+      "summary": "Spieler gelöscht",
+      "detail": "Der Spieler \"{{name}}\" wurde erfolgreich gelöscht."
+    }
   },
   "shared": {
     "tryAgainLater": "Bitte versuche es später erneut.",

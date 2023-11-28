@@ -41,6 +41,9 @@ dependencies:
   '@ngrx/entity':
     specifier: ^17.0.0
     version: 17.0.0(@angular/core@17.0.0)(@ngrx/store@17.0.0)(rxjs@7.8.1)
+  '@ngrx/router-store':
+    specifier: ^17.0.1
+    version: 17.0.1(@angular/common@17.0.0)(@angular/core@17.0.0)(@angular/router@17.0.0)(@ngrx/store@17.0.0)(rxjs@7.8.1)
   '@ngrx/store':
     specifier: ^17.0.0
     version: 17.0.0(@angular/core@17.0.0)(rxjs@7.8.1)
@@ -3021,6 +3024,23 @@ packages:
     peerDependencies:
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
+      rxjs: 7.8.1
+      tslib: 2.6.2
+    dev: false
+
+  /@ngrx/router-store@17.0.1(@angular/common@17.0.0)(@angular/core@17.0.0)(@angular/router@17.0.0)(@ngrx/store@17.0.0)(rxjs@7.8.1):
+    resolution: {integrity: sha512-O4kz/yvIaAfG0Hzloj24RqL17E1oddQ7wpxjU6UrTr/oZkX1/lIehaSxSJIVzq02vQWShIq0RFo/t8ac5mzqZQ==}
+    peerDependencies:
+      '@angular/common': ^17.0.0
+      '@angular/core': ^17.0.0
+      '@angular/router': ^17.0.0
+      '@ngrx/store': 17.0.1
+      rxjs: ^6.5.3 || ^7.5.0
+    dependencies:
+      '@angular/common': 17.0.0(@angular/core@17.0.0)(rxjs@7.8.1)
+      '@angular/core': 17.0.0(rxjs@7.8.1)(zone.js@0.14.2)
+      '@angular/router': 17.0.0(@angular/common@17.0.0)(@angular/core@17.0.0)(@angular/platform-browser@17.0.0)(rxjs@7.8.1)
+      '@ngrx/store': 17.0.0(@angular/core@17.0.0)(rxjs@7.8.1)
       rxjs: 7.8.1
       tslib: 2.6.2
     dev: false

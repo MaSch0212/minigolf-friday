@@ -1,14 +1,21 @@
-<p-menubar class="m-4" [model]="menuItems()">
+<p-menubar class="m-2 sm:m-4" [model]="menuItems()">
   <ng-template pTemplate="end">
-    <h3 class="truncate m-0">{{ translations.title() }}</h3>
+    @if (title()) {
+      <span class="font-semibold">{{ title() }}</span>
+      <span class="text-xs ml-4 sm:ml-8">{{ translations.title() }}</span>
+    } @else {
+      <span class="font-semibold">{{ translations.title() }}</span>
+    }
   </ng-template>
 </p-menubar>
 
-<div class="grow mx-4 min-h-0">
+<div class="grow mx-2 sm:mx-4 min-h-0">
   <router-outlet></router-outlet>
 </div>
 
-<footer class="px-4 py-1 bg-surface-50 text-xs flex flex-row justify-between flex-wrap gap-x-8">
+<footer
+  class="px-2 sm:px-4 py-1 bg-surface-50 text-2xs md:text-xs lg:text-sm flex flex-row justify-around flex-wrap gap-x-8"
+>
   <div class="truncate">
     <span>{{ translations.footer_developedBy() }} Marc Schmidt </span>
     <span class="whitespace-nowrap"
@@ -26,3 +33,6 @@
     >
   </div>
 </footer>
+
+<p-toast />
+<p-confirmDialog />
