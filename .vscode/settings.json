@@ -30,7 +30,10 @@
   "[csharp]": {
     "editor.defaultFormatter": "csharpier.csharpier-vscode"
   },
-  "editor.rulers": [100]
+  "editor.rulers": [100],
+
+  "tailwindCSS.rootFontSize": 14,
+  "css.customData": [".vscode/tailwind.json"]
 
   // Remove comments if branch policies are used
   // "git.branchProtection": ["main", "master"],

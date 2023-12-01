@@ -29,10 +29,27 @@
     "playerDeleted": {
       "summary": "Spieler gelöscht",
       "detail": "Der Spieler \"{{name}}\" wurde erfolgreich gelöscht."
+    },
+    "dialog": {
+      "addHeader": "Spieler hinzufügen",
+      "editHeader": "Spieler \"{{name}}\" bearbeiten",
+      "name": "Name",
+      "alias": "Alias",
+      "facebookId": "Facebook ID",
+      "whatsAppNumber": "WhatsApp Nummer",
+      "preferences": "Präferenzen",
+      "avoid": "Gemiedene Spieler",
+      "prefer": "Bevorzugte Spieler",
+      "error": {
+        "commRequired": "Mindestens eine Kommunikationsmöglichkeit muss angegeben werden.",
+        "save": "Fehler beim Speichern des Spielers."
+      }
     }
   },
   "shared": {
     "tryAgainLater": "Bitte versuche es später erneut.",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
   }
 }

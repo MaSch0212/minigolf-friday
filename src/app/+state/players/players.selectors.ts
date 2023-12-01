@@ -12,3 +12,7 @@ export const selectPlayersLoadState = createDistinctSelector(
   playersFeatureSelector,
   state => state.loadState
 );
+export const selectPlayerActionState = createDistinctSelector(
+  playersFeatureSelector,
+  state => state.actionState
+);

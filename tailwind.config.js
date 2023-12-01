@@ -3,7 +3,14 @@ module.exports = {
   content: ['./src/**/*.{html,ts}'],
   corePlugins: { preflight: false },
   theme: {
-    extend: {},
+    extend: {
+      fontSize: {
+        '2xs': ['0.625rem', '0.875rem'],
+      },
+      boxShadow: {
+        focus: '0 0 0 0.2rem',
+      },
+    },
     colors: {
       transparent: 'transparent',
       white: '#ffffff',
@@ -15,6 +22,7 @@ module.exports = {
       'surface-e': 'var(--surface-e)',
       'surface-f': 'var(--surface-f)',
       primary: 'var(--primary-color)',
+      danger: 'var(--danger-color)',
       'surface-0': 'var(--surface-0)',
       'surface-50': 'var(--surface-50)',
       'surface-100': 'var(--surface-100)',
@@ -156,22 +164,6 @@ module.exports = {
       'primary-700': 'var(--primary-700)',
       'primary-800': 'var(--primary-800)',
       'primary-900': 'var(--primary-900)',
-    },
-    fontSize: {
-      '2xs': ['0.625rem', '0.875rem'],
-      xs: ['0.75rem', '1rem'],
-      sm: ['0.875rem', '1.25rem'],
-      base: ['1rem', '1.5rem'],
-      lg: ['1.125rem', '1.75rem'],
-      xl: ['1.25rem', '1.75rem'],
-      '2xl': ['1.5rem', '2rem'],
-      '3xl': ['1.875rem', '2.25rem'],
-      '4xl': ['2.25rem', '2.5rem'],
-      '5xl': ['3rem', '1'],
-      '6xl': ['3.75rem', '1'],
-      '7xl': ['4.5rem', '1'],
-      '8xl': ['6rem', '1'],
-      '9xl': ['8rem', '1'],
     },
   },
 };

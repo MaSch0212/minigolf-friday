@@ -29,10 +29,27 @@
     "playerDeleted": {
       "summary": "Player deleted",
       "detail": "Player \"{{name}}\" was deleted successfully."
+    },
+    "dialog": {
+      "addHeader": "Add player",
+      "editHeader": "Edit player \"{{name}}\"",
+      "name": "Name",
+      "alias": "Alias",
+      "facebookId": "Facebook ID",
+      "whatsAppNumber": "WhatsApp number",
+      "preferences": "Preferences",
+      "avoid": "Avoided players",
+      "prefer": "Preferred players",
+      "error": {
+        "commRequired": "At least one communication channel needs to be provided.",
+        "save": "Failed to save player."
+      }
     }
   },
   "shared": {
     "tryAgainLater": "Please try again later.",
-    "add": "Add"
+    "add": "Add",
+    "cancel": "Cancel",
+    "save": "Save"
   }
 }

@@ -1,0 +1,183 @@
+<p-dialog
+  [header]="
+    playerToUpdate()
+      ? (translations.players_dialog_editHeader() | interpolate: playerToUpdate())
+      : translations.players_dialog_addHeader()
+  "
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="form">
+    @if (actionState().error) {
+      <p-messages class="sm:col-span-2 -mt-4" severity="error">
+        <ng-template pTemplate>
+          <span class="mdi mdi-close-circle-outline mr-2"></span>
+          <span
+            >{{ translations.players_dialog_error_save() }}
+            {{ translations.shared_tryAgainLater() }}</span
+          >
+        </ng-template>
+      </p-messages>
+    }
+
+    <span class="p-float-label required">
+      <input pInputText [id]="id('name')" type="text" formControlName="name" />
+      <label [htmlFor]="id('name')">{{ translations.players_dialog_name() }}</label>
+    </span>
+
+    <span class="p-float-label">
+      <input pInputText [id]="id('alias')" type="text" formControlName="alias" />
+      <label [htmlFor]="id('alias')">{{ translations.players_dialog_alias() }}</label>
+    </span>
+
+    <span class="p-float-label p-input-icon-left">
+      <i class="mdi mdi-facebook text-blue-400"></i>
+      <input
+        pInputText
+        [id]="id('facebookId')"
+        [class.ng-invalid]="hasCommRequiredError"
+        [class.ng-touched]="commTouched"
+        type="text"
+        formControlName="facebookId"
+      />
+      <label [htmlFor]="id('facebookId')">{{ translations.players_dialog_facebookId() }}</label>
+    </span>
+
+    <span class="p-float-label p-input-icon-left">
+      <i class="mdi mdi-whatsapp text-green-400"></i>
+      <input
+        pInputText
+        [id]="id('whatsAppNumber')"
+        [class.ng-invalid]="hasCommRequiredError"
+        [class.ng-touched]="commTouched"
+        type="text"
+        formControlName="whatsAppNumber"
+      />
+      <label [htmlFor]="id('whatsAppNumber')">{{
+        translations.players_dialog_whatsAppNumber()
+      }}</label>
+    </span>
+
+    @if (hasCommRequiredError && commTouched) {
+      <span class="sm:col-span-2 text-danger mdi mdi-close-circle -mt-3">
+        {{ translations.players_dialog_error_commRequired() }}
+      </span>
+    }
+
+    <span class="flex flex-col gap-2">
+      <div class="flex flex-row items-center">
+        <label class="grow" [htmlFor]="id('avoid')"
+          >👎 {{ translations.players_dialog_avoid() }}</label
+        >
+        <p-button
+          icon="mdi mdi-plus"
+          [rounded]="true"
+          [text]="true"
+          [disabled]="form.controls.preferences.controls.avoid.disabled"
+          size="small"
+          (onClick)="$event.stopPropagation(); addAvoidPanel.show($event)"
+        />
+      </div>
+      <p-dataView [id]="id('avoid')" [value]="avoidPlayers()" [trackBy]="trackByPlayerId">
+        <ng-template pTemplate="empty"></ng-template>
+        <ng-template let-player pTemplate="listItem">
+          <div class="flex flex-row items-center py-2 pl-4 gap-2">
+            <app-player-item [player]="player" class="grow" />
+            <p-button
+              icon="mdi mdi-delete-outline"
+              [rounded]="true"
+              [text]="true"
+              [disabled]="form.controls.preferences.controls.avoid.disabled"
+              size="small"
+              severity="danger"
+              (onClick)="onRemoveAvoid(player)"
+            />
+          </div>
+        </ng-template>
+      </p-dataView>
+    </span>
+
+    <span class="flex flex-col gap-1 sm:gap-2">
+      <div class="flex flex-row items-center">
+        <label class="grow" [htmlFor]="id('prefer')"
+          >👍 {{ translations.players_dialog_prefer() }}</label
+        >
+        <p-button
+          icon="mdi mdi-plus"
+          [rounded]="true"
+          [text]="true"
+          [disabled]="form.controls.preferences.controls.prefer.disabled"
+          size="small"
+          (onClick)="$event.stopPropagation(); addPreferPanel.show($event)"
+        />
+      </div>
+      <p-dataView [id]="id('prefer')" [value]="preferPlayers()" [trackBy]="trackByPlayerId">
+        <ng-template pTemplate="empty"></ng-template>
+        <ng-template let-player pTemplate="listItem">
+          <div class="flex flex-row items-center py-2 pl-4 gap-2">
+            <app-player-item [player]="player" class="grow" />
+            <p-button
+              icon="mdi mdi-delete-outline"
+              [rounded]="true"
+              [text]="true"
+              [disabled]="form.controls.preferences.controls.prefer.disabled"
+              size="small"
+              severity="danger"
+              (onClick)="onRemovePrefer(player)"
+            />
+          </div>
+        </ng-template>
+      </p-dataView>
+    </span>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button
+      [disabled]="actionState().loading"
+      [text]="true"
+      label="{{ translations.shared_cancel() }}"
+      (onClick)="close()"
+    />
+    <p-button
+      [disabled]="actionState().loading"
+      label="{{ translations.shared_save() }}"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-overlayPanel #addAvoidPanel styleClass="p-0">
+  <ng-template pTemplate="content">
+    <p-listbox
+      [autofocus]="true"
+      styleClass="border-none"
+      [options]="unassignedPlayers()"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name,alias"
+      (onChange)="onAddAvoid($event.value); addAvoidPanel.hide()"
+    >
+      <ng-template let-player pTemplate="listItem">
+        <app-player-item [player]="player" [showCommIcon]="false" />
+      </ng-template>
+    </p-listbox>
+  </ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel #addPreferPanel styleClass="p-0">
+  <ng-template pTemplate="content">
+    <p-listbox
+      [autofocus]="true"
+      styleClass="border-none"
+      [options]="unassignedPlayers()"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name,alias"
+      (onChange)="onAddPrefer($event.value); addPreferPanel.hide()"
+    >
+      <ng-template let-player pTemplate="listItem">
+        <app-player-item [player]="player" [showCommIcon]="false" />
+      </ng-template>
+    </p-listbox>
+  </ng-template>
+</p-overlayPanel>

@@ -1,31 +1,120 @@
-@import '@mdi/font/css/materialdesignicons.css';
-@import 'primeng/resources/primeng.css';
+@layer base, primeng, adjustments, components, utilities, tw;
 
-$flag-icons-included-countries: us, de;
-$flag-icons-path: '/assets/flags';
-@import 'flag-icons/sass/flag-icons';
+@import 'primeng/resources/primeng.css' layer(primeng);
+@import '@mdi/font/css/materialdesignicons.css' layer(components);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html,
-body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+@layer components {
+  $flag-icons-included-countries: us, de;
+  $flag-icons-path: '/assets/flags';
+  @import 'flag-icons/sass/flag-icons';
 }
 
-* {
-  box-sizing: border-box;
+@layer tw {
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
 }
 
-p-button[size='small'] .p-button-icon-only.p-button-rounded {
-  @apply w-8 h-8 p-0;
+@layer base {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-size: 14px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
-p-menubar .p-menuitem-icon:has(+ .p-menuitem-text:empty) {
-  margin-right: 0;
+@layer adjustments {
+  p-button[size='small'] .p-button-icon-only.p-button-rounded {
+    @apply w-8 h-8 p-0;
+  }
+
+  p-menubar .p-menuitem-icon:has(+ .p-menuitem-text:empty) {
+    margin-right: 0;
+  }
+
+  .p-dialog {
+    @apply p-6 gap-6 bg-surface-a;
+  }
+
+  .p-dialog-header,
+  .p-dialog-content,
+  .p-dialog-footer {
+    padding: 0;
+  }
+
+  .p-dialog-content {
+    @apply -m-2 p-2;
+  }
+
+  .p-dialog-footer {
+    @apply flex flex-row gap-2 items-center justify-end flex-wrap-reverse;
+
+    button {
+      margin-right: 0;
+    }
+  }
+
+  .p-inputtext {
+    width: 100%;
+
+    &.ng-invalid.ng-touched {
+      @apply border-danger;
+
+      &:enabled:focus {
+        box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--danger-color) 50%, transparent);
+      }
+    }
+  }
+
+  .p-float-label {
+    input,
+    textarea,
+    .p-inputwrapper {
+      ~ label {
+        background: var(--surface-b);
+      }
+    }
+
+    input:focus,
+    input.p-filled,
+    textarea:focus,
+    textarea.p-filled,
+    .p-inputwrapper-focus,
+    .p-inputwrapper-filled {
+      ~ label {
+        top: 3px;
+        padding: 0 4px;
+        left: 8px;
+        background: linear-gradient(180deg, var(--surface-a) 50%, var(--surface-b) 50%);
+      }
+    }
+
+    > .ng-invalid.ng-touched + label {
+      @apply text-danger;
+    }
+
+    &.required > label::after {
+      content: ' *';
+    }
+  }
+
+  .p-overlaypanel.p-0 .p-overlaypanel-content {
+    padding: 0;
+  }
+
+  .p-dataview.p-dataview-list .p-dataview-content > .grid > div:last-child {
+    border: none;
+  }
+
+  [class*='p-input-icon-'] > .mdi {
+    line-height: 1rem;
+  }
 }

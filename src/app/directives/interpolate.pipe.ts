@@ -1,6 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-export function interpolate(value: string, params: Record<string, unknown>): string {
+export function interpolate(
+  value: string,
+  params: Record<string, unknown> | null | undefined
+): string {
+  if (!params) return value;
+
   const placeholderRegex = /{{\s*([\w.]+)\s*}}/g;
 
   let match: RegExpExecArray | null;
@@ -20,7 +25,7 @@ export function interpolate(value: string, params: Record<string, unknown>): str
   standalone: true,
 })
 export class InterpolatePipe implements PipeTransform {
-  public transform(value: string, params: Record<string, unknown>): string {
+  public transform(value: string, params: Record<string, unknown> | null | undefined): string {
     return interpolate(value, params);
   }
 }

@@ -1,15 +1,17 @@
-<p-menubar class="m-2 sm:m-4" [model]="menuItems()">
+<p-menubar class="m-4" [model]="menuItems()">
   <ng-template pTemplate="end">
-    @if (title()) {
-      <span class="font-semibold">{{ title() }}</span>
-      <span class="text-xs ml-4 sm:ml-8">{{ translations.title() }}</span>
-    } @else {
-      <span class="font-semibold">{{ translations.title() }}</span>
-    }
+    <div class="flex flex-row items-end gap-x-8 flex-wrap justify-end">
+      @if (title()) {
+        <span class="font-semibold">{{ title() }}</span>
+        <span class="text-xs">{{ translations.title() }}</span>
+      } @else {
+        <span class="font-semibold">{{ translations.title() }}</span>
+      }
+    </div>
   </ng-template>
 </p-menubar>
 
-<div class="grow mx-2 sm:mx-4 min-h-0">
+<div class="grow mx-4 min-h-0">
   <router-outlet></router-outlet>
 </div>
 

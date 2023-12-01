@@ -1,0 +1,17 @@
+<div class="flex flex-row items-center gap-2">
+  @if (showCommIcon) {
+    @if (player.facebookId) {
+      <span class="mdi mdi-facebook text-blue-400"></span>
+    } @else if (player.whatsAppNumber) {
+      <span class="mdi mdi-whatsapp text-green-400"></span>
+    } @else {
+      <span class="mdi mdi-alert-outline text-orange-400"></span>
+    }
+  }
+  <span class="truncate grow min-w-0">
+    {{ player.name }}
+    @if (player.alias) {
+      <span class="opacity-50">({{ player.alias }})</span>
+    }
+  </span>
+</div>

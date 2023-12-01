@@ -16,6 +16,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
+import { PlayerDialogComponent } from './player-dialog/player-dialog.component';
+import { PlayerItemComponent } from './player-item/player-item.component';
 import { loadPlayersAction, playerSelectors, selectPlayersLoadState } from '../../+state/players';
 import { interpolate } from '../../directives/interpolate.pipe';
 import { Player } from '../../models/player';
@@ -43,6 +45,8 @@ function playerMatchesFilter(
     FormsModule,
     InputTextModule,
     MessagesModule,
+    PlayerDialogComponent,
+    PlayerItemComponent,
     ProgressSpinnerModule,
   ],
   templateUrl: './players.component.html',
@@ -76,6 +80,7 @@ export class PlayersComponent implements OnInit {
       acceptButtonStyleClass: 'p-button-danger',
       acceptIcon: 'p-button-icon-left mdi mdi-delete-outline',
       rejectLabel: this.translations.players_deleteDialog_cancel(),
+      rejectButtonStyleClass: 'p-button-text',
       accept: () => {
         this._messageService.add({
           severity: 'success',

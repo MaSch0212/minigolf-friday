@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService, PrimeNGConfig } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MenubarModule } from 'primeng/menubar';
@@ -42,6 +42,7 @@ export class AppComponent {
   );
   protected menuItems = computed<MenuItem[]>(() => [
     {
+      label: this.translations.nav_home(),
       icon: 'mdi mdi-home',
       routerLink: '/home',
     },
@@ -57,6 +58,7 @@ export class AppComponent {
       ],
     },
     {
+      label: this.translations.nav_settings(),
       icon: 'mdi mdi-cog',
       items: [
         {
@@ -120,6 +122,11 @@ export class AppComponent {
       ],
     },
   ]);
+
+  constructor() {
+    const primengConfig = inject(PrimeNGConfig);
+    primengConfig.ripple = true;
+  }
 
   private getLangDisplay(lang: string) {
     switch (lang) {

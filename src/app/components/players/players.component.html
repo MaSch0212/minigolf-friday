@@ -8,7 +8,7 @@
     </ng-template>
   </p-messages>
 } @else {
-  <div class="flex flex-col h-full w-full max-w-[40rem] gap-2 sm:gap-4">
+  <div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
     <div class="flex flex-row gap-2 items-center">
       <div class="grow min-w-0">
         <span class="p-input-icon-left">
@@ -22,26 +22,24 @@
           />
         </span>
       </div>
-      <p-button icon="mdi mdi-plus" label="{{ translations.shared_add() }}" size="small" />
+      <p-button
+        icon="mdi mdi-plus"
+        label="{{ translations.shared_add() }}"
+        (onClick)="dialog.open()"
+      />
     </div>
     <div class="overflow-auto grow">
       <p-dataView [value]="players()" [trackBy]="trackByPlayerId">
         <ng-template let-player pTemplate="listItem">
-          <div class="flex flex-row items-center p-2 pl-4 gap-2">
-            @if (player.facebookId) {
-              <span class="mdi mdi-facebook text-blue-400"></span>
-            } @else if (player.whatsAppNumber) {
-              <span class="mdi mdi-whatsapp text-green-400"></span>
-            } @else {
-              <span class="mdi mdi-alert-outline text-orange-400"></span>
-            }
-            <span class="truncate grow">
-              {{ player.name }}
-              @if (player.alias) {
-                <span class="opacity-50">({{ player.alias }})</span>
-              }
-            </span>
-            <p-button icon="mdi mdi-pencil-outline" [rounded]="true" [text]="true" size="small" />
+          <div class="flex flex-row items-center p-2 pl-4 gap-2 min-w-0">
+            <app-player-item [player]="player" class="grow min-w-0" />
+            <p-button
+              icon="mdi mdi-pencil-outline"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              (onClick)="dialog.open(player)"
+            />
             <p-button
               icon="mdi mdi-delete-outline"
               [rounded]="true"
@@ -56,3 +54,5 @@
     </div>
   </div>
 }
+
+<app-player-dialog #dialog></app-player-dialog>
