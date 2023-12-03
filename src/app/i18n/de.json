@@ -30,6 +30,10 @@
       "summary": "Spieler gelöscht",
       "detail": "Der Spieler \"{{name}}\" wurde erfolgreich gelöscht."
     },
+    "playerDeletionFailed": {
+      "summary": "Fehler beim Löschen des Spielers",
+      "detail": "Der Spieler \"{{name}}\" konnte nicht gelöscht werden."
+    },
     "dialog": {
       "addHeader": "Spieler hinzufügen",
       "editHeader": "Spieler \"{{name}}\" bearbeiten",

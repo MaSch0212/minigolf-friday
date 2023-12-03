@@ -1,6 +1,10 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using MinigolfFriday.Data;
+using MinigolfFriday.Models;
+using MinigolfFriday.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +14,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
+builder.Services.AddDbContext<MinigolfFridayContext>();
+builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
+builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
 
 builder
     .Services
@@ -131,7 +138,14 @@ app.UseRouting();
 // app.UseAuthentication();
 // app.UseAuthorization();
 
-app.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
+#pragma warning disable ASP0014 // Suggest using top level route registrations
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+#pragma warning restore ASP0014 // Suggest using top level route registrations
+
+//app.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
 
 app.UseSpa(spa =>
 {
@@ -141,5 +155,10 @@ app.UseSpa(spa =>
         spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
     }
 });
+
+using (var context = new MinigolfFridayContext(null))
+{
+    context.Database.Migrate();
+}
 
 app.Run();

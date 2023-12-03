@@ -13,7 +13,7 @@ export const loadPlayersSuccessAction = createAction(
 );
 export const loadPlayersFailureAction = createAction(
   '[Players] Load Players Failure',
-  props<{ error: HttpErrorResponse }>()
+  props<{ reload: boolean; error: HttpErrorResponse }>()
 );
 
 export const addPlayerAction = createAction('[Players] Add Player', props<{ player: Player }>());
@@ -23,7 +23,7 @@ export const addPlayerSuccessAction = createAction(
 );
 export const addPlayerFailureAction = createAction(
   '[Players] Add Player Failure',
-  props<{ error: HttpErrorResponse }>()
+  props<{ player: Player; error: HttpErrorResponse }>()
 );
 
 export const updatePlayerAction = createAction(
@@ -36,5 +36,18 @@ export const updatePlayerSuccessAction = createAction(
 );
 export const updatePlayerFailureAction = createAction(
   '[Players] Update Player Failure',
-  props<{ error: HttpErrorResponse }>()
+  props<{ player: Player; error: HttpErrorResponse }>()
+);
+
+export const deletePlayerAction = createAction(
+  '[Players] Delete Player',
+  props<{ player: Player }>()
+);
+export const deletePlayerSuccessAction = createAction(
+  '[Players] Delete Player Success',
+  props<{ player: Player }>()
+);
+export const deletePlayerFailureAction = createAction(
+  '[Players] Delete Player Failure',
+  props<{ player: Player; error: HttpErrorResponse }>()
 );

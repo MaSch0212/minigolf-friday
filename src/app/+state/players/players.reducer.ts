@@ -49,6 +49,7 @@ export const playersReducer = createReducer<PlayersFeatureState>(
   on(
     actions.addPlayerAction,
     actions.updatePlayerAction,
+    actions.deletePlayerAction,
     produce(state => {
       state.actionState.error = undefined;
       state.actionState.loading = true;
@@ -70,9 +71,18 @@ export const playersReducer = createReducer<PlayersFeatureState>(
       })
     )
   ),
+  on(actions.deletePlayerSuccessAction, (state, { player }) =>
+    playersEntityAdapter.removeOne(
+      player.id,
+      produce(state, draft => {
+        draft.actionState = { loading: false, loaded: true, error: null };
+      })
+    )
+  ),
   on(
     actions.addPlayerFailureAction,
     actions.updatePlayerFailureAction,
+    actions.deletePlayerFailureAction,
     produce((state, { error }) => {
       state.actionState.loading = false;
       state.actionState.error = error;

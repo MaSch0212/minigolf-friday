@@ -30,6 +30,10 @@
       "summary": "Player deleted",
       "detail": "Player \"{{name}}\" was deleted successfully."
     },
+    "playerDeletionFailed": {
+      "summary": "Failed to delete player",
+      "detail": "Player \"{{name}}\" could not be deleted."
+    },
     "dialog": {
       "addHeader": "Add player",
       "editHeader": "Edit player \"{{name}}\"",

@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -18,11 +19,19 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { PlayerDialogComponent } from './player-dialog/player-dialog.component';
 import { PlayerItemComponent } from './player-item/player-item.component';
-import { loadPlayersAction, playerSelectors, selectPlayersLoadState } from '../../+state/players';
+import {
+  deletePlayerAction,
+  deletePlayerFailureAction,
+  deletePlayerSuccessAction,
+  loadPlayersAction,
+  playerSelectors,
+  selectPlayersLoadState,
+} from '../../+state/players';
 import { interpolate } from '../../directives/interpolate.pipe';
 import { Player } from '../../models/player';
 import { TranslateService } from '../../services/translate.service';
 import { notNullish } from '../../utils/common.utils';
+import { autoDestroy } from '../../utils/rxjs.utils';
 
 function playerMatchesFilter(
   player: Player | undefined,
@@ -66,6 +75,20 @@ export class PlayersComponent implements OnInit {
   );
   protected readonly loadState = this._store.selectSignal(selectPlayersLoadState);
 
+  constructor() {
+    const actions$ = inject(Actions);
+    autoDestroy(
+      actions$
+        .pipe(ofType(deletePlayerSuccessAction))
+        .subscribe(({ player }) => this.onPlayerDeleted(player))
+    );
+    autoDestroy(
+      actions$
+        .pipe(ofType(deletePlayerFailureAction))
+        .subscribe(({ player }) => this.onPlayerDeletionFailed(player))
+    );
+  }
+
   public ngOnInit() {
     this._store.dispatch(loadPlayersAction({ reload: false }));
   }
@@ -81,14 +104,7 @@ export class PlayersComponent implements OnInit {
       acceptIcon: 'p-button-icon-left mdi mdi-delete-outline',
       rejectLabel: this.translations.players_deleteDialog_cancel(),
       rejectButtonStyleClass: 'p-button-text',
-      accept: () => {
-        this._messageService.add({
-          severity: 'success',
-          summary: this.translations.players_playerDeleted_summary(),
-          detail: interpolate(this.translations.players_playerDeleted_detail(), player),
-          life: 2000,
-        });
-      },
+      accept: () => this._store.dispatch(deletePlayerAction({ player })),
     });
   }
 
@@ -98,5 +114,23 @@ export class PlayersComponent implements OnInit {
     }
     const lowerCaseFilter = filter.toLowerCase();
     return players.filter((p): p is Player => playerMatchesFilter(p, lowerCaseFilter));
+  }
+
+  private onPlayerDeleted(player: Player) {
+    this._messageService.add({
+      severity: 'success',
+      summary: this.translations.players_playerDeleted_summary(),
+      detail: interpolate(this.translations.players_playerDeleted_detail(), player),
+      life: 2000,
+    });
+  }
+
+  private onPlayerDeletionFailed(player: Player) {
+    this._messageService.add({
+      severity: 'error',
+      summary: this.translations.players_playerDeletionFailed_summary(),
+      detail: interpolate(this.translations.players_playerDeletionFailed_detail(), player),
+      life: 2000,
+    });
   }
 }
