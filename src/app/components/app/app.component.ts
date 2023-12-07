@@ -55,6 +55,11 @@ export class AppComponent {
           icon: 'mdi mdi-account-multiple',
           routerLink: '/manage/players',
         },
+        {
+          label: this.translations.nav_maps(),
+          icon: 'mdi mdi-golf',
+          routerLink: '/manage/maps',
+        },
       ],
     },
     {

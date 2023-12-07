@@ -1,0 +1,58 @@
+@if (loadState().loading) {
+  <p-progressSpinner class="m-8"></p-progressSpinner>
+} @else if (loadState().error) {
+  <p-messages severity="error">
+    <ng-template pTemplate>
+      <span class="mdi mdi-close-circle-outline mr-2"></span>
+      <span>{{ translations.maps_loadError() }} {{ translations.shared_tryAgainLater() }}</span>
+    </ng-template>
+  </p-messages>
+} @else {
+  <div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
+    <div class="flex flex-row gap-2 items-center">
+      <div class="grow min-w-0">
+        <span class="p-input-icon-left">
+          <i class="mdi mdi-magnify"></i>
+          <input
+            class="w-full max-w-[350px]"
+            type="text"
+            pInputText
+            [ngModel]="filter()"
+            (ngModelChange)="filter.set($event)"
+          />
+        </span>
+      </div>
+      <p-button
+        icon="mdi mdi-plus"
+        label="{{ translations.shared_add() }}"
+        (onClick)="dialog.open()"
+      />
+    </div>
+    <div class="overflow-auto grow">
+      <p-dataView [value]="maps()" [trackBy]="trackByMapId">
+        <ng-template let-map pTemplate="listItem">
+          <div class="flex flex-row items-center p-2 pl-4 gap-2 min-w-0">
+            <app-map-item [map]="map" class="grow min-w-0" />
+            <p-button
+              icon="mdi mdi-pencil-outline"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              (onClick)="dialog.open(map)"
+            />
+            <p-button
+              icon="mdi mdi-delete-outline"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="danger"
+              (onClick)="deleteMap(map)"
+            />
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </div>
+}
+
+<app-map-dialog #dialog></app-map-dialog>

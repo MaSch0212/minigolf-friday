@@ -8,6 +8,7 @@
     "home": "Home",
     "manage": "Manage",
     "players": "Players",
+    "maps": "Maps",
     "settings": "Settings"
   },
   "settings": {
@@ -22,9 +23,7 @@
     "loadError": "Failed to load players.",
     "deleteDialog": {
       "title": "Delete player",
-      "text": "Are you sure you want to delete player \"{{name}}\"?",
-      "cancel": "Cancel",
-      "delete": "Delete"
+      "text": "Are you sure you want to delete player \"{{name}}\"?"
     },
     "playerDeleted": {
       "summary": "Player deleted",
@@ -50,10 +49,34 @@
       }
     }
   },
+  "maps": {
+    "loadError": "Failed to load maps.",
+    "deleteDialog": {
+      "title": "Delete map",
+      "text": "Are you sure you want to delete map \"{{name}}\"?"
+    },
+    "mapDeleted": {
+      "summary": "Map deleted",
+      "detail": "Map \"{{name}}\" was deleted successfully."
+    },
+    "mapDeletionFailed": {
+      "summary": "Failed to delete map",
+      "detail": "Map \"{{name}}\" could not be deleted."
+    },
+    "dialog": {
+      "addHeader": "Add map",
+      "editHeader": "Edit map \"{{name}}\"",
+      "name": "Name",
+      "error": {
+        "save": "Failed to save map."
+      }
+    }
+  },
   "shared": {
     "tryAgainLater": "Please try again later.",
     "add": "Add",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "delete": "Delete"
   }
 }

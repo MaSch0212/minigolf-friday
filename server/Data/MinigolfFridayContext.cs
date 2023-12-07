@@ -9,6 +9,7 @@ public class MinigolfFridayContext : DbContext
     private readonly ILoggerFactory? _loggerFactory;
 
     public DbSet<PlayerEntity> Players { get; set; }
+    public DbSet<MinigolfMapEntity> Maps { get; set; }
 
     public string DbPath { get; }
 

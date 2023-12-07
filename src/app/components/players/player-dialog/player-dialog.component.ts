@@ -14,7 +14,6 @@ import {
   FormControl,
   ReactiveFormsModule,
   ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Actions, ofType } from '@ngrx/effects';
@@ -62,7 +61,6 @@ import { PlayerItemComponent } from '../player-item/player-item.component';
     ReactiveFormsModule,
   ],
   templateUrl: './player-dialog.component.html',
-  styleUrl: './player-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerDialogComponent {
@@ -181,14 +179,6 @@ export class PlayerDialogComponent {
 
   private getPlayersByIds(ids: string[]) {
     return ids.map(id => this._allPlayers()[id]).filter(notNullish);
-  }
-
-  private getCommValidator(): ValidatorFn {
-    return () => {
-      return this.form?.value.facebookId || this.form?.value.whatsAppNumber
-        ? null
-        : { commRequired: true };
-    };
   }
 }
 

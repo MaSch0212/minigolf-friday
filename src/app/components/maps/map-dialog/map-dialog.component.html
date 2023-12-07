@@ -1,0 +1,31 @@
+<p-dialog
+  [header]="
+    mapToUpdate()
+      ? (translations.maps_dialog_editHeader() | interpolate: mapToUpdate())
+      : translations.maps_dialog_addHeader()
+  "
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+>
+  <div class="grid grid-cols-1 gap-4" [formGroup]="form">
+    <span class="p-float-label required">
+      <input pInputText [id]="id('name')" type="text" formControlName="name" autofocus />
+      <label [htmlFor]="id('name')">{{ translations.maps_dialog_name() }}</label>
+    </span>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      [disabled]="actionState().loading"
+      [text]="true"
+      label="{{ translations.shared_cancel() }}"
+      (onClick)="close()"
+    />
+    <p-button
+      [disabled]="actionState().loading"
+      label="{{ translations.shared_save() }}"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>

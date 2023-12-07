@@ -7,6 +7,7 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { provideAppState } from './+state/app';
+import { provideMapsState } from './+state/maps';
 import { providePlayersState } from './+state/players';
 import { getAdditionalProviders } from './additional-providers';
 import { routes } from './app.routes';
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideStoreDevtools(),
     provideAppState(),
     providePlayersState(),
+    provideMapsState(),
     getAdditionalProviders(),
   ],
 };

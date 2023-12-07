@@ -1,3 +1,4 @@
+import { MinigolfMap } from './models/minigolf-map';
 import { Player } from './models/player';
 
 export const players: Player[] = [
@@ -78,4 +79,50 @@ export const players: Player[] = [
       prefer: [],
     },
   },
+];
+
+// Maps from Walkabout Minigolf
+export const maps: MinigolfMap[] = [
+  { id: '1', name: 'Tourist Trap leicht' },
+  { id: '2', name: 'Tourist Trap hart' },
+  { id: '3', name: 'Cherry Blossom leicht' },
+  { id: '4', name: 'Cherry Blossom hart' },
+  { id: '5', name: 'Seagull Stacks leicht' },
+  { id: '6', name: 'Seagull Stacks hart' },
+  { id: '7', name: 'Arizona Modern leicht' },
+  { id: '8', name: 'Arizona Modern hart' },
+  { id: '9', name: 'Original Gothic leicht' },
+  { id: '10', name: 'Original Gothic hart' },
+  { id: '11', name: 'Bogeys Bonanza leicht' },
+  { id: '12', name: 'Bogeys Bonanza hart' },
+  { id: '13', name: 'Tethys Station leicht' },
+  { id: '14', name: 'Tethys Station hart' },
+  { id: '15', name: 'Quixote Valley leicht' },
+  { id: '16', name: 'Quixote Valley hart' },
+  { id: '17', name: 'Sweetopia leicht' },
+  { id: '18', name: 'Sweetopia hart' },
+  { id: '19', name: 'Upside Town leicht' },
+  { id: '20', name: 'Upside Town hart' },
+  { id: '21', name: 'Labyrinth leicht' },
+  { id: '22', name: 'Labyrinth hart' },
+  { id: '23', name: 'Myst leicht' },
+  { id: '24', name: 'Myst hart' },
+  { id: '25', name: 'Laser Lair leicht' },
+  { id: '26', name: 'Laser Lair hart' },
+  { id: '27', name: 'Alfheim leicht' },
+  { id: '28', name: 'Alfheim hart' },
+  { id: '29', name: "Widow's Walkabout leicht" },
+  { id: '30', name: "Widow's Walkabout hart" },
+  { id: '31', name: 'Shangri-La leicht' },
+  { id: '32', name: 'Shangri-La hart' },
+  { id: '33', name: 'El Dorado leicht' },
+  { id: '34', name: 'El Dorado hart' },
+  { id: '35', name: 'Atlantis leicht' },
+  { id: '36', name: 'Atlantis hart' },
+  { id: '37', name: 'Temple at Zerzura leicht' },
+  { id: '38', name: 'Temple at Zerzura hart' },
+  { id: '39', name: '20,000 Leagues leicht' },
+  { id: '40', name: '20,000 Leagues hart' },
+  { id: '41', name: 'Journey leicht' },
+  { id: '42', name: 'Journey hart' },
 ];

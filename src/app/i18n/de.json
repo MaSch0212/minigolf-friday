@@ -8,6 +8,7 @@
     "home": "Startseite",
     "manage": "Verwalten",
     "players": "Spieler",
+    "maps": "Bahnen",
     "settings": "Einstellungen"
   },
   "settings": {
@@ -22,9 +23,7 @@
     "loadError": "Fehler beim Laden der Spieler.",
     "deleteDialog": {
       "title": "Spieler löschen",
-      "text": "Möchtest du den Spieler \"{{name}}\" wirklich löschen?",
-      "cancel": "Abbrechen",
-      "delete": "Löschen"
+      "text": "Möchtest du den Spieler \"{{name}}\" wirklich löschen?"
     },
     "playerDeleted": {
       "summary": "Spieler gelöscht",
@@ -50,10 +49,34 @@
       }
     }
   },
+  "maps": {
+    "loadError": "Fehler beim Laden der Bahnen.",
+    "deleteDialog": {
+      "title": "Bahn löschen",
+      "text": "Möchtest du die Bahn \"{{name}}\" wirklich löschen?"
+    },
+    "mapDeleted": {
+      "summary": "Bahn gelöscht",
+      "detail": "Die Bahn \"{{name}}\" wurde erfolgreich gelöscht."
+    },
+    "mapDeletionFailed": {
+      "summary": "Fehler beim Löschen der Bahn",
+      "detail": "Die Bahn \"{{name}}\" konnte nicht gelöscht werden."
+    },
+    "dialog": {
+      "addHeader": "Bahn hinzufügen",
+      "editHeader": "Bahn \"{{name}}\" bearbeiten",
+      "name": "Name",
+      "error": {
+        "save": "Fehler beim Speichern der Bahn."
+      }
+    }
+  },
   "shared": {
     "tryAgainLater": "Bitte versuche es später erneut.",
     "add": "Hinzufügen",
     "cancel": "Abbrechen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "delete": "Löschen"
   }
 }

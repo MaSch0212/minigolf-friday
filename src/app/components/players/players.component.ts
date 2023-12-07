@@ -99,10 +99,10 @@ export class PlayersComponent implements OnInit {
     this._confirmationService.confirm({
       header: this.translations.players_deleteDialog_title(),
       message: interpolate(this.translations.players_deleteDialog_text(), player),
-      acceptLabel: this.translations.players_deleteDialog_delete(),
+      acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
       acceptIcon: 'p-button-icon-left mdi mdi-delete-outline',
-      rejectLabel: this.translations.players_deleteDialog_cancel(),
+      rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
       accept: () => this._store.dispatch(deletePlayerAction({ player })),
     });

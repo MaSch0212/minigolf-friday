@@ -29,6 +29,14 @@ export const routes: Routes = [
             ({ PlayersComponent }) => PlayersComponent
           ),
       },
+      {
+        path: 'maps',
+        resolve: {
+          title: getTitleResolver('nav_maps', true),
+        },
+        loadComponent: () =>
+          import('./components/maps/maps.component').then(({ MapsComponent }) => MapsComponent),
+      },
     ],
   },
   {

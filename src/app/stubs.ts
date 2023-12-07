@@ -5,13 +5,14 @@ import {
   ErrorResponse,
 } from '@ngneers/ng-httpclient-easy-network-stub';
 
+import { GetMapsResponse } from './services/maps.service';
 import {
   AddPlayerRequest,
   AddPlayerResponse,
   GetPlayersResponse,
   UpdatePlayerRequest,
 } from './services/players.service';
-import { players } from './stub-data';
+import { maps, players } from './stub-data';
 
 export function provideStubs() {
   return [
@@ -55,6 +56,38 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
       return respondWith(404, { error: 'Player not found' });
     }
     players.splice(playerIndex, 1);
+    await defaultDelay();
+    return respondWith(200);
+  });
+
+  stub.stub('GET', 'maps', async () => {
+    await defaultDelay();
+    return respondWith<GetMapsResponse>(200, { maps: [...maps] });
+  });
+
+  stub.stub('POST', 'maps', async ({ body }) => {
+    const map = { ...body.map, id: `${nextPlayerId++}` };
+    maps.push(map);
+    await defaultDelay();
+    return respondWith<AddPlayerResponse>(201, { id: map.id });
+  });
+
+  stub.stub('PUT', 'maps', async ({ body }) => {
+    const mapIndex = maps.findIndex(p => p.id === body.map.id);
+    if (mapIndex === -1) {
+      return respondWith(404, { error: 'Map not found' });
+    }
+    maps[mapIndex] = body.map;
+    await defaultDelay();
+    return respondWith(200);
+  });
+
+  stub.stub('DELETE', 'maps/{id:string}', async ({ params }) => {
+    const mapIndex = maps.findIndex(p => p.id === params.id);
+    if (mapIndex === -1) {
+      return respondWith(404, { error: 'Map not found' });
+    }
+    maps.splice(mapIndex, 1);
     await defaultDelay();
     return respondWith(200);
   });
