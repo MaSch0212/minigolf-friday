@@ -43,40 +43,40 @@ export class AppComponent {
   protected menuItems = computed<MenuItem[]>(() => [
     {
       label: this.translations.nav_home(),
-      icon: 'mdi mdi-home',
+      icon: 'i-[mdi--home]',
       routerLink: '/home',
     },
     {
       label: this.translations.nav_manage(),
-      icon: 'mdi mdi-table-edit',
+      icon: 'i-[mdi--table-edit]',
       items: [
         {
           label: this.translations.nav_players(),
-          icon: 'mdi mdi-account-multiple',
+          icon: 'i-[mdi--account-multiple]',
           routerLink: '/manage/players',
         },
         {
           label: this.translations.nav_maps(),
-          icon: 'mdi mdi-golf',
+          icon: 'i-[mdi--golf]',
           routerLink: '/manage/maps',
         },
       ],
     },
     {
       label: this.translations.nav_settings(),
-      icon: 'mdi mdi-cog',
+      icon: 'i-[mdi--cog]',
       items: [
         {
           label: this.translations.settings_theme(),
-          icon: 'mdi mdi-theme-light-dark',
+          icon: 'i-[mdi--theme-light-dark]',
           items: [
             {
               label: `${this.translations.settings_useSystemTheme()} (${this.getThemeDisplay(
                 this._themeService.isDarkColorSchemePrefered() ? 'dark' : 'light'
               )})`,
-              icon: `mdi ${
-                this._themeService.isTheme(null) ? 'mdi-check' : 'mdi-theme-light-dark'
-              }`,
+              icon: this._themeService.isTheme(null)
+                ? 'i-[mdi--check]'
+                : 'i-[mdi--theme-light-dark]',
               command: () => this._themeService.setTheme(null),
             },
             {
@@ -84,29 +84,31 @@ export class AppComponent {
             },
             {
               label: this.translations.settings_darkTheme(),
-              icon: `mdi ${this._themeService.isTheme('dark') ? 'mdi-check' : 'mdi-weather-night'}`,
+              icon: this._themeService.isTheme('dark')
+                ? 'i-[mdi--check]'
+                : 'i-[mdi--weather-night]',
               command: () => this._themeService.setTheme('dark'),
             },
             {
               label: this.translations.settings_lightTheme(),
-              icon: `mdi ${
-                this._themeService.isTheme('light') ? 'mdi-check' : 'mdi-weather-sunny'
-              }`,
+              icon: this._themeService.isTheme('light')
+                ? 'i-[mdi--check]'
+                : 'i-[mdi--weather-sunny]',
               command: () => this._themeService.setTheme('light'),
             },
           ],
         },
         {
           label: this.translations.settings_language(),
-          icon: 'mdi mdi-translate',
+          icon: 'i-[mdi--translate]',
           items: [
             {
               label: `${this.translations.settings_useSystemLanguage()} (${this.getLangDisplay(
                 this._translateService.browserLanguage()
               )})`,
-              icon: `mdi ${
-                this._translateService.isLanguage(null) ? 'mdi-check' : 'mdi-translate'
-              }`,
+              icon: this._translateService.isLanguage(null)
+                ? 'i-[mdi--check]'
+                : 'i-[mdi--translate]',
               command: () => this._translateService.setLanguage(null),
             },
             {
@@ -114,12 +116,12 @@ export class AppComponent {
             },
             {
               label: this.getLangDisplay('en'),
-              icon: this._translateService.isLanguage('en') ? 'mdi mdi-check' : 'fi fi-us',
+              icon: this._translateService.isLanguage('en') ? 'i-[mdi--check]' : 'i-[flag--us-1x1]',
               command: () => this._translateService.setLanguage('en'),
             },
             {
               label: this.getLangDisplay('de'),
-              icon: this._translateService.isLanguage('de') ? 'mdi mdi-check' : 'fi fi-de',
+              icon: this._translateService.isLanguage('de') ? 'i-[mdi--check]' : 'i-[flag--de-1x1]',
               command: () => this._translateService.setLanguage('de'),
             },
           ],

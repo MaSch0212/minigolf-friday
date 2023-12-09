@@ -29,9 +29,6 @@ dependencies:
   '@angular/router':
     specifier: ^17.0.0
     version: 17.0.0(@angular/common@17.0.0)(@angular/core@17.0.0)(@angular/platform-browser@17.0.0)(rxjs@7.8.1)
-  '@mdi/font':
-    specifier: ^7.3.67
-    version: 7.3.67
   '@ngneers/easy-ngrx-distinct-selector':
     specifier: ^0.1.0
     version: 0.1.0(@ngrx/store@17.0.0)
@@ -50,9 +47,6 @@ dependencies:
   '@ngrx/store-devtools':
     specifier: ^17.0.0
     version: 17.0.0(@ngrx/store@17.0.0)(rxjs@7.8.1)
-  flag-icons:
-    specifier: ^7.0.2
-    version: 7.0.2
   immer:
     specifier: ^10.0.3
     version: 10.0.3
@@ -91,6 +85,15 @@ devDependencies:
   '@angular/compiler-cli':
     specifier: ^17.0.0
     version: 17.0.0(@angular/compiler@17.0.0)(typescript@5.2.2)
+  '@iconify-json/flag':
+    specifier: ^1.1.45
+    version: 1.1.45
+  '@iconify-json/mdi':
+    specifier: ^1.1.60
+    version: 1.1.60
+  '@iconify/tailwind':
+    specifier: ^0.1.4
+    version: 0.1.4
   '@ngneers/eslint-config':
     specifier: ^1.0.0
     version: 1.0.0(@typescript-eslint/eslint-plugin@6.12.0)(@typescript-eslint/parser@6.12.0)(eslint-config-prettier@9.0.0)(eslint-plugin-import@2.29.0)(eslint-plugin-unused-imports@3.0.0)(eslint@8.54.0)
@@ -2610,6 +2613,28 @@ packages:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
 
+  /@iconify-json/flag@1.1.45:
+    resolution: {integrity: sha512-622uD8E37NGsglOHwmdqY66wb7hcusbJPhfwvCmDCzYunh0BOcTUeWjl9aOUCmWTvR0yQYLsKGW4vyBmY8EBxg==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/mdi@1.1.60:
+    resolution: {integrity: sha512-oDb+ilwHIccaX/iHEQxcsd9ULRXi14T8gVrx1XivTkMAmVLGzPD/u9GIFNngvF1P/D0xBx68l2COWwsLlker5Q==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify/tailwind@0.1.4:
+    resolution: {integrity: sha512-U7RzcU2fkwOfMDsGQ3mtpLIaApSnqb+vgcJJknPPbg8/NF5s7tI1o5otEMfcpnLGk4PbYB8bxmKTz7IJVUlU2Q==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify/types@2.0.0:
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+    dev: true
+
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -2899,10 +2924,6 @@ packages:
     dependencies:
       call-bind: 1.0.5
     dev: true
-
-  /@mdi/font@7.3.67:
-    resolution: {integrity: sha512-SWxvzRbUQRfewlIV+OF4/YF4DkeTjMWoT8Hh9yeU/5UBVdJZj9Uf4a9+cXjknSIhIaMxZ/4N1O/s7ojApOOGjg==}
-    dev: false
 
   /@ngneers/easy-ngrx-distinct-selector@0.1.0(@ngrx/store@17.0.0):
     resolution: {integrity: sha512-x0C2vYZX6G0Buo4duxNqQWdZGhWYud+bPmYC+NB+avJsDy/mUoxuDf8HnUBbl0kZjkCdM5dp9Sfty7vETwmFBg==}
@@ -6200,10 +6221,6 @@ packages:
       locate-path: 7.2.0
       path-exists: 5.0.0
     dev: true
-
-  /flag-icons@7.0.2:
-    resolution: {integrity: sha512-d54NSa0t4GcKflhZWzxjpxj315DScbtdzqVdZKJl+R0zjtHNiLLuUl9Lis+UJRRL/YJbJ80JXP9FYQ4u/eGXAg==}
-    dev: false
 
   /flat-cache@3.2.0:
     resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}

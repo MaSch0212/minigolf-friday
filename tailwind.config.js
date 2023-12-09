@@ -1,3 +1,5 @@
+const { addDynamicIconSelectors } = require('@iconify/tailwind');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{html,ts}'],
@@ -166,4 +168,10 @@ module.exports = {
       'primary-900': 'var(--primary-900)',
     },
   },
+  plugins: [
+    addDynamicIconSelectors({
+      prefix: 'i',
+      overrideOnly: true,
+    }),
+  ],
 };

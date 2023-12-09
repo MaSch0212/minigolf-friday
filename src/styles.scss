@@ -1,12 +1,45 @@
 @layer base, primeng, adjustments, components, utilities, tw;
 
 @import 'primeng/resources/primeng.css' layer(primeng);
-@import '@mdi/font/css/materialdesignicons.css' layer(components);
+
+@mixin classStartsWith($prefixes...) {
+  $selector: '';
+  @for $i from 1 through length($prefixes) {
+    @if $i > 1 {
+      $selector: $selector + ', ';
+    }
+    $prefix: nth($prefixes, $i);
+    $selector: $selector + "[class^='#{$prefix}'], [class*=' #{$prefix}']";
+  }
+  @at-root #{$selector} {
+    @content;
+  }
+}
 
 @layer components {
-  $flag-icons-included-countries: us, de;
-  $flag-icons-path: '/assets/flags';
-  @import 'flag-icons/sass/flag-icons';
+  @include classStartsWith('i-[') {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    min-width: 1em;
+    min-height: 1em;
+    vertical-align: -0.125em;
+  }
+
+  @include classStartsWith('i-[mdi--') {
+    background-color: currentColor;
+    -webkit-mask-image: var(--svg);
+    mask-image: var(--svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  @include classStartsWith('i-[flag--') {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+  }
 }
 
 @layer tw {

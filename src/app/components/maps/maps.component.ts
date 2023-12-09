@@ -93,7 +93,7 @@ export class MapsComponent implements OnInit {
       message: interpolate(this.translations.maps_deleteDialog_text(), map),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
-      acceptIcon: 'p-button-icon-left mdi mdi-delete-outline',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
       rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
       accept: () => this._store.dispatch(deleteMapAction({ map })),

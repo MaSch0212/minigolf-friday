@@ -3,7 +3,7 @@
 } @else if (loadState().error) {
   <p-messages severity="error">
     <ng-template pTemplate>
-      <span class="mdi mdi-close-circle-outline mr-2"></span>
+      <span class="i-[mdi--close-circle-outline] mr-2"></span>
       <span>{{ translations.players_loadError() }} {{ translations.shared_tryAgainLater() }}</span>
     </ng-template>
   </p-messages>
@@ -12,7 +12,7 @@
     <div class="flex flex-row gap-2 items-center">
       <div class="grow min-w-0">
         <span class="p-input-icon-left">
-          <i class="mdi mdi-magnify"></i>
+          <i class="i-[mdi--magnify]"></i>
           <input
             class="w-full max-w-[350px]"
             type="text"
@@ -23,7 +23,7 @@
         </span>
       </div>
       <p-button
-        icon="mdi mdi-plus"
+        icon="i-[mdi--plus]"
         label="{{ translations.shared_add() }}"
         (onClick)="dialog.open()"
       />
@@ -34,14 +34,14 @@
           <div class="flex flex-row items-center p-2 pl-4 gap-2 min-w-0">
             <app-player-item [player]="player" class="grow min-w-0" />
             <p-button
-              icon="mdi mdi-pencil-outline"
+              icon="i-[mdi--pencil-outline]"
               [rounded]="true"
               [text]="true"
               size="small"
               (onClick)="dialog.open(player)"
             />
             <p-button
-              icon="mdi mdi-delete-outline"
+              icon="i-[mdi--delete-outline]"
               [rounded]="true"
               [text]="true"
               size="small"

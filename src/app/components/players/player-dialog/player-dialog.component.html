@@ -12,7 +12,7 @@
     @if (actionState().error) {
       <p-messages class="sm:col-span-2 -mt-4" severity="error">
         <ng-template pTemplate>
-          <span class="mdi mdi-close-circle-outline mr-2"></span>
+          <span class="i-[mdi--close-circle-outline] mr-2"></span>
           <span
             >{{ translations.players_dialog_error_save() }}
             {{ translations.shared_tryAgainLater() }}</span
@@ -32,7 +32,7 @@
     </span>
 
     <span class="p-float-label p-input-icon-left">
-      <i class="mdi mdi-facebook text-blue-400"></i>
+      <i class="i-[mdi--facebook] text-blue-400"></i>
       <input
         pInputText
         [id]="id('facebookId')"
@@ -45,7 +45,7 @@
     </span>
 
     <span class="p-float-label p-input-icon-left">
-      <i class="mdi mdi-whatsapp text-green-400"></i>
+      <i class="i-[mdi--whatsapp] text-green-400"></i>
       <input
         pInputText
         [id]="id('whatsAppNumber')"
@@ -60,9 +60,10 @@
     </span>
 
     @if (hasCommRequiredError && commTouched) {
-      <span class="sm:col-span-2 text-danger mdi mdi-close-circle -mt-3">
-        {{ translations.players_dialog_error_commRequired() }}
-      </span>
+      <div class="sm:col-span-2 text-danger -mt-3">
+        <span class="i-[mdi--close-circle]"></span>
+        <span>{{ translations.players_dialog_error_commRequired() }}</span>
+      </div>
     }
 
     <span class="flex flex-col gap-2">
@@ -71,7 +72,7 @@
           >👎 {{ translations.players_dialog_avoid() }}</label
         >
         <p-button
-          icon="mdi mdi-plus"
+          icon="i-[mdi--plus]"
           [rounded]="true"
           [text]="true"
           [disabled]="form.controls.preferences.controls.avoid.disabled"
@@ -85,7 +86,7 @@
           <div class="flex flex-row items-center py-2 pl-4 gap-2">
             <app-player-item [player]="player" class="grow" />
             <p-button
-              icon="mdi mdi-delete-outline"
+              icon="i-[mdi--delete-outline]"
               [rounded]="true"
               [text]="true"
               [disabled]="form.controls.preferences.controls.avoid.disabled"
@@ -104,7 +105,7 @@
           >👍 {{ translations.players_dialog_prefer() }}</label
         >
         <p-button
-          icon="mdi mdi-plus"
+          icon="i-[mdi--plus]"
           [rounded]="true"
           [text]="true"
           [disabled]="form.controls.preferences.controls.prefer.disabled"
@@ -118,7 +119,7 @@
           <div class="flex flex-row items-center py-2 pl-4 gap-2">
             <app-player-item [player]="player" class="grow" />
             <p-button
-              icon="mdi mdi-delete-outline"
+              icon="i-[mdi--delete-outline]"
               [rounded]="true"
               [text]="true"
               [disabled]="form.controls.preferences.controls.prefer.disabled"
