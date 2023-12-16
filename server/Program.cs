@@ -1,9 +1,10 @@
-using System.Text.RegularExpressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
+using MinigolfFriday;
 using MinigolfFriday.Data;
+using MinigolfFriday.Middlewares;
 using MinigolfFriday.Models;
+using MinigolfFriday.Services;
 using MinigolfFriday.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +16,25 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MinigolfFridayContext>();
+builder
+    .Services
+    .AddAuthentication("facebook")
+    .AddScheme<FacebookSignedRequestOptions, FacebookSignedRequestAuthHandler>(
+        "facebook",
+        options =>
+        {
+            options.AppId =
+                builder.Configuration["Authentication:Facebook:AppId"]
+                ?? throw new Exception("Facebook AppId is null");
+            options.AppSecret =
+                builder.Configuration["Authentication:Facebook:AppSecret"]
+                ?? throw new Exception("Facebook AppSecret is null");
+        }
+    );
+
 builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
 builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
+builder.Services.AddScoped<IFacebookService, FacebookService>();
 
 builder
     .Services
@@ -36,107 +54,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-if ((app.Configuration["path-base"] ?? app.Configuration["PathBase"]) is string pathBase)
-    app.UsePathBase(pathBase);
-
-app.Use(
-    async (context, next) =>
-    {
-        bool isMatch = false;
-        var originalPath = context.Request.Path;
-        var originalPathBase = context.Request.PathBase;
-
-        if (
-            context.Request.Headers.TryGetValue("X-Forwarded-Path", out StringValues values)
-            && values.Count > 0
-        )
-        {
-            foreach (var path in values)
-            {
-                if (
-                    context
-                        .Request
-                        .Path
-                        .StartsWithSegments(
-                            "/" + path?.Trim('/'),
-                            out var matched,
-                            out var remaining
-                        )
-                )
-                {
-                    isMatch = true;
-                    context.Request.Path = remaining;
-                    context.Request.PathBase = context.Request.PathBase.Add(matched);
-                    break;
-                }
-            }
-        }
-
-        try
-        {
-            await next();
-        }
-        finally
-        {
-            if (isMatch)
-            {
-                context.Request.Path = originalPath;
-                context.Request.PathBase = originalPathBase;
-            }
-        }
-    }
-);
+app.UsePathBaseResolver();
 app.UseForwardedHeaders();
 
 app.UseStaticFiles();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.Use(
-        async (context, next) =>
-        {
-            var body = context.Response.Body;
-            using var newBody = new MemoryStream();
-            context.Response.Body = newBody;
-
-            await next();
-
-            context.Response.Body = body;
-            newBody.Seek(0, SeekOrigin.Begin);
-            if (context.Response.ContentType == "text/html")
-            {
-                using var streamReader = new StreamReader(newBody);
-                var html = await streamReader.ReadToEndAsync();
-                var baseTagMatch = Regex.Match(html, @"<base href=""(?<PathBase>[^""]+)""\s*\/?>");
-                if (baseTagMatch.Success)
-                {
-                    var pathBaseGroup = baseTagMatch.Groups["PathBase"];
-                    html = string.Concat(
-                        html[..pathBaseGroup.Index],
-                        context.Request.PathBase.Value?.TrimEnd('/') + "/",
-                        html[(pathBaseGroup.Index + pathBaseGroup.Value.Length)..]
-                    );
-                }
-
-                context.Response.ContentLength = null;
-                await using (var sw = new StreamWriter(context.Response.Body))
-                {
-                    await sw.WriteAsync(html);
-                }
-            }
-            else
-            {
-                await newBody.CopyToAsync(context.Response.Body);
-            }
-        }
-    );
+    app.UseHtmlBaseTagInjector();
     app.UseSpaStaticFiles();
 }
 
 app.UseRouting();
 
-// app.UseAuthentication();
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 #pragma warning disable ASP0014 // Suggest using top level route registrations
 app.UseEndpoints(endpoints =>
@@ -145,14 +77,12 @@ app.UseEndpoints(endpoints =>
 });
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
-//app.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
-
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "../";
     if (app.Environment.IsDevelopment())
     {
-        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+        spa.UseProxyToSpaDevelopmentServer("https://localhost:4200");
     }
 });
 

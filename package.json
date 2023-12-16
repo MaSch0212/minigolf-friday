@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "lint": "eslint ./src --ext .ts --ext .html",
-    "start": "ng serve --ssl",
-    "start:stub": "ng serve --ssl --configuration stubbed",
+    "prestart": "node tools/aspnetcore-https",
+    "start": "run-script-os",
+    "start:windows": "ng serve --port 4200 --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
+    "start:default": "ng serve --port 4200 --ssl --ssl-cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --ssl-key \"$HOME/.aspnet/https/${npm_package_name}.key\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -64,6 +66,7 @@
     "jest-preset-angular": "^13.1.4",
     "postcss": "^8.4.31",
     "prettier": "^3.1.0",
+    "run-script-os": "^1.1.6",
     "tailwindcss": "^3.3.5",
     "ts-jest": "^29.1.1",
     "typescript": "~5.2.2"

@@ -15,7 +15,6 @@ public record AddMapResponse(string Id);
 
 public record UpdateMapRequest(MinigolfMap Map);
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 public class MapsController(MinigolfFridayContext dbContext) : Controller
 {

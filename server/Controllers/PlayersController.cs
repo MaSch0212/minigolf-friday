@@ -16,7 +16,6 @@ public record AddPlayerResponse(string Id);
 
 public record UpdatePlayerRequest(Player Player);
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 public class PlayersController(MinigolfFridayContext dbContext) : Controller
 {
