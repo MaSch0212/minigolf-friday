@@ -17,7 +17,8 @@
     "useSystemTheme": "Use system theme",
     "useSystemLanguage": "Use system language",
     "darkTheme": "Dark",
-    "lightTheme": "Light"
+    "lightTheme": "Light",
+    "signOut": "Sign out"
   },
   "players": {
     "loadError": "Failed to load players.",
@@ -78,5 +79,9 @@
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete"
-  }
+  },
+  "loginTo": "Login to {{appName}}",
+  "loginWith": "Login with {{provider}}",
+  "switchLanguage": "Switch language",
+  "switchTheme": "Switch theme"
 }

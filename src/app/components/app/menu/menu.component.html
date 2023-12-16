@@ -1,0 +1,12 @@
+<p-menubar class="m-4" [model]="menuItems()">
+  <ng-template pTemplate="end">
+    <div class="flex flex-row items-end gap-x-8 flex-wrap justify-end">
+      @if (title()) {
+        <span class="font-semibold">{{ title() }}</span>
+        <span class="text-xs">{{ translations.title() }}</span>
+      } @else {
+        <span class="font-semibold">{{ translations.title() }}</span>
+      }
+    </div>
+  </ng-template>
+</p-menubar>

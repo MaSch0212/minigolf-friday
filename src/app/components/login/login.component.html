@@ -1,0 +1,33 @@
+<div class="h-full mt-4 grid grid-rows-[auto,1fr,auto,2fr]">
+  <div class="flex flex-row gap-2 p-4 justify-end">
+    <p-button
+      icon="i-[mdi--theme-light-dark]"
+      [rounded]="true"
+      [text]="true"
+      [size]="'large'"
+      [pTooltip]="translations.switchTheme()"
+      (onClick)="themeMenu.toggle($event)"
+    />
+    <p-button
+      icon="i-[mdi--translate]"
+      [rounded]="true"
+      [text]="true"
+      [size]="'large'"
+      [pTooltip]="translations.switchLanguage()"
+      (onClick)="languageMenu.toggle($event)"
+    />
+  </div>
+  <div class="row-start-3 flex flex-col items-center">
+    <h2 class="mb-16">
+      {{ translations.loginTo() | interpolate: { appName: translations.title() } }}
+    </h2>
+    <p-button
+      icon="i-[mdi--facebook]"
+      [label]="translations.loginWith() | interpolate: { provider: 'Facebook' }"
+      (onClick)="loginWithFacebook()"
+    />
+  </div>
+</div>
+
+<p-menu #languageMenu [model]="languageItems()" [popup]="true" />
+<p-menu #themeMenu [model]="themeItems()" [popup]="true" />

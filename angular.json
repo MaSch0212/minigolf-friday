@@ -68,7 +68,13 @@
                   "maximumError": "4kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/app/environments/environment.ts",
+                  "with": "src/app/environments/environment.prod.ts"
+                }
+              ]
             },
             "stubbed": {
               "optimization": false,
@@ -76,8 +82,8 @@
               "sourceMap": true,
               "fileReplacements": [
                 {
-                  "replace": "src/app/additional-providers.ts",
-                  "with": "src/app/additional-providers.stub.ts"
+                  "replace": "src/app/environments/environment.ts",
+                  "with": "src/app/environments/environment.stub.ts"
                 }
               ]
             },

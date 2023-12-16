@@ -39,6 +39,29 @@ export class TranslateService {
   public readonly browserLanguage = computed(() => navigator.language ?? 'en');
   public readonly language = computed(() => this._language() ?? this.browserLanguage());
 
+  public readonly languageItems = computed(() => [
+    {
+      label: `${this.translations.settings_useSystemLanguage()} (${this.getLangDisplay(
+        this.browserLanguage()
+      )})`,
+      icon: this.isLanguage(null) ? 'i-[mdi--check]' : 'i-[mdi--translate]',
+      command: () => this.setLanguage(null),
+    },
+    {
+      separator: true,
+    },
+    {
+      label: this.getLangDisplay('en'),
+      icon: this.isLanguage('en') ? 'i-[mdi--check]' : 'i-[flag--us-1x1]',
+      command: () => this.setLanguage('en'),
+    },
+    {
+      label: this.getLangDisplay('de'),
+      icon: this.isLanguage('de') ? 'i-[mdi--check]' : 'i-[flag--de-1x1]',
+      command: () => this.setLanguage('de'),
+    },
+  ]);
+
   constructor() {
     effect(() => {
       let getTranslations = langs[this.language()];
@@ -60,6 +83,17 @@ export class TranslateService {
 
   public isLanguage(language: string | null) {
     return this._language() === language;
+  }
+
+  private getLangDisplay(lang: string) {
+    switch (lang) {
+      case 'en':
+        return 'English';
+      case 'de':
+        return 'Deutsch';
+      default:
+        return lang;
+    }
   }
 }
 

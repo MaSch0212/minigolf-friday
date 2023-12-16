@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "lint": "eslint ./src --ext .ts --ext .html",
-    "start": "ng serve",
-    "start:stub": "ng serve --configuration stubbed",
+    "start": "ng serve --ssl",
+    "start:stub": "ng serve --ssl --configuration stubbed",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -13,6 +13,7 @@
   "private": true,
   "prettier": "@ngneers/prettier-config",
   "dependencies": {
+    "@abacritt/angularx-social-login": "^2.2.0",
     "@angular/animations": "^17.0.0",
     "@angular/common": "^17.0.0",
     "@angular/compiler": "^17.0.0",

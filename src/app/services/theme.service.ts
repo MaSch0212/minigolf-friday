@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, computed, effect, inject, signal } from '@angular/core';
 
+import { TranslateService } from './translate.service';
 import { getLocalStorage, setLocalStorage } from '../utils/local-storage.utils';
 
 const localStorageKey = 'theme';
@@ -10,11 +11,35 @@ export type Theme = 'light' | 'dark';
 export class ThemeService {
   private readonly _linkElement = document.getElementById('app-theme') as HTMLLinkElement;
   private readonly _theme = signal<Theme | null>(this.getThemeFromLocalStorage());
+  private readonly _translations = inject(TranslateService).translations;
 
   public readonly isDarkColorSchemePrefered = isDarkColorSchemePrefered();
   public readonly theme = computed(
     () => this._theme() ?? (this.isDarkColorSchemePrefered() ? 'dark' : 'light')
   );
+
+  public readonly themeItems = computed(() => [
+    {
+      label: `${this._translations.settings_useSystemTheme()} (${this.getThemeDisplay(
+        this.isDarkColorSchemePrefered() ? 'dark' : 'light'
+      )})`,
+      icon: this.isTheme(null) ? 'i-[mdi--check]' : 'i-[mdi--theme-light-dark]',
+      command: () => this.setTheme(null),
+    },
+    {
+      separator: true,
+    },
+    {
+      label: this._translations.settings_darkTheme(),
+      icon: this.isTheme('dark') ? 'i-[mdi--check]' : 'i-[mdi--weather-night]',
+      command: () => this.setTheme('dark'),
+    },
+    {
+      label: this._translations.settings_lightTheme(),
+      icon: this.isTheme('light') ? 'i-[mdi--check]' : 'i-[mdi--weather-sunny]',
+      command: () => this.setTheme('light'),
+    },
+  ]);
 
   constructor() {
     effect(() => {
@@ -34,6 +59,17 @@ export class ThemeService {
   private getThemeFromLocalStorage() {
     const theme = getLocalStorage(localStorageKey);
     return theme === 'light' || theme === 'dark' ? theme : null;
+  }
+
+  private getThemeDisplay(theme: string) {
+    switch (theme) {
+      case 'dark':
+        return this._translations.settings_darkTheme();
+      case 'light':
+        return this._translations.settings_lightTheme();
+      default:
+        throw new Error(`Unknown theme: ${theme}`);
+    }
   }
 }
 

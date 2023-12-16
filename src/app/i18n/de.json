@@ -17,7 +17,8 @@
     "useSystemTheme": "Systemthema verwenden",
     "useSystemLanguage": "Systemsprache verwenden",
     "darkTheme": "Dunkel",
-    "lightTheme": "Hell"
+    "lightTheme": "Hell",
+    "signOut": "Abmelden"
   },
   "players": {
     "loadError": "Fehler beim Laden der Spieler.",
@@ -78,5 +79,9 @@
     "cancel": "Abbrechen",
     "save": "Speichern",
     "delete": "Löschen"
-  }
+  },
+  "loginTo": "An {{appName}} anmelden",
+  "loginWith": "Mit {{provider}} anmelden",
+  "switchLanguage": "Sprache wechseln",
+  "switchTheme": "Thema wechseln"
 }

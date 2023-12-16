@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
-import { Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Routes } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import { setTitleAction } from './+state/app';
+import { AuthGuard } from './services/auth.guard';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,10 @@ export const routes: Routes = [
     },
     loadComponent: () =>
       import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
+    canActivateChild: [
+      (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+        inject(AuthGuard).canActivate(route, state),
+    ],
   },
   {
     path: 'manage',
@@ -38,6 +43,15 @@ export const routes: Routes = [
           import('./components/maps/maps.component').then(({ MapsComponent }) => MapsComponent),
       },
     ],
+    canActivateChild: [
+      (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+        inject(AuthGuard).canActivate(route, state),
+    ],
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./components/login/login.component').then(({ LoginComponent }) => LoginComponent),
   },
   {
     path: '',

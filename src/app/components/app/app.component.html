@@ -1,40 +1,15 @@
-<p-menubar class="m-4" [model]="menuItems()">
-  <ng-template pTemplate="end">
-    <div class="flex flex-row items-end gap-x-8 flex-wrap justify-end">
-      @if (title()) {
-        <span class="font-semibold">{{ title() }}</span>
-        <span class="text-xs">{{ translations.title() }}</span>
-      } @else {
-        <span class="font-semibold">{{ translations.title() }}</span>
-      }
-    </div>
-  </ng-template>
-</p-menubar>
+@if (isLoggedIn()) {
+  <app-menu />
+}
 
-<div class="grow mx-4 min-h-0">
-  <router-outlet></router-outlet>
-</div>
+<main class="grow mx-4 min-h-0">
+  @if (authInit()) {
+    <router-outlet />
+  }
+</main>
 
-<footer
-  class="px-2 sm:px-4 py-1 bg-surface-50 text-2xs md:text-xs lg:text-sm flex flex-row justify-around flex-wrap gap-x-8"
->
-  <div class="truncate">
-    <span>{{ translations.footer_developedBy() }} Marc Schmidt </span>
-    <span class="whitespace-nowrap"
-      >(<a href="https://github.com/MaSch0212" target="_blank"
-        ><span class="i-[mdi--github]"></span>MaSch0212</a
-      >)</span
-    >
-  </div>
-  <div class="truncate">
-    <span>{{ translations.footer_basedOn() }} André Schmidt </span>
-    <span class="whitespace-nowrap"
-      >(<a href="https://github.com/AnSch1510" target="_blank"
-        ><span class="i-[mdi--github]"></span>AnSch1510</a
-      >)</span
-    >
-  </div>
-</footer>
+<app-footer />
 
+<!-- Overlay registrations -->
 <p-toast />
 <p-confirmDialog />
