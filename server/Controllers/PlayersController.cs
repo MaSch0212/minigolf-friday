@@ -16,7 +16,8 @@ public record AddPlayerResponse(string Id);
 
 public record UpdatePlayerRequest(Player Player);
 
-[Route("api/[controller]")]
+[Authorize]
+[Route("api/players")]
 public class PlayersController(MinigolfFridayContext dbContext) : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;

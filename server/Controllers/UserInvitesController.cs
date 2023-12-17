@@ -10,19 +10,20 @@ namespace MinigolfFriday.Controllers;
 
 public record PutUserInviteResponse(string Id, DateTimeOffset ExpiresAt);
 
-[Route("api/[controller]")]
-public class UserInnvitesController(
+[Route("api/user-invites")]
+public class UserInvitesController(
     MinigolfFridayContext dbContext,
     IFacebookService facebookService,
-    IOptionsMonitor<FacebookSignedRequestOptions> facebookOptions
+    IOptionsMonitor<FacebookOptions> facebookOptions
 ) : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;
     private readonly IFacebookService _facebookService = facebookService;
-    private readonly IOptionsMonitor<FacebookSignedRequestOptions> _facebookOptions =
-        facebookOptions;
+    private readonly IOptionsMonitor<FacebookOptions> _facebookOptions = facebookOptions;
 
     [HttpPut]
+    //[Authorize]
+    [AllowAnonymous]
     public async ValueTask<IActionResult> CreateInvite()
     {
         var inviteEntity = new UserInviteEntity
@@ -42,8 +43,6 @@ public class UserInnvitesController(
     public async ValueTask<IActionResult> RedeemInvite([FromRoute] string id)
     {
         var options = _facebookOptions.CurrentValue;
-        if (string.IsNullOrEmpty(options.AppId) || string.IsNullOrEmpty(options.AppSecret))
-            return Unauthorized("Authentication not configured.");
 
         var fbsr = _facebookService.GetSignedRequestFromCookie(Request.Cookies, options.AppId);
         if (fbsr is null)

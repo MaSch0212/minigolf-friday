@@ -1,4 +1,3 @@
-import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -6,6 +5,7 @@ import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 
 import { selectAppTitle } from '../../../+state/app';
+import { AuthService } from '../../../services/auth.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TranslateService, TranslationKey } from '../../../services/translate.service';
 import { chainSignals } from '../../../utils/signal.utils';
@@ -21,7 +21,7 @@ export class MenuComponent {
   private readonly _store = inject(Store);
   private readonly _translateService = inject(TranslateService);
   private readonly _themeService = inject(ThemeService);
-  private readonly _socialAuthService = inject(SocialAuthService);
+  private readonly _authService = inject(AuthService);
 
   protected translations = this._translateService.translations;
   protected title = chainSignals(this._store.selectSignal(selectAppTitle), title =>
@@ -72,7 +72,7 @@ export class MenuComponent {
         {
           label: this.translations.settings_signOut(),
           icon: 'i-[mdi--logout]',
-          command: () => this._socialAuthService.signOut(),
+          command: () => this._authService.signOut(),
         },
       ],
     },

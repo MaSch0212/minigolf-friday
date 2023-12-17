@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday;
 using MinigolfFriday.Data;
@@ -16,21 +17,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MinigolfFridayContext>();
+builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
 builder
     .Services
-    .AddAuthentication("facebook")
-    .AddScheme<FacebookSignedRequestOptions, FacebookSignedRequestAuthHandler>(
-        "facebook",
-        options =>
-        {
-            options.AppId =
-                builder.Configuration["Authentication:Facebook:AppId"]
-                ?? throw new Exception("Facebook AppId is null");
-            options.AppSecret =
-                builder.Configuration["Authentication:Facebook:AppSecret"]
-                ?? throw new Exception("Facebook AppSecret is null");
-        }
-    );
+    .AddAuthentication()
+    .AddScheme<AuthenticationSchemeOptions, FacebookSignedRequestAuthHandler>("facebook", _ => { });
+builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IFacebookAccessTokenProvider, FacebookAccessTokenProvider>();
 

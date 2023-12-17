@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MinigolfFriday.Services;
 
@@ -6,22 +7,20 @@ namespace MinigolfFriday;
 
 public record GetAuthorizationResponse(bool IsAuthorized, string Reason);
 
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController(
-    FacebookService facebookService,
-    IOptionsMonitor<FacebookSignedRequestOptions> facebookOptions
+    IFacebookService facebookService,
+    IOptionsMonitor<FacebookOptions> facebookOptions
 ) : Controller
 {
-    private readonly FacebookService _facebookService = facebookService;
-    private readonly IOptionsMonitor<FacebookSignedRequestOptions> _facebookOptions =
-        facebookOptions;
+    private readonly IFacebookService _facebookService = facebookService;
+    private readonly IOptionsMonitor<FacebookOptions> _facebookOptions = facebookOptions;
 
     [HttpGet]
-    public async ValueTask<IActionResult> Get()
+    [AllowAnonymous]
+    public async ValueTask<IActionResult> GetIsAuthorized()
     {
         var options = _facebookOptions.CurrentValue;
-        if (string.IsNullOrEmpty(options.AppId) || string.IsNullOrEmpty(options.AppSecret))
-            return Ok(new GetAuthorizationResponse(false, "Authentication not configured."));
 
         var fbsr = _facebookService.GetSignedRequestFromCookie(Request.Cookies, options.AppId);
         if (fbsr is null)

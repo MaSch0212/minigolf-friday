@@ -1,10 +1,5 @@
-import {
-  FacebookLoginProvider,
-  SocialAuthServiceConfig,
-  SocialLoginModule,
-} from '@abacritt/angularx-social-login';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideRouterStore, routerReducer } from '@ngrx/router-store';
@@ -16,6 +11,7 @@ import { provideMapsState } from './+state/maps';
 import { providePlayersState } from './+state/players';
 import { routes } from './app.routes';
 import { environment } from './environments/environment';
+import { provideAuth } from './services/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,18 +27,6 @@ export const appConfig: ApplicationConfig = {
     providePlayersState(),
     provideMapsState(),
     environment.getProviders(),
-    importProvidersFrom(SocialLoginModule),
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: true,
-        providers: [
-          {
-            id: FacebookLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider('729806069048476'),
-          },
-        ],
-      } as SocialAuthServiceConfig,
-    },
+    provideAuth(),
   ],
 };

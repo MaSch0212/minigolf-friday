@@ -1,4 +1,3 @@
-import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -7,45 +6,53 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { firstValueFrom, map } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
 
+import { AuthService } from './auth.service';
 import { environment } from '../environments/environment';
 
 interface Guard {
   canActivate: CanActivateFn;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class AuthGuard implements Guard {
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _router = inject(Router);
-  private readonly _socialAuthService = inject(SocialAuthService);
+  private readonly _authService = inject(AuthService);
 
-  public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  public async canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+    allowUnAuthorized = false
+  ) {
     if (!environment.authenticationRequired) return true;
 
-    const user = await firstValueFrom(this._socialAuthService.authState);
-    if (!user) {
-      this.navigateToLogin(state.url);
-    }
-    return !!user;
+    const authState = await firstValueFrom(
+      this._authService.authState.pipe(filter(x => x.isInitized))
+    );
+
+    return !!authState.user && (!!authState.isAuthorized || allowUnAuthorized);
   }
 
   public init(): void {
     if (!environment.authenticationRequired) return;
 
-    this._socialAuthService.authState
+    this._authService.authState
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        map(user => !!user)
+        filter(x => x.isInitized)
       )
-      .subscribe(isLoggedIn => {
-        const url = new URL(`http://dummy${this._router.routerState.snapshot.url}`);
+      .subscribe(state => {
+        const url = new URL(window.location.href);
         const isLoginRoute = url.pathname === '/login';
-        if (!isLoggedIn && !isLoginRoute) {
+        const isUnauthorizedRoute = url.pathname === '/unauthorized';
+        const isInviteRoute = url.pathname.startsWith('/invite');
+        if (!state.user && !isLoginRoute) {
           this.navigateToLogin(this._router.routerState.snapshot.url);
-        }
-        if (isLoggedIn && isLoginRoute) {
+        } else if (state.user && !state.isAuthorized && !isUnauthorizedRoute && !isInviteRoute) {
+          this.navigateToUnauthorized();
+        } else if (state.isAuthorized && isLoginRoute) {
           const returnUrl = url.searchParams.get('returnUrl') || '/';
           this._router.navigate([returnUrl]);
         }
@@ -54,5 +61,9 @@ export class AuthGuard implements Guard {
 
   private navigateToLogin(returnUrl: string): void {
     this._router.navigate(['/login'], { queryParams: { returnUrl } });
+  }
+
+  private navigateToUnauthorized(): void {
+    this._router.navigate(['/unauthorized']);
   }
 }

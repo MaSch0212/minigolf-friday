@@ -13,7 +13,7 @@ export const routes: Routes = [
     },
     loadComponent: () =>
       import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
-    canActivateChild: [
+    canActivate: [
       (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
         inject(AuthGuard).canActivate(route, state),
     ],
@@ -49,9 +49,27 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'invite/:inviteId',
+    loadComponent: () =>
+      import('./components/users/redeem-invite/redeem-invite.component').then(
+        ({ RedeemInviteComponent }) => RedeemInviteComponent
+      ),
+    canActivate: [
+      (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+        inject(AuthGuard).canActivate(route, state, true),
+    ],
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login.component').then(({ LoginComponent }) => LoginComponent),
+  },
+  {
+    path: 'unauthorized',
+    loadComponent: () =>
+      import('./components/app/unauthorized/unauthorized.component').then(
+        ({ UnauthorizedComponent }) => UnauthorizedComponent
+      ),
   },
   {
     path: '',
@@ -65,7 +83,7 @@ export const routes: Routes = [
       title: getTitleResolver(undefined),
     },
     loadComponent: () =>
-      import('./components/not-found/not-found.component').then(
+      import('./components/app/not-found/not-found.component').then(
         ({ NotFoundComponent }) => NotFoundComponent
       ),
   },

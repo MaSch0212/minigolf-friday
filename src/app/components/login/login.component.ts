@@ -1,4 +1,3 @@
-import { SocialAuthService, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +6,7 @@ import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
+import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { TranslateService } from '../../services/translate.service';
 
@@ -18,7 +18,7 @@ import { TranslateService } from '../../services/translate.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
-  private readonly _socialAuthService = inject(SocialAuthService);
+  private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
 
@@ -27,6 +27,6 @@ export class LoginComponent {
   protected themeItems = inject(ThemeService).themeItems;
 
   protected loginWithFacebook(): void {
-    this._socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID);
+    this._authService.signIn();
   }
 }

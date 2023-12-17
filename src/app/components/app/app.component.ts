@@ -1,4 +1,4 @@
-import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
+import { SocialUser } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -11,6 +11,7 @@ import { FooterComponent } from './footer/footer.component';
 import { MenuComponent } from './menu/menu.component';
 import { environment } from '../../environments/environment';
 import { AuthGuard } from '../../services/auth.guard';
+import { AuthService, AuthState } from '../../services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -29,13 +30,13 @@ import { AuthGuard } from '../../services/auth.guard';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  private readonly _socialAuthService = inject(SocialAuthService);
+  private readonly _authService = inject(AuthService);
 
-  protected socialUser = environment.authenticationRequired
-    ? toSignal(this._socialAuthService.authState)
-    : signal({} as SocialUser);
-  protected isLoggedIn = computed(() => !!this.socialUser());
-  protected authInit = computed(() => this.socialUser() !== undefined);
+  protected authState = environment.authenticationRequired
+    ? toSignal(this._authService.authState)
+    : signal<AuthState>({ isInitized: true, user: {} as SocialUser, isAuthorized: true });
+  protected isLoggedIn = computed(() => this.authState()?.isAuthorized === true);
+  protected authInit = computed(() => this.authState()?.isInitized === true);
 
   constructor() {
     inject(AuthGuard).init();
