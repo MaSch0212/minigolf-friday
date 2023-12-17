@@ -56,8 +56,8 @@ public class FacebookSignedRequestAuthHandler : AuthenticationHandler<FacebookSi
         if (user is null)
             return AuthenticateResult.Fail("User not found");
 
-        var identity = new GenericIdentity(user.Id.ToString());
-        identity.AddClaim(new(ClaimTypes.Name, user.Name));
+        var identity = new GenericIdentity(user.Name);
+        identity.AddClaim(new(ClaimTypes.NameIdentifier, user.Id.ToString()));
         identity.AddClaim(new("FacebookId", user.FacebookId));
         identity.AddClaim(new("FacebookSignedRequest", fbsr));
         var principal = new GenericPrincipal(identity, null);

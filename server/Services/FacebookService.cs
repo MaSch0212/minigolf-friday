@@ -1,13 +1,26 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 
 namespace MinigolfFriday.Services;
 
-public class FacebookService(MinigolfFridayContext dbContext) : IFacebookService
+public class FacebookService(
+    ILoggerFactory loggerFactory,
+    IHttpClientFactory httpClientFactory,
+    MinigolfFridayContext dbContext,
+    IFacebookAccessTokenProvider facebookAccessTokenProvider
+) : IFacebookService
 {
+    private readonly ILogger<FacebookService> _logger =
+        loggerFactory.CreateLogger<FacebookService>();
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly MinigolfFridayContext _dbContext = dbContext;
+    private readonly IFacebookAccessTokenProvider _facebookAccessTokenProvider =
+        facebookAccessTokenProvider;
 
     public string? GetSignedRequestFromCookie(IRequestCookieCollection cookies, string appId)
     {
@@ -27,6 +40,38 @@ public class FacebookService(MinigolfFridayContext dbContext) : IFacebookService
         return await _dbContext
             .Users
             .FirstOrDefaultAsync(u => u.FacebookId == signedRequest.UserId);
+    }
+
+    public async Task<string?> GetNameOfUserAsync(string appId, string appSecret, string userId)
+    {
+        var accessToken = await _facebookAccessTokenProvider.GetAccessTokenAsync(appId, appSecret);
+        if (accessToken is null)
+            return null;
+
+        using var httpClient = _httpClientFactory.CreateClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            accessToken
+        );
+        var response = await httpClient.GetAsync($"https://graph.facebook.com/{userId}");
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JsonSerializer.Deserialize<FacebookUserInfo>(content);
+            if (json is { Name: not null or "" })
+                return json.Name;
+            else
+                _logger.LogError("Failed to get user info from Facebook: {content}", content);
+        }
+        else
+        {
+            _logger.LogError(
+                "Failed to get user info from Facebook: {statusCode}",
+                response.StatusCode
+            );
+        }
+
+        return null;
     }
 
     private static string DecodeSignedRequest(string signedRequest, string appSecret)
@@ -73,4 +118,9 @@ public class FacebookService(MinigolfFridayContext dbContext) : IFacebookService
         }
         return str.Replace("-", "+").Replace("_", "/");
     }
+
+    private record struct FacebookUserInfo(
+        [property: JsonPropertyName("id")] string? Id,
+        [property: JsonPropertyName("name")] string? Name
+    );
 }

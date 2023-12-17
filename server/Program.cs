@@ -32,6 +32,8 @@ builder
         }
     );
 
+builder.Services.AddSingleton<IFacebookAccessTokenProvider, FacebookAccessTokenProvider>();
+
 builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
 builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
