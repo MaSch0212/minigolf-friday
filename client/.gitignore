@@ -1,0 +1,9 @@
+# Compiled output
+/dist
+/tmp
+
+# Node
+/node_modules
+
+# Miscellaneous
+/.angular/cache

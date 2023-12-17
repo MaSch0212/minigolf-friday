@@ -33,7 +33,8 @@
   "editor.rulers": [100],
 
   "tailwindCSS.rootFontSize": 14,
-  "css.customData": [".vscode/tailwind.json"]
+  "css.customData": [".vscode/tailwind.json"],
+  "task.autoDetect": "off"
 
   // Remove comments if branch policies are used
   // "git.branchProtection": ["main", "master"],

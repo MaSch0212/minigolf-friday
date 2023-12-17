@@ -1,0 +1,33 @@
+{
+  "tasks": [
+    {
+      "label": "🚀 Start Client",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/client"
+      },
+      "command": "pnpm run start",
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "🚀 Start Server (watch)",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      },
+      "command": "dotnet watch run",
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "🚀 Start",
+      "dependsOn": ["🚀 Start Client", "🚀 Start Server (watch)"],
+      "group": {
+        "kind": "build"
+      }
+    }
+  ]
+}
