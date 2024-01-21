@@ -33,6 +33,8 @@
   "editor.rulers": [100],
 
   "tailwindCSS.rootFontSize": 14,
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "styleClass"],
+  "tailwindCSS.experimental.configFile": "client/tailwind.config.js",
   "css.customData": [".vscode/tailwind.json"],
   "task.autoDetect": "off"
 

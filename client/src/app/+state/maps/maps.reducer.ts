@@ -25,9 +25,9 @@ export const mapsReducer = createReducer<MapsFeatureState>(
 
   on(
     actions.loadMapsAction,
-    produce(state => {
+    produce((state, { reload }) => {
       state.loadState.error = undefined;
-      state.loadState.loading = true;
+      state.loadState.loading = !state.loadState.loaded || reload;
     })
   ),
   on(actions.loadMapsSuccessAction, (state, { maps }) =>

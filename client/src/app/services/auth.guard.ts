@@ -9,7 +9,6 @@ import {
 import { filter, firstValueFrom } from 'rxjs';
 
 import { AuthService } from './auth.service';
-import { environment } from '../environments/environment';
 
 interface Guard {
   canActivate: CanActivateFn;
@@ -26,19 +25,15 @@ export class AuthGuard implements Guard {
     state: RouterStateSnapshot,
     allowUnAuthorized = false
   ) {
-    if (!environment.authenticationRequired) return true;
-
     const authState = await firstValueFrom(
-      this._authService.authState.pipe(filter(x => x.isInitized))
+      this._authService.authState$.pipe(filter(x => x.isInitized))
     );
 
-    return !!authState.user && (!!authState.isAuthorized || allowUnAuthorized);
+    return !!authState.user && (!!authState.token || allowUnAuthorized);
   }
 
   public init(): void {
-    if (!environment.authenticationRequired) return;
-
-    this._authService.authState
+    this._authService.authState$
       .pipe(
         takeUntilDestroyed(this._destroyRef),
         filter(x => x.isInitized)
@@ -50,9 +45,9 @@ export class AuthGuard implements Guard {
         const isInviteRoute = url.pathname.startsWith('/invite');
         if (!state.user && !isLoginRoute) {
           this.navigateToLogin(this._router.routerState.snapshot.url);
-        } else if (state.user && !state.isAuthorized && !isUnauthorizedRoute && !isInviteRoute) {
+        } else if (state.user && !state.token && !isUnauthorizedRoute && !isInviteRoute) {
           this.navigateToUnauthorized();
-        } else if (state.isAuthorized && isLoginRoute) {
+        } else if (state.token && isLoginRoute) {
           const returnUrl = url.searchParams.get('returnUrl') || '/';
           this._router.navigate([returnUrl]);
         }

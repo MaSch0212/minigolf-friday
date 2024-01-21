@@ -1,39 +1,43 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using MinigolfFriday.Data;
 using MinigolfFriday.Services;
 
 namespace MinigolfFriday;
 
-public record GetAuthorizationResponse(bool IsAuthorized, string Reason);
+public record GetAccessTokenResponse(string Token, DateTime ExpiresAt);
 
 [Route("api/auth")]
 public class AuthController(
     IFacebookService facebookService,
-    IOptionsMonitor<FacebookOptions> facebookOptions
+    IUSerService userService,
+    IJwtService jwtService
 ) : Controller
 {
     private readonly IFacebookService _facebookService = facebookService;
-    private readonly IOptionsMonitor<FacebookOptions> _facebookOptions = facebookOptions;
+    private readonly IUSerService _userService = userService;
+    private readonly IJwtService _jwtService = jwtService;
 
-    [HttpGet]
+    [HttpPost("token")]
     [AllowAnonymous]
-    public async ValueTask<IActionResult> GetIsAuthorized()
+    public async ValueTask<IActionResult> GetAccessToken()
     {
-        var options = _facebookOptions.CurrentValue;
+        var fbResult = await _facebookService.ValidateAsync(Request.Cookies, false);
+        if (fbResult.IsFailed)
+            return Unauthorized(fbResult.Errors);
 
-        var fbsr = _facebookService.GetSignedRequestFromCookie(Request.Cookies, options.AppId);
-        if (fbsr is null)
-            return Ok(new GetAuthorizationResponse(false, "Not authenticated."));
+        if (fbResult.Value.User is null)
+        {
+            var addUserResult = await _userService.AddUserAsync(
+                fbResult.Value.SignedRequest.UserId,
+                false
+            );
+            if (addUserResult.IsFailed)
+                return addUserResult.ToActionResult();
+        }
 
-        var parsed = _facebookService.ParseSignedRequest(fbsr, options.AppSecret);
-        if (parsed is null)
-            return Ok(new GetAuthorizationResponse(false, "Invalid Facebook Signed Request."));
-
-        var user = await _facebookService.GetUserFromSignedRequestAsync(parsed);
-        if (user is null)
-            return Ok(new GetAuthorizationResponse(false, "Not authorized."));
-
-        return Ok(new GetAuthorizationResponse(true, "Authorized."));
+        var token = _jwtService.GenerateToken(fbResult.Value.User!);
+        return Ok(new GetAccessTokenResponse(_jwtService.WriteToken(token), token.ValidTo));
     }
 }

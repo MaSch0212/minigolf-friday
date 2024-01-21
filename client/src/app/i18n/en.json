@@ -9,6 +9,7 @@
     "manage": "Manage",
     "players": "Players",
     "maps": "Maps",
+    "users": "Users",
     "settings": "Settings"
   },
   "settings": {
@@ -73,12 +74,19 @@
       }
     }
   },
+  "users": {
+    "inviteAdmin": "Invite admin",
+    "inviteLink": "Invite link",
+    "copyInviteLink": "Copy invite link",
+    "linkExpires": "Link expires on {{date}} at {{time}}."
+  },
   "shared": {
     "tryAgainLater": "Please try again later.",
     "add": "Add",
     "cancel": "Cancel",
     "save": "Save",
-    "delete": "Delete"
+    "delete": "Delete",
+    "ok": "OK"
   },
   "loginTo": "Login to {{appName}}",
   "loginWith": "Login with {{provider}}",

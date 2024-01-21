@@ -1,12 +1,18 @@
+import { registerLocaleData } from '@angular/common';
 import { Injectable, Signal, computed, effect, signal } from '@angular/core';
 
 import { getLocalStorage, setLocalStorage } from '../utils/local-storage.utils';
 
 import type en from '../i18n/en.json';
 
-const langs: Record<string, () => Promise<typeof en>> = {
-  en: () => import('../i18n/en.json').then(x => x.default),
-  de: () => import('../i18n/de.json').then(x => x.default),
+type LangType = {
+  translations: typeof en;
+  locale: unknown;
+  localeExtra: unknown;
+};
+const langs: Record<string, () => Promise<LangType>> = {
+  en: () => import('../i18n/en').then(x => x.default),
+  de: () => import('../i18n/de').then(x => x.default),
 };
 
 type TranslateKeys<T> = T extends object
@@ -64,15 +70,19 @@ export class TranslateService {
 
   constructor() {
     effect(() => {
-      let getTranslations = langs[this.language()];
-      if (!getTranslations && this.language().includes('-')) {
-        getTranslations = langs[this.language().split('-')[0]];
+      const lang = this.language();
+      let getTranslations = langs[lang];
+      if (!getTranslations && lang.includes('-')) {
+        getTranslations = langs[lang.split('-')[0]];
       }
       if (!getTranslations) {
         getTranslations = langs['en'];
       }
 
-      getTranslations().then(x => this._translations.set(JSON.parse(JSON.stringify(x))));
+      getTranslations().then(({ translations, locale, localeExtra }) => {
+        this._translations.set(JSON.parse(JSON.stringify(translations)));
+        registerLocaleData(locale, lang, localeExtra);
+      });
     });
   }
 

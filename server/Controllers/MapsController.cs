@@ -15,7 +15,7 @@ public record AddMapResponse(string Id);
 
 public record UpdateMapRequest(MinigolfMap Map);
 
-[Authorize]
+[Authorize(Policy = Policies.Admin)]
 [Route("api/maps")]
 public class MapsController(MinigolfFridayContext dbContext) : Controller
 {
@@ -56,8 +56,7 @@ public class MapsController(MinigolfFridayContext dbContext) : Controller
         return Ok();
     }
 
-    [HttpDelete]
-    [Route("{id}")]
+    [HttpDelete("{id}")]
     public async ValueTask<IActionResult> DeleteMap(string id)
     {
         var map = await _dbContext.Maps.FindAsync(Guid.Parse(id));

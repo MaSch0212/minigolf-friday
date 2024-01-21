@@ -3,7 +3,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MinigolfFriday.Data;
 
 namespace MinigolfFriday.Services;
@@ -12,7 +14,8 @@ public class FacebookService(
     ILoggerFactory loggerFactory,
     IHttpClientFactory httpClientFactory,
     MinigolfFridayContext dbContext,
-    IFacebookAccessTokenProvider facebookAccessTokenProvider
+    IFacebookAccessTokenProvider facebookAccessTokenProvider,
+    IOptionsMonitor<FacebookOptions> facebookOptions
 ) : IFacebookService
 {
     private readonly ILogger<FacebookService> _logger =
@@ -21,30 +24,36 @@ public class FacebookService(
     private readonly MinigolfFridayContext _dbContext = dbContext;
     private readonly IFacebookAccessTokenProvider _facebookAccessTokenProvider =
         facebookAccessTokenProvider;
+    private readonly IOptionsMonitor<FacebookOptions> _facebookOptions = facebookOptions;
 
-    public string? GetSignedRequestFromCookie(IRequestCookieCollection cookies, string appId)
-    {
-        return cookies[$"fbsr_{appId}"];
-    }
-
-    public FacebookSignedRequest? ParseSignedRequest(string signedRequest, string appSecret)
-    {
-        var data = DecodeSignedRequest(signedRequest, appSecret);
-        return data != null ? JsonSerializer.Deserialize<FacebookSignedRequest>(data) : null;
-    }
-
-    public async Task<UserEntity?> GetUserFromSignedRequestAsync(
-        FacebookSignedRequest signedRequest
+    public async ValueTask<Result<FacebookValidationResult>> ValidateAsync(
+        IRequestCookieCollection cookies,
+        bool requiresUser
     )
     {
-        return await _dbContext
-            .Users
-            .FirstOrDefaultAsync(u => u.FacebookId == signedRequest.UserId);
+        var fbOptions = _facebookOptions.CurrentValue;
+        var fbsr = cookies[$"fbsr_{fbOptions.AppId}"];
+        if (fbsr is null)
+            return Result.Fail("Not authenticated.");
+
+        var parsed = ParseSignedRequest(fbsr, fbOptions.AppSecret);
+        if (parsed is null)
+            return Result.Fail("Invalid Facebook Signed Request.");
+
+        var user = await GetUserFromSignedRequestAsync(parsed);
+        if (user is null && requiresUser)
+            return Result.Fail("Not authenticated.");
+
+        return Result.Ok(new FacebookValidationResult(parsed, user));
     }
 
-    public async Task<string?> GetNameOfUserAsync(string appId, string appSecret, string userId)
+    public async ValueTask<string?> GetNameOfUserAsync(string userId)
     {
-        var accessToken = await _facebookAccessTokenProvider.GetAccessTokenAsync(appId, appSecret);
+        var fbOptions = _facebookOptions.CurrentValue;
+        var accessToken = await _facebookAccessTokenProvider.GetAccessTokenAsync(
+            fbOptions.AppId,
+            fbOptions.AppSecret
+        );
         if (accessToken is null)
             return null;
 
@@ -72,6 +81,21 @@ public class FacebookService(
         }
 
         return null;
+    }
+
+    private FacebookSignedRequest? ParseSignedRequest(string signedRequest, string appSecret)
+    {
+        var data = DecodeSignedRequest(signedRequest, appSecret);
+        return data != null ? JsonSerializer.Deserialize<FacebookSignedRequest>(data) : null;
+    }
+
+    private async ValueTask<UserEntity?> GetUserFromSignedRequestAsync(
+        FacebookSignedRequest signedRequest
+    )
+    {
+        return await _dbContext
+            .Users
+            .FirstOrDefaultAsync(u => u.FacebookId == signedRequest.UserId);
     }
 
     private static string DecodeSignedRequest(string signedRequest, string appSecret)

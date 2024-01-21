@@ -16,7 +16,7 @@ public record AddPlayerResponse(string Id);
 
 public record UpdatePlayerRequest(Player Player);
 
-[Authorize]
+[Authorize(Policy = Policies.Admin)]
 [Route("api/players")]
 public class PlayersController(MinigolfFridayContext dbContext) : Controller
 {
@@ -57,8 +57,7 @@ public class PlayersController(MinigolfFridayContext dbContext) : Controller
         return Ok();
     }
 
-    [HttpDelete]
-    [Route("{id}")]
+    [HttpDelete("{id}")]
     public async ValueTask<IActionResult> DeletePlayer([FromRoute] string id)
     {
         var player = await _dbContext.Players.FindAsync(Guid.Parse(id));

@@ -1,0 +1,48 @@
+<p-dialog
+  [header]="translations.users_inviteAdmin()"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  styleClass="w-full sm:w-[640px]"
+>
+  @if (inviteUrl()) {
+    <div class="flex flex-col">
+      <div class="flex flex-row items-center">
+        <span class="p-float-label grow">
+          <input
+            pInputText
+            [id]="'link' | id"
+            type="text"
+            [ngModel]="inviteUrl()"
+            [readOnly]="true"
+          />
+          <label [htmlFor]="'link' | id">{{ translations.users_inviteLink() }}</label>
+        </span>
+        <p-button
+          [pTooltip]="translations.users_copyInviteLink()"
+          [tooltipStyleClass]="'whitespace-nowrap'"
+          [rounded]="true"
+          [text]="true"
+          icon="i-[mdi--content-copy]"
+          (onClick)="copyLink()"
+        />
+      </div>
+      <div class="helper-text-info">
+        {{
+          translations.users_linkExpires()
+            | interpolate
+              : {
+                  date: inviteExpiresAt() | date: 'shortDate' : '' : language(),
+                  time: inviteExpiresAt() | date: 'shortTime' : '' : language()
+                }
+        }}
+      </div>
+    </div>
+  } @else {
+    <p-progressSpinner class="m-8"></p-progressSpinner>
+  }
+
+  <p-footer>
+    <p-button [label]="translations.shared_ok()" (onClick)="visible.set(false)" />
+  </p-footer>
+</p-dialog>

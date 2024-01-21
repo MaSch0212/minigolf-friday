@@ -8,7 +8,7 @@ namespace MinigolfFriday.Controllers;
 
 public record GetUsersResponse(User[] Users);
 
-[Authorize]
+[Authorize(Policy = Policies.Admin)]
 [Route("api/users")]
 public class UsersController(MinigolfFridayContext dbContext) : Controller
 {
@@ -22,8 +22,7 @@ public class UsersController(MinigolfFridayContext dbContext) : Controller
         return Ok(new GetUsersResponse(users));
     }
 
-    [HttpDelete]
-    [Route("{id}")]
+    [HttpDelete("{id}")]
     public async ValueTask<IActionResult> Delete([FromRoute] string id)
     {
         var executingUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

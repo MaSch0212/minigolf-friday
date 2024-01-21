@@ -1,5 +1,5 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday;
 using MinigolfFriday.Data;
@@ -10,25 +10,32 @@ using MinigolfFriday.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
+builder.Services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName);
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MinigolfFridayContext>();
-builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder
     .Services
-    .AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, FacebookSignedRequestAuthHandler>("facebook", _ => { });
+    .AddAuthorization(options =>
+    {
+        options.AddPolicy(Policies.Admin, policy => policy.RequireRole(Roles.Admin));
+        options.AddPolicy(Policies.Player, policy => policy.RequireRole(Roles.Player));
+    });
+builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IFacebookAccessTokenProvider, FacebookAccessTokenProvider>();
 
 builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
 builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
+builder.Services.AddScoped<IUSerService, UserService>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder
     .Services

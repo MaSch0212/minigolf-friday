@@ -9,7 +9,7 @@
       $selector: $selector + ', ';
     }
     $prefix: nth($prefixes, $i);
-    $selector: $selector + "[class^='#{$prefix}'], [class*=' #{$prefix}']";
+    $selector: $selector + "[class^='#{$prefix}'], [class*='#{$prefix}']";
   }
   @at-root #{$selector} {
     @content;
@@ -46,6 +46,42 @@
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
+
+  @layer components {
+    .helper-text {
+      @apply px-4 line-clamp-2;
+      &::before {
+        @extend [class^='i-['];
+        @extend [class^='i-[mdi--'];
+        content: ' ';
+      }
+    }
+    .helper-text-info {
+      @extend .helper-text;
+      @apply i-[mdi--information];
+      &::before {
+        @apply text-blue-500;
+      }
+    }
+    .helper-text-warning {
+      @extend .helper-text;
+      @apply i-[mdi--alert];
+      &::before {
+        @apply text-yellow-500;
+      }
+    }
+    .helper-text-error {
+      @extend .helper-text;
+      @apply i-[mdi--alert-circle] text-danger;
+    }
+    .helper-text-success {
+      @extend .helper-text;
+      @apply i-[mdi--check-circle];
+      &::before {
+        @apply text-green-500;
+      }
+    }
+  }
 }
 
 @layer base {
@@ -149,5 +185,9 @@
 
   [class*='p-input-icon-'] > .mdi {
     line-height: 1rem;
+  }
+
+  .p-tooltip-text {
+    white-space: break-spaces;
   }
 }

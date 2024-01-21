@@ -21,7 +21,7 @@ export class RedeemInviteComponent {
     const id = inject(ActivatedRoute).snapshot.params['inviteId'];
     if (id) {
       this._userInvitesService.redeemInvite(id).subscribe(() => {
-        this._authService.refreshAuthorized();
+        this._authService.refreshToken();
         this._router.navigate(['/home']);
       });
     }

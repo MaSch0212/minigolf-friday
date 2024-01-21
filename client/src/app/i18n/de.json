@@ -9,6 +9,7 @@
     "manage": "Verwalten",
     "players": "Spieler",
     "maps": "Bahnen",
+    "users": "Benutzer",
     "settings": "Einstellungen"
   },
   "settings": {
@@ -73,12 +74,19 @@
       }
     }
   },
+  "users": {
+    "inviteAdmin": "Admin einladen",
+    "inviteLink": "Einladungslink",
+    "copyInviteLink": "Einladungslink kopieren",
+    "linkExpires": "Der Link läuft am {{date}} um {{time}} ab."
+  },
   "shared": {
     "tryAgainLater": "Bitte versuche es später erneut.",
     "add": "Hinzufügen",
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "ok": "OK"
   },
   "loginTo": "An {{appName}} anmelden",
   "loginWith": "Mit {{provider}} anmelden",

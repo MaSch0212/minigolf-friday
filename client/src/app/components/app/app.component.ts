@@ -1,7 +1,5 @@
-import { SocialUser } from '@abacritt/angularx-social-login';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ConfirmationService, MessageService, PrimeNGConfig } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -9,9 +7,9 @@ import { ToastModule } from 'primeng/toast';
 
 import { FooterComponent } from './footer/footer.component';
 import { MenuComponent } from './menu/menu.component';
-import { environment } from '../../environments/environment';
 import { AuthGuard } from '../../services/auth.guard';
-import { AuthService, AuthState } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
+import { notNullish } from '../../utils/common.utils';
 
 @Component({
   selector: 'app-root',
@@ -32,10 +30,8 @@ import { AuthService, AuthState } from '../../services/auth.service';
 export class AppComponent {
   private readonly _authService = inject(AuthService);
 
-  protected authState = environment.authenticationRequired
-    ? toSignal(this._authService.authState)
-    : signal<AuthState>({ isInitized: true, user: {} as SocialUser, isAuthorized: true });
-  protected isLoggedIn = computed(() => this.authState()?.isAuthorized === true);
+  protected authState = this._authService.authState;
+  protected isLoggedIn = computed(() => notNullish(this.authState()?.token));
   protected authInit = computed(() => this.authState()?.isInitized === true);
 
   constructor() {

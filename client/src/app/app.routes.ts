@@ -42,6 +42,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./components/maps/maps.component').then(({ MapsComponent }) => MapsComponent),
       },
+      {
+        path: 'users',
+        resolve: {
+          title: getTitleResolver('nav_users', true),
+        },
+        loadComponent: () =>
+          import('./components/users/users.component').then(({ UsersComponent }) => UsersComponent),
+      },
     ],
     canActivateChild: [
       (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>

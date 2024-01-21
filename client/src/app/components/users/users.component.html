@@ -1,1 +1,3 @@
-<p>users works!</p>
+<p-button [label]="translations.users_inviteAdmin()" (onClick)="inviteAdminDialog.open()" />
+
+<app-invite-admin-dialog #inviteAdminDialog />

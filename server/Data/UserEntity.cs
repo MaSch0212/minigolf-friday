@@ -11,6 +11,7 @@ public class UserEntity
     public required Guid Id { get; set; }
     public required string FacebookId { get; set; }
     public required string Name { get; set; }
+    public bool IsAdmin { get; set; }
 
     public static UserEntity ById(Guid Id)
     {

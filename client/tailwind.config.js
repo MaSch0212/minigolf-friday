@@ -1,4 +1,5 @@
 const { addDynamicIconSelectors } = require('@iconify/tailwind');
+const plugin = require('tailwindcss');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

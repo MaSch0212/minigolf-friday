@@ -1,8 +1,6 @@
-﻿using System.Net;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using MinigolfFriday.Data;
 using MinigolfFriday.Services;
 
@@ -14,16 +12,15 @@ public record PutUserInviteResponse(string Id, DateTimeOffset ExpiresAt);
 public class UserInvitesController(
     MinigolfFridayContext dbContext,
     IFacebookService facebookService,
-    IOptionsMonitor<FacebookOptions> facebookOptions
+    IJwtService jwtService
 ) : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;
     private readonly IFacebookService _facebookService = facebookService;
-    private readonly IOptionsMonitor<FacebookOptions> _facebookOptions = facebookOptions;
+    private readonly IJwtService _jwtService = jwtService;
 
     [HttpPut]
-    //[Authorize]
-    [AllowAnonymous]
+    [Authorize(Policy = Policies.Admin)]
     public async ValueTask<IActionResult> CreateInvite()
     {
         var inviteEntity = new UserInviteEntity
@@ -37,21 +34,10 @@ public class UserInvitesController(
         return Ok(new PutUserInviteResponse(inviteEntity.Id.ToString(), inviteEntity.ExpiresAt));
     }
 
-    [HttpPost]
-    [Route("{id}/redeem")]
-    [AllowAnonymous]
+    [HttpPost("{id}/redeem")]
+    [Authorize]
     public async ValueTask<IActionResult> RedeemInvite([FromRoute] string id)
     {
-        var options = _facebookOptions.CurrentValue;
-
-        var fbsr = _facebookService.GetSignedRequestFromCookie(Request.Cookies, options.AppId);
-        if (fbsr is null)
-            return Unauthorized();
-
-        var signedRequest = _facebookService.ParseSignedRequest(fbsr, options.AppSecret);
-        if (signedRequest is null)
-            return Unauthorized();
-
         if (!Guid.TryParse(id, out var inviteId))
             return BadRequest("Invalid invite id.");
 
@@ -59,31 +45,18 @@ public class UserInvitesController(
         if (inviteEntity is null)
             return NotFound();
 
-        var existingUser = await _facebookService.GetUserFromSignedRequestAsync(signedRequest);
-        if (existingUser is not null)
-            return Conflict("User already exists.");
+        var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null)
+            return Unauthorized();
 
-        var userName = await _facebookService.GetNameOfUserAsync(
-            options.AppId,
-            options.AppSecret,
-            signedRequest.UserId
-        );
-        if (userName is null)
-        {
-            return StatusCode(
-                StatusCodes.Status500InternalServerError,
-                "Could not get user name from facebook."
-            );
-        }
+        var user = await _dbContext.Users.FindAsync(Guid.Parse(userId));
+        if (user is null)
+            return Unauthorized();
 
-        var userEntity = new UserEntity
-        {
-            Id = Guid.NewGuid(),
-            FacebookId = signedRequest.UserId,
-            Name = userName,
-        };
-        _dbContext.Users.Add(userEntity);
-        inviteEntity.User = userEntity;
+        if (user.IsAdmin)
+            return BadRequest("User is already admin.");
+
+        user.IsAdmin = true;
         await _dbContext.SaveChangesAsync();
         return Ok();
     }

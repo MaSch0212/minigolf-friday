@@ -50,6 +50,11 @@ export class MenuComponent {
           icon: 'i-[mdi--golf]',
           routerLink: '/manage/maps',
         },
+        {
+          label: this.translations.nav_users(),
+          icon: 'i-[mdi--account-multiple]',
+          routerLink: '/manage/users',
+        },
       ],
     },
     {
