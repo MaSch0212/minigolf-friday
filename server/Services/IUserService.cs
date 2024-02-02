@@ -2,7 +2,15 @@ using FluentResults;
 
 namespace MinigolfFriday.Services;
 
-public interface IUSerService
+public interface IUserService
 {
-    ValueTask<Result> AddUserAsync(string facebookId, bool isAdmin);
+    ValueTask<UserEntity?> GetUserByFacebookIdAsync(string facebookId);
+    ValueTask<UserEntity?> GetUserByEmailAsync(string email);
+    ValueTask<Result<UserEntity>> AddUserAsync(string facebookId, string name, bool isAdmin);
+    ValueTask<Result<UserEntity>> AddUserAsync(
+        string email,
+        string password,
+        string name,
+        bool isAdmin
+    );
 }

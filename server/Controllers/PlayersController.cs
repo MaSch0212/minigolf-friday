@@ -1,4 +1,5 @@
 using System.Data.Common;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +19,11 @@ public record UpdatePlayerRequest(Player Player);
 
 [Authorize(Policy = Policies.Admin)]
 [Route("api/players")]
-public class PlayersController(MinigolfFridayContext dbContext) : Controller
+public class PlayersController(MinigolfFridayContext dbContext, IValidator<Player> playerValidator)
+    : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;
+    private readonly IValidator<Player> _playerValidator = playerValidator;
 
     [HttpGet]
     public async ValueTask<IActionResult> Get()
@@ -32,6 +35,12 @@ public class PlayersController(MinigolfFridayContext dbContext) : Controller
     [HttpPost]
     public async ValueTask<IActionResult> AddPlayer([FromBody] AddPlayerRequest request)
     {
+        var validationResult = await _playerValidator.ValidateAsync(request.Player);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
         var player = request.Player.ToEntity();
         _dbContext.Players.Add(player);
         await _dbContext.SaveChangesAsync();

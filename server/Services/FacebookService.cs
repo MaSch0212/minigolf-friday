@@ -13,15 +13,15 @@ namespace MinigolfFriday.Services;
 public class FacebookService(
     ILoggerFactory loggerFactory,
     IHttpClientFactory httpClientFactory,
-    MinigolfFridayContext dbContext,
     IFacebookAccessTokenProvider facebookAccessTokenProvider,
+    IUserService userService,
     IOptionsMonitor<FacebookOptions> facebookOptions
 ) : IFacebookService
 {
     private readonly ILogger<FacebookService> _logger =
         loggerFactory.CreateLogger<FacebookService>();
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-    private readonly MinigolfFridayContext _dbContext = dbContext;
+    private readonly IUserService _userService = userService;
     private readonly IFacebookAccessTokenProvider _facebookAccessTokenProvider =
         facebookAccessTokenProvider;
     private readonly IOptionsMonitor<FacebookOptions> _facebookOptions = facebookOptions;
@@ -40,7 +40,7 @@ public class FacebookService(
         if (parsed is null)
             return Result.Fail("Invalid Facebook Signed Request.");
 
-        var user = await GetUserFromSignedRequestAsync(parsed);
+        var user = await _userService.GetUserByFacebookIdAsync(parsed.UserId);
         if (user is null && requiresUser)
             return Result.Fail("Not authenticated.");
 
@@ -87,15 +87,6 @@ public class FacebookService(
     {
         var data = DecodeSignedRequest(signedRequest, appSecret);
         return data != null ? JsonSerializer.Deserialize<FacebookSignedRequest>(data) : null;
-    }
-
-    private async ValueTask<UserEntity?> GetUserFromSignedRequestAsync(
-        FacebookSignedRequest signedRequest
-    )
-    {
-        return await _dbContext
-            .Users
-            .FirstOrDefaultAsync(u => u.FacebookId == signedRequest.UserId);
     }
 
     private static string DecodeSignedRequest(string signedRequest, string appSecret)

@@ -8,7 +8,13 @@ public static class UserMapper
         {
             Id = entity.Id.ToString(),
             Name = entity.Name,
-            IsAdmin = entity.IsAdmin
+            IsAdmin = entity.IsAdmin,
+            LoginType = entity.GetLoginType()
         };
+    }
+
+    public static UserLoginType GetLoginType(this UserEntity entity)
+    {
+        return entity.FacebookId is not null ? UserLoginType.Facebook : UserLoginType.Email;
     }
 }

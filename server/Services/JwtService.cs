@@ -18,16 +18,23 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Name),
+            new(CustomClaimNames.LoginType, user.GetLoginType().ToString()),
+            new(ClaimTypes.Role, user.IsAdmin ? Roles.Admin : Roles.Player)
+        };
+
+        if (user.FacebookId is not null)
+            claims.Add(new(CustomClaimNames.FacebookId, user.FacebookId));
+        if (user.Email is not null)
+            claims.Add(new(ClaimTypes.Email, user.Email));
+
         var token = new JwtSecurityToken(
             jwtOptions.Issuer,
             jwtOptions.Audience,
-            claims:
-            [
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, user.Name),
-                new(JwtOptions.FacebookIdClaim, user.FacebookId),
-                new(ClaimTypes.Role, user.IsAdmin ? Roles.Admin : Roles.Player)
-            ],
+            claims,
             expires: DateTime.UtcNow.Add(jwtOptions.Expiration),
             signingCredentials: creds
         );

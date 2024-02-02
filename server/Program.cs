@@ -1,6 +1,8 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MinigolfFriday;
 using MinigolfFriday.Data;
 using MinigolfFriday.Middlewares;
@@ -11,7 +13,39 @@ using MinigolfFriday.Validators;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder
+    .Services
+    .AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition(
+            "Bearer",
+            new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme.",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "Bearer",
+            }
+        );
+        options.AddSecurityRequirement(
+            new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer",
+                        },
+                    },
+                    Array.Empty<string>()
+                }
+            }
+        );
+    });
 
 builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
 builder.Services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName);
@@ -31,11 +65,16 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IFacebookAccessTokenProvider, FacebookAccessTokenProvider>();
 
-builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
-builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
-builder.Services.AddScoped<IUSerService, UserService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
+builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
+builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
+builder.Services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateEmailRequest>, UpdateEmailRequestValidator>();
 
 builder
     .Services

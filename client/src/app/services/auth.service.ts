@@ -27,12 +27,14 @@ import { environment } from '../environments/environment';
 type GetAccessTokenResponse = {
   token: string;
   expiresAt: string;
+  isAdmin: boolean;
 };
 
 export type AuthState = {
   isInitized: boolean;
   token?: string | null;
   user?: SocialUser;
+  isAdmin?: boolean;
 };
 
 @Injectable()
@@ -43,6 +45,7 @@ export class AuthService implements OnDestroy {
   private readonly _socialAuthService = inject(SocialAuthService);
 
   private readonly _token = signal<string | null | undefined>(undefined);
+  private readonly _isAdmin = signal<boolean | undefined>(undefined);
   private readonly _socialInitState = toSignal(this._socialAuthService.initState);
   private readonly _socialAuthState = toSignal(this._socialAuthService.authState);
   private readonly _tokenInitialized = signal(false);
@@ -59,8 +62,9 @@ export class AuthService implements OnDestroy {
             this._tokenInitialized(),
           user: this._socialAuthState(),
           token: this._token(),
+          isAdmin: this._isAdmin(),
         }
-      : { isInitized: true, user: {} as SocialUser, token: 'abc' }
+      : { isInitized: true, user: {} as SocialUser, token: 'abc', isAdmin: true }
   );
   public authState$ = toObservable(this.authState);
 
@@ -101,12 +105,14 @@ export class AuthService implements OnDestroy {
         this._http.post<GetAccessTokenResponse>('/api/auth/token', {})
       );
       this._token.set(response.token);
+      this._isAdmin.set(response.isAdmin);
       this._tokenRefreshTimeout = setTimeout(
         () => this.refreshToken(),
         Math.max(10000, new Date(response.expiresAt).getTime() - Date.now() - 1000 * 60)
       );
     } catch (err) {
       this._token.set(null);
+      this._isAdmin.set(false);
     } finally {
       this._tokenInitialized.set(true);
       this._isTokenLoading = false;

@@ -29,6 +29,8 @@ export class AuthGuard implements Guard {
       this._authService.authState$.pipe(filter(x => x.isInitized))
     );
 
+    const needsAdmin = route.data['allowNonAdmin'] !== true;
+
     return !!authState.user && (!!authState.token || allowUnAuthorized);
   }
 
