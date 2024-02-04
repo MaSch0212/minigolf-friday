@@ -4,6 +4,14 @@
     "developedBy": "Developed with ❤️ by",
     "basedOn": "Based on the Excel app by"
   },
+  "login": {
+    "login": "Login",
+    "loginTo": "Login to {{appName}}",
+    "loginWith": "Login with {{provider}}",
+    "registerTo": "Register to {{appName}}",
+    "register": "Register",
+    "confirmPassword": "Confirm password"
+  },
   "nav": {
     "home": "Home",
     "manage": "Manage",
@@ -86,10 +94,19 @@
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
-    "ok": "OK"
+    "ok": "OK",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "or": "or"
   },
-  "loginTo": "Login to {{appName}}",
-  "loginWith": "Login with {{provider}}",
+  "validation": {
+    "required": "Cannot be blank.",
+    "minlength": "Cannot be shorter than {{requiredLength}} characters.",
+    "maxlength": "Cannot be longer than {{requiredLength}} characters.",
+    "passwordsEqual": "Passwords do not match.",
+    "email": "Invalid email address."
+  },
   "switchLanguage": "Switch language",
   "switchTheme": "Switch theme"
 }

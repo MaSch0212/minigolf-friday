@@ -1,12 +1,64 @@
-<p-menubar class="m-4" [model]="menuItems()">
-  <ng-template pTemplate="end">
-    <div class="flex flex-row items-end gap-x-8 flex-wrap justify-end">
-      @if (title()) {
-        <span class="font-semibold">{{ title() }}</span>
-        <span class="text-xs">{{ translations.title() }}</span>
+@if (isAdmin()) {
+  <p-menubar class="block" [model]="menuItems()">
+    <ng-template pTemplate="end">
+      <div class="flex flex-row items-end gap-x-8 flex-wrap justify-end">
+        @if (title()) {
+          <span class="font-semibold">{{ title() }}</span>
+          <span class="text-xs">{{ translations.title() }}</span>
+        } @else {
+          <span class="font-semibold">{{ translations.title() }}</span>
+        }
+      </div>
+    </ng-template>
+  </p-menubar>
+} @else {
+  <div class="flex flex-row gap-2">
+    @for (item of menuItems(); track index; let index = $index) {
+      <ng-container
+        *ngTemplateOutlet="menuItemTemplate; context: { $implicit: item, index }"
+      ></ng-container>
+    }
+  </div>
+}
+
+<ng-template #menuItemTemplate let-item let-index="index">
+  @if (item.visible !== false) {
+    @if (item.separator) {
+      @if (item.state?.['grow']) {
+        <div class="grow"></div>
       } @else {
-        <span class="font-semibold">{{ translations.title() }}</span>
+        <div class="mx-4 h-8 my-auto w-[1px] bg-surface-d"></div>
       }
-    </div>
-  </ng-template>
-</p-menubar>
+    } @else if (item.items) {
+      @if (item.state?.['expand'] === true) {
+        @for (subItem of item.items; track index; let index = $index) {
+          <ng-container
+            *ngTemplateOutlet="menuItemTemplate; context: { $implicit: subItem, index }"
+          ></ng-container>
+        }
+      } @else {
+        <div>
+          <p-button
+            [icon]="item.icon"
+            [pTooltip]="item.label"
+            [rounded]="true"
+            [text]="true"
+            [size]="'large'"
+            (onClick)="menu.toggle($event)"
+          />
+          <p-menu #menu [model]="item.items" [popup]="true" />
+        </div>
+      }
+    } @else {
+      <p-button
+        [icon]="item.icon"
+        [pTooltip]="item.label"
+        [rounded]="true"
+        [text]="true"
+        [size]="'large'"
+        [routerLink]="item.routerLink"
+        (onClick)="item.command?.({ originalEvent: $event, item, index })"
+      />
+    }
+  }
+</ng-template>

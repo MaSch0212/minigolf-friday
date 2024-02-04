@@ -6,8 +6,9 @@ import {
   SocialLoginModule,
   SocialUser,
 } from '@abacritt/angularx-social-login';
-import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import {
+  APP_INITIALIZER,
   Injectable,
   OnDestroy,
   computed,
@@ -16,70 +17,55 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
+import { AuthApiService } from './auth-api.service';
 import { AuthGuard } from './auth.guard';
 import { AuthInterceptor } from './auth.interceptor';
 import { WellKnownService } from './well-known.service';
 import { environment } from '../environments/environment';
-
-type GetAccessTokenResponse = {
-  token: string;
-  expiresAt: string;
-  isAdmin: boolean;
-};
+import { User, UserLoginType } from '../models/user';
 
 export type AuthState = {
-  isInitized: boolean;
-  token?: string | null;
-  user?: SocialUser;
-  isAdmin?: boolean;
+  token: string | null;
+  user: User | null;
 };
 
 @Injectable()
 export class AuthService implements OnDestroy {
   public static TOKEN_KEY = 'access_token';
+  public static TOKEN_EXPIRATION_KEY = 'access_token_expiration';
 
-  private readonly _http = inject(HttpClient);
+  private readonly _api = inject(AuthApiService);
   private readonly _socialAuthService = inject(SocialAuthService);
+  private readonly _router = inject(Router);
 
   private readonly _token = signal<string | null | undefined>(undefined);
-  private readonly _isAdmin = signal<boolean | undefined>(undefined);
-  private readonly _socialInitState = toSignal(this._socialAuthService.initState);
-  private readonly _socialAuthState = toSignal(this._socialAuthService.authState);
-  private readonly _tokenInitialized = signal(false);
+  private readonly _user = signal<User | null | undefined>(undefined);
+  private readonly _socialAuthState = toSignal(this._socialAuthService.authState, {
+    initialValue: null,
+  });
 
   private _isTokenLoading = false;
   private _tokenRefreshTimeout?: number;
 
-  public authState = computed<AuthState>(() =>
-    environment.authenticationRequired
-      ? {
-          isInitized:
-            this._socialAuthState() !== undefined &&
-            this._socialInitState() === true &&
-            this._tokenInitialized(),
-          user: this._socialAuthState(),
-          token: this._token(),
-          isAdmin: this._isAdmin(),
-        }
-      : { isInitized: true, user: {} as SocialUser, token: 'abc', isAdmin: true }
-  );
-  public authState$ = toObservable(this.authState);
-
-  public token = computed(() => this.authState().token);
+  public token = this._token.asReadonly();
+  public user = this._user.asReadonly();
+  public isAuthorized = computed(() => !!this._token() && !!this._user());
 
   constructor() {
     effect(
       () => {
-        const user = this._socialAuthState();
-        if (user === undefined) return;
-        if (user) {
+        const user = this._user();
+        if (user?.loginType !== 'facebook') return;
+        const socialUser = this._socialAuthState();
+        if (socialUser) {
           this.refreshToken();
         } else {
-          this._tokenInitialized.set(true);
-          this.clearTokenRefreshTimeout();
+          this._token.set(null);
+          this._user.set(null);
         }
       },
       { allowSignalWrites: true }
@@ -88,49 +74,110 @@ export class AuthService implements OnDestroy {
     effect(() => {
       const token = this._token();
       if (token) {
-        sessionStorage.setItem(AuthService.TOKEN_KEY, token);
+        localStorage.setItem(AuthService.TOKEN_KEY, token);
       } else {
-        sessionStorage.removeItem(AuthService.TOKEN_KEY);
+        this.clearTokenRefreshTimeout();
+        localStorage.removeItem(AuthService.TOKEN_KEY);
+        localStorage.removeItem(AuthService.TOKEN_EXPIRATION_KEY);
       }
     });
   }
 
-  public async refreshToken() {
+  public async initialize() {
+    if (this._token() !== undefined || this._user() !== undefined) {
+      throw new Error('AuthService already initialized');
+    }
+
+    if (!environment.authenticationRequired) {
+      this._token.set('abc');
+      this._user.set({ name: 'Stub User', id: 'abcdef', isAdmin: true, loginType: 'email' });
+      return;
+    }
+
+    const token = localStorage.getItem(AuthService.TOKEN_KEY);
+    const tokenExpiration = localStorage.getItem(AuthService.TOKEN_EXPIRATION_KEY);
+    if (token && tokenExpiration && new Date(tokenExpiration) > new Date()) {
+      await this.refreshToken(token);
+      return;
+    }
+
+    const socialAuthState = await firstValueFrom(this._socialAuthService.authState);
+    if (socialAuthState) {
+      await this.refreshToken();
+    }
+
+    this._token.set(null);
+    this._user.set(null);
+  }
+
+  public async refreshToken(oldToken?: string) {
     if (!environment.authenticationRequired || this._isTokenLoading) return;
 
     this._isTokenLoading = true;
     this.clearTokenRefreshTimeout();
     try {
-      const response = await firstValueFrom(
-        this._http.post<GetAccessTokenResponse>('/api/auth/token', {})
-      );
-      this._token.set(response.token);
-      this._isAdmin.set(response.isAdmin);
-      this._tokenRefreshTimeout = setTimeout(
-        () => this.refreshToken(),
-        Math.max(10000, new Date(response.expiresAt).getTime() - Date.now() - 1000 * 60)
-      );
+      const response = await firstValueFrom(this._api.getAccessToken(oldToken));
+      this.handleTokenResponse(response);
     } catch (err) {
+      await this._socialAuthService.signOut().catch();
       this._token.set(null);
-      this._isAdmin.set(false);
+      this._user.set(null);
     } finally {
-      this._tokenInitialized.set(true);
       this._isTokenLoading = false;
     }
   }
 
-  public async signIn() {
+  public async signIn(loginType: 'facebook'): Promise<void>;
+  public async signIn(loginType: 'email', email: string, password: string): Promise<void>;
+  public async signIn(loginType: UserLoginType, email?: string, password?: string): Promise<void> {
     if (!environment.authenticationRequired) return;
-    await this._socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID);
+
+    if (loginType === 'facebook') {
+      await this._socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID);
+      await this.refreshToken();
+    } else if (loginType === 'email' && email && password) {
+      const response = await firstValueFrom(this._api.login({ email, password }));
+      this.handleTokenResponse(response);
+    }
   }
 
   public async signOut() {
     if (!environment.authenticationRequired) return;
-    await this._socialAuthService.signOut();
+
+    const loginType = this._user()?.loginType;
+    if (loginType === 'facebook') {
+      await this._socialAuthService.signOut();
+    } else {
+      this._token.set(null);
+      this._user.set(null);
+    }
+
+    this._router.navigate(['/login']);
+  }
+
+  public async register(email: string, name: string, password: string) {
+    if (!environment.authenticationRequired) return;
+
+    const response = await firstValueFrom(this._api.register({ email, name, password }));
+    this.handleTokenResponse(response);
   }
 
   public ngOnDestroy(): void {
     this.clearTokenRefreshTimeout();
+  }
+
+  private handleTokenResponse(response: { token: string; expiresAt: string; user: User }) {
+    this._token.set(response.token);
+    this._user.set(response.user);
+    localStorage.setItem(AuthService.TOKEN_EXPIRATION_KEY, response.expiresAt);
+    this.updateTokenRefreshTimeout(response.expiresAt);
+  }
+
+  private updateTokenRefreshTimeout(expiration: string) {
+    this._tokenRefreshTimeout = setTimeout(
+      () => this.refreshToken(),
+      Math.max(10000, new Date(expiration).getTime() - Date.now() - 1000 * 60)
+    );
   }
 
   private clearTokenRefreshTimeout() {
@@ -208,6 +255,12 @@ export function provideAuth() {
       provide: HTTP_INTERCEPTORS,
       multi: true,
       useClass: AuthInterceptor,
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: (authService: AuthService) => () => authService.initialize(),
+      deps: [AuthService],
     },
   ];
 }

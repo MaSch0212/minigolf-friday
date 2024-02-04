@@ -8,29 +8,23 @@ namespace MinigolfFriday.Controllers;
 
 public record GetUsersResponse(User[] Users);
 
-[Authorize(Policy = Policies.Admin)]
+[Authorize(Roles = Roles.Admin)]
 [Route("api/users")]
 public class UsersController(MinigolfFridayContext dbContext) : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;
 
     [HttpGet]
-    public async ValueTask<IActionResult> Get()
+    public async ValueTask<IActionResult> GetAllUsers()
     {
         var entities = await _dbContext.Users.ToArrayAsync();
         var users = entities.Select(UserMapper.ToModel).ToArray();
         return Ok(new GetUsersResponse(users));
     }
 
-    [HttpDelete("{id}")]
-    public async ValueTask<IActionResult> Delete([FromRoute] string id)
+    [HttpGet("{id}")]
+    public async ValueTask<IActionResult> GetUser([FromRoute] string id)
     {
-        var executingUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (executingUserId is null)
-            return Unauthorized();
-        if (executingUserId == id)
-            return BadRequest("Cannot delete yourself.");
-
         if (!Guid.TryParse(id, out var userId))
             return BadRequest("Invalid user id.");
 
@@ -38,8 +32,7 @@ public class UsersController(MinigolfFridayContext dbContext) : Controller
         if (entity is null)
             return NotFound();
 
-        _dbContext.Users.Remove(entity);
-        await _dbContext.SaveChangesAsync();
-        return Ok();
+        var user = UserMapper.ToModel(entity);
+        return Ok(user);
     }
 }

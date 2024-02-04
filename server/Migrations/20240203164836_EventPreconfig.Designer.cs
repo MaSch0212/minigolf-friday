@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinigolfFriday.Data;
 
@@ -10,9 +11,11 @@ using MinigolfFriday.Data;
 namespace MinigolfFriday.Migrations
 {
     [DbContext(typeof(MinigolfFridayContext))]
-    partial class MinigolfFridayContextModelSnapshot : ModelSnapshot
+    [Migration("20240203164836_EventPreconfig")]
+    partial class EventPreconfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -54,9 +57,6 @@ namespace MinigolfFriday.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset>("RegistrationDeadline")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -193,6 +193,28 @@ namespace MinigolfFriday.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("MinigolfFriday.UserInviteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserInvites");
+                });
+
             modelBuilder.Entity("UserEntityUserEntity", b =>
                 {
                     b.Property<Guid>("AvoidId")
@@ -278,7 +300,7 @@ namespace MinigolfFriday.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.EventPlayerRegistrationEntity", b =>
                 {
                     b.HasOne("MinigolfFriday.Data.EventTimeslotEntity", "EventTimeslot")
-                        .WithMany("Registrations")
+                        .WithMany()
                         .HasForeignKey("EventTimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -317,6 +339,15 @@ namespace MinigolfFriday.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Map");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.UserInviteEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UserEntityUserEntity", b =>
@@ -359,8 +390,6 @@ namespace MinigolfFriday.Migrations
                     b.Navigation("Instances");
 
                     b.Navigation("Preconfigurations");
-
-                    b.Navigation("Registrations");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,70 +1,78 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Routes } from '@angular/router';
+import { CanActivateFn, Routes } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import { setTitleAction } from './+state/app';
 import { AuthGuard } from './services/auth.guard';
 
+function getCanActivate(guards: CanActivateFn[]) {
+  return guards;
+}
+
 export const routes: Routes = [
   {
-    path: 'home',
-    resolve: {
-      title: getTitleResolver(undefined),
-    },
-    loadComponent: () =>
-      import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
-    canActivate: [
-      (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-        inject(AuthGuard).canActivate(route, state),
-    ],
+    path: '',
+    pathMatch: 'full',
+    redirectTo: '/home',
   },
   {
-    path: 'manage',
-    resolve: {
-      title: getTitleResolver('nav_manage', true),
-    },
+    path: '',
+    canActivate: getCanActivate([
+      (_, state) => inject(AuthGuard).canActivate(state, { needsAdminRights: true }),
+    ]),
     children: [
       {
-        path: 'players',
+        path: 'manage',
         resolve: {
-          title: getTitleResolver('nav_players', true),
+          title: getTitleResolver('nav_manage', true),
         },
-        loadComponent: () =>
-          import('./components/players/players.component').then(
-            ({ PlayersComponent }) => PlayersComponent
-          ),
+        children: [
+          {
+            path: 'players',
+            resolve: {
+              title: getTitleResolver('nav_players', true),
+            },
+            loadComponent: () =>
+              import('./components/players/players.component').then(
+                ({ PlayersComponent }) => PlayersComponent
+              ),
+          },
+          {
+            path: 'maps',
+            resolve: {
+              title: getTitleResolver('nav_maps', true),
+            },
+            loadComponent: () =>
+              import('./components/maps/maps.component').then(({ MapsComponent }) => MapsComponent),
+          },
+          {
+            path: 'users',
+            resolve: {
+              title: getTitleResolver('nav_users', true),
+            },
+            loadComponent: () =>
+              import('./components/users/users.component').then(
+                ({ UsersComponent }) => UsersComponent
+              ),
+          },
+        ],
       },
-      {
-        path: 'maps',
-        resolve: {
-          title: getTitleResolver('nav_maps', true),
-        },
-        loadComponent: () =>
-          import('./components/maps/maps.component').then(({ MapsComponent }) => MapsComponent),
-      },
-      {
-        path: 'users',
-        resolve: {
-          title: getTitleResolver('nav_users', true),
-        },
-        loadComponent: () =>
-          import('./components/users/users.component').then(({ UsersComponent }) => UsersComponent),
-      },
-    ],
-    canActivateChild: [
-      (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-        inject(AuthGuard).canActivate(route, state),
     ],
   },
   {
-    path: 'invite/:inviteId',
-    loadComponent: () =>
-      import('./components/users/redeem-invite/redeem-invite.component').then(
-        ({ RedeemInviteComponent }) => RedeemInviteComponent
-      ),
-    canActivate: [
-      (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-        inject(AuthGuard).canActivate(route, state, true),
+    path: '',
+    canActivate: getCanActivate([
+      (_, state) => inject(AuthGuard).canActivate(state, { needsAdminRights: false }),
+    ]),
+    children: [
+      {
+        path: 'home',
+        resolve: {
+          title: getTitleResolver(undefined),
+        },
+        loadComponent: () =>
+          import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
+      },
     ],
   },
   {
@@ -78,11 +86,6 @@ export const routes: Routes = [
       import('./components/app/unauthorized/unauthorized.component').then(
         ({ UnauthorizedComponent }) => UnauthorizedComponent
       ),
-  },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: '/home',
   },
   {
     path: '**',

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinigolfFriday.Data;
 
@@ -10,9 +11,11 @@ using MinigolfFriday.Data;
 namespace MinigolfFriday.Migrations
 {
     [DbContext(typeof(MinigolfFridayContext))]
-    partial class MinigolfFridayContextModelSnapshot : ModelSnapshot
+    [Migration("20240203163345_Events")]
+    partial class Events
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -32,21 +35,6 @@ namespace MinigolfFriday.Migrations
                     b.ToTable("EventInstanceEntityUserEntity");
                 });
 
-            modelBuilder.Entity("EventInstancePreconfigurationEntityUserEntity", b =>
-                {
-                    b.Property<Guid>("EventInstancePreconfigurationsId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("PlayersId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("EventInstancePreconfigurationsId", "PlayersId");
-
-                    b.HasIndex("PlayersId");
-
-                    b.ToTable("EventInstancePreconfigurationEntityUserEntity");
-                });
-
             modelBuilder.Entity("MinigolfFriday.Data.EventEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -54,9 +42,6 @@ namespace MinigolfFriday.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset>("RegistrationDeadline")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -82,22 +67,6 @@ namespace MinigolfFriday.Migrations
                     b.HasIndex("EventTimeslotId");
 
                     b.ToTable("EventInstances");
-                });
-
-            modelBuilder.Entity("MinigolfFriday.Data.EventInstancePreconfigurationEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("EventTimeslotId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventTimeslotId");
-
-                    b.ToTable("EventInstancePreconfigurations");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.EventPlayerRegistrationEntity", b =>
@@ -193,6 +162,28 @@ namespace MinigolfFriday.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("MinigolfFriday.UserInviteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserInvites");
+                });
+
             modelBuilder.Entity("UserEntityUserEntity", b =>
                 {
                     b.Property<Guid>("AvoidId")
@@ -238,21 +229,6 @@ namespace MinigolfFriday.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EventInstancePreconfigurationEntityUserEntity", b =>
-                {
-                    b.HasOne("MinigolfFriday.Data.EventInstancePreconfigurationEntity", null)
-                        .WithMany()
-                        .HasForeignKey("EventInstancePreconfigurationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MinigolfFriday.UserEntity", null)
-                        .WithMany()
-                        .HasForeignKey("PlayersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("MinigolfFriday.Data.EventInstanceEntity", b =>
                 {
                     b.HasOne("MinigolfFriday.Data.EventTimeslotEntity", "EventTimeSlot")
@@ -264,21 +240,10 @@ namespace MinigolfFriday.Migrations
                     b.Navigation("EventTimeSlot");
                 });
 
-            modelBuilder.Entity("MinigolfFriday.Data.EventInstancePreconfigurationEntity", b =>
-                {
-                    b.HasOne("MinigolfFriday.Data.EventTimeslotEntity", "EventTimeSlot")
-                        .WithMany("Preconfigurations")
-                        .HasForeignKey("EventTimeslotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EventTimeSlot");
-                });
-
             modelBuilder.Entity("MinigolfFriday.Data.EventPlayerRegistrationEntity", b =>
                 {
                     b.HasOne("MinigolfFriday.Data.EventTimeslotEntity", "EventTimeslot")
-                        .WithMany("Registrations")
+                        .WithMany()
                         .HasForeignKey("EventTimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -319,6 +284,15 @@ namespace MinigolfFriday.Migrations
                     b.Navigation("Map");
                 });
 
+            modelBuilder.Entity("MinigolfFriday.UserInviteEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("UserEntityUserEntity", b =>
                 {
                     b.HasOne("MinigolfFriday.UserEntity", null)
@@ -357,10 +331,6 @@ namespace MinigolfFriday.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.EventTimeslotEntity", b =>
                 {
                     b.Navigation("Instances");
-
-                    b.Navigation("Preconfigurations");
-
-                    b.Navigation("Registrations");
                 });
 #pragma warning restore 612, 618
         }

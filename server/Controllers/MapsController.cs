@@ -15,7 +15,7 @@ public record AddMapResponse(string Id);
 
 public record UpdateMapRequest(MinigolfMap Map);
 
-[Authorize(Policy = Policies.Admin)]
+[Authorize(Roles = Roles.Admin)]
 [Route("api/maps")]
 public class MapsController(MinigolfFridayContext dbContext) : Controller
 {

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,16 +52,19 @@ builder
 builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
 builder.Services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName);
 
-builder.Services.AddControllers();
-builder.Services.AddDbContext<MinigolfFridayContext>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder
     .Services
-    .AddAuthorization(options =>
+    .AddControllers()
+    .AddJsonOptions(options =>
     {
-        options.AddPolicy(Policies.Admin, policy => policy.RequireRole(Roles.Admin));
-        options.AddPolicy(Policies.Player, policy => policy.RequireRole(Roles.Player));
+        options
+            .JsonSerializerOptions
+            .Converters
+            .Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, false));
     });
+builder.Services.AddDbContext<MinigolfFridayContext>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+builder.Services.AddAuthorization();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.AddHttpClient();
 
@@ -70,8 +75,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-builder.Services.AddScoped<IValidator<Player>, PlayerValidator>();
-builder.Services.AddScoped<IValidator<PlayerPreferences>, PlayerPreferencesValidator>();
 builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateEmailRequest>, UpdateEmailRequestValidator>();

@@ -4,6 +4,14 @@
     "developedBy": "Entwickelt mit ❤️ von",
     "basedOn": "Basierend auf der Excel-App von"
   },
+  "login": {
+    "login": "Anmelden",
+    "loginTo": "An {{appName}} anmelden",
+    "loginWith": "Mit {{provider}} anmelden",
+    "registerTo": "Bei {{appName}} registrieren",
+    "register": "Registrieren",
+    "confirmPassword": "Passwort bestätigen"
+  },
   "nav": {
     "home": "Startseite",
     "manage": "Verwalten",
@@ -86,10 +94,19 @@
     "cancel": "Abbrechen",
     "save": "Speichern",
     "delete": "Löschen",
-    "ok": "OK"
+    "ok": "OK",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "name": "Name",
+    "or": "oder"
   },
-  "loginTo": "An {{appName}} anmelden",
-  "loginWith": "Mit {{provider}} anmelden",
+  "validation": {
+    "required": "Darf nicht leer sein.",
+    "minlength": "Darf nicht kürzer als {{requiredLength}} Zeichen sein.",
+    "maxlength": "Darf nicht länger als {{requiredLength}} Zeichen sein.",
+    "passwordsEqual": "Die Passwörter müssen übereinstimmen.",
+    "email": "Ungültige E-Mail-Adresse."
+  },
   "switchLanguage": "Sprache wechseln",
   "switchTheme": "Thema wechseln"
 }

@@ -1,14 +1,14 @@
-@if (isLoggedIn()) {
+<header class="p-4">
   <app-menu />
-}
+</header>
 
-<main class="grow mx-4 min-h-0">
-  @if (authInit()) {
-    <router-outlet />
-  }
+<main class="grow px-4 min-h-0">
+  <router-outlet />
 </main>
 
-<app-footer />
+<footer>
+  <app-footer />
+</footer>
 
 <!-- Overlay registrations -->
 <p-toast />

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using MinigolfFriday.Data;
 
 namespace MinigolfFriday;
 
@@ -14,6 +15,19 @@ public class UserEntity
     public string? Password { get; set; }
     public required string Name { get; set; }
     public bool IsAdmin { get; set; }
+
+    public List<UserEntity> Avoid { get; set; } = [];
+    public List<UserEntity> Prefer { get; set; } = [];
+
+    [InverseProperty(nameof(Avoid))]
+    public List<UserEntity> AvoidedBy { get; set; } = [];
+
+    [InverseProperty(nameof(Prefer))]
+    public List<UserEntity> PreferredBy { get; set; } = [];
+
+    public List<EventInstancePreconfigurationEntity> EventInstancePreconfigurations { get; set; } =
+        [];
+    public List<EventInstanceEntity> EventInstances { get; set; } = [];
 
     public static UserEntity ById(Guid Id)
     {

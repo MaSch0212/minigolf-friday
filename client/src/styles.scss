@@ -131,19 +131,35 @@
     }
   }
 
-  .p-inputtext {
+  .p-card-content {
+    padding: 0;
+  }
+  .p-card-title + .p-card-content {
+    padding-top: 1.25rem;
+  }
+  .p-card-footer + .p-card-content {
+    padding-bottom: 1.25rem;
+  }
+
+  .p-inputtext,
+  .p-password {
     width: 100%;
+  }
 
-    &.ng-invalid.ng-touched {
-      @apply border-danger;
+  .p-inputtext.ng-invalid.ng-touched,
+  .p-inputwrapper.ng-invalid.ng-touched input {
+    @apply border-danger;
 
-      &:enabled:focus {
-        box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--danger-color) 50%, transparent);
-      }
+    &:enabled:focus {
+      box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--danger-color) 50%, transparent);
     }
   }
 
   .p-float-label {
+    label {
+      top: 1.5rem;
+    }
+
     input,
     textarea,
     .p-inputwrapper {
@@ -166,8 +182,15 @@
       }
     }
 
-    > .ng-invalid.ng-touched + label {
-      @apply text-danger;
+    > .ng-invalid.ng-touched {
+      + label,
+      + label + small {
+        @apply text-danger;
+      }
+    }
+
+    > :not(.ng-invalid.ng-touched) + label + small.error {
+      display: none;
     }
 
     &.required > label::after {

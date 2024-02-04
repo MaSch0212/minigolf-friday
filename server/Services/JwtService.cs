@@ -20,16 +20,17 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.Name),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Name, user.Name),
             new(CustomClaimNames.LoginType, user.GetLoginType().ToString()),
-            new(ClaimTypes.Role, user.IsAdmin ? Roles.Admin : Roles.Player)
+            new("role", user.IsAdmin ? Roles.Admin : Roles.Player),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         if (user.FacebookId is not null)
             claims.Add(new(CustomClaimNames.FacebookId, user.FacebookId));
         if (user.Email is not null)
-            claims.Add(new(ClaimTypes.Email, user.Email));
+            claims.Add(new(JwtRegisteredClaimNames.Email, user.Email));
 
         var token = new JwtSecurityToken(
             jwtOptions.Issuer,

@@ -3,20 +3,21 @@ using System.Security.Claims;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Services;
 
 namespace MinigolfFriday;
 
-public record GetAccessTokenResponse(string Token, DateTime ExpiresAt, bool IsAdmin);
+public record GetAccessTokenResponse(string Token, DateTime ExpiresAt, User User);
 
 public record LoginRequest(string Email, string Password);
 
-public record LoginResponse(string Token, DateTime ExpiresAt, bool IsAdmin);
+public record LoginResponse(string Token, DateTime ExpiresAt, User User);
 
 public record RegisterRequest(string Email, string Name, string Password);
 
-public record RegisterResponse(string Token, DateTime ExpiresAt, bool IsAdmin);
+public record RegisterResponse(string Token, DateTime ExpiresAt, User User);
 
 public record ChangePasswordRequest(string OldPassword, string NewPassword);
 
@@ -53,13 +54,7 @@ public class AuthController(
         UserEntity? user = null;
         if (User.Identity?.IsAuthenticated == true)
         {
-            var loginType = User.Claims
-                .FirstOrDefault(x => x.Type == CustomClaimNames.LoginType)
-                ?.Value;
-            if (!Enum.TryParse<UserLoginType>(loginType, out var parsedLoginType))
-                return Unauthorized();
-
-            user = parsedLoginType switch
+            user = User.GetLoginType() switch
             {
                 UserLoginType.Facebook
                     => await _userService.GetUserByFacebookIdAsync(
@@ -67,7 +62,7 @@ public class AuthController(
                     ),
                 UserLoginType.Email
                     => await _userService.GetUserByEmailAsync(
-                        User.Claims.First(x => x.Type == ClaimTypes.Email).Value
+                        User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value
                     ),
                 _ => null
             };
@@ -103,7 +98,7 @@ public class AuthController(
 
         var token = _jwtService.GenerateToken(user);
         return Ok(
-            new GetAccessTokenResponse(_jwtService.WriteToken(token), token.ValidTo, user.IsAdmin)
+            new GetAccessTokenResponse(_jwtService.WriteToken(token), token.ValidTo, user.ToModel())
         );
     }
 
@@ -116,7 +111,7 @@ public class AuthController(
             return Unauthorized();
 
         var token = _jwtService.GenerateToken(user);
-        return Ok(new LoginResponse(_jwtService.WriteToken(token), token.ValidTo, user.IsAdmin));
+        return Ok(new LoginResponse(_jwtService.WriteToken(token), token.ValidTo, user.ToModel()));
     }
 
     [HttpPost("register")]
@@ -145,7 +140,7 @@ public class AuthController(
             new RegisterResponse(
                 _jwtService.WriteToken(token),
                 token.ValidTo,
-                addUserResult.Value.IsAdmin
+                addUserResult.Value.ToModel()
             )
         );
     }
@@ -153,12 +148,15 @@ public class AuthController(
     [HttpPost("change-password")]
     public async ValueTask<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
+        if (User.GetLoginType() == UserLoginType.Facebook)
+            return BadRequest("Cannot change password for facebook users.");
+
         var validationResult = await _changePasswordRequestValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
         var user = await _userService.GetUserByEmailAsync(
-            User.Claims.First(x => x.Type == ClaimTypes.Email).Value
+            User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value
         );
         if (user is null)
             return Unauthorized();
@@ -174,12 +172,15 @@ public class AuthController(
     [HttpPost("update-email")]
     public async ValueTask<IActionResult> UpdateEmail([FromBody] UpdateEmailRequest request)
     {
+        if (User.GetLoginType() == UserLoginType.Facebook)
+            return BadRequest("Cannot change E-Mail for facebook users.");
+
         var validationResult = await _updateEmailRequestValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
         var user = await _userService.GetUserByEmailAsync(
-            User.Claims.First(x => x.Type == ClaimTypes.Email).Value
+            User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value
         );
         if (user is null)
             return Unauthorized();
@@ -192,6 +193,32 @@ public class AuthController(
             return Conflict("Email already exists.");
 
         user.Email = request.NewEmail;
+        await _dbContext.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPost("delete-account")]
+    public async ValueTask<IActionResult> DeleteAccount()
+    {
+        var user = await _userService.GetUserByEmailAsync(
+            User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value
+        );
+        if (user is null)
+            return Unauthorized();
+
+        if (user.IsAdmin)
+        {
+            var adminCount = await _dbContext.Users.CountAsync(x => x.IsAdmin);
+            if (adminCount == 1)
+                return BadRequest("Cannot delete the last admin.");
+        }
+
+        user.Email = null;
+        user.Password = null;
+        user.Name = "[deleted]";
+        user.IsAdmin = false;
+        user.FacebookId = null;
+        _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync();
         return Ok();
     }

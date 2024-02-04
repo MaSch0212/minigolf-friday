@@ -86,6 +86,11 @@ export class TranslateService {
     });
   }
 
+  public translate(key: string) {
+    const path = key.split('_');
+    return (getDeepValue(this.translations(), path) as string) ?? key;
+  }
+
   public setLanguage(language: string | null) {
     setLocalStorage(langLocalStorageKey, language);
     this._language.set(language);

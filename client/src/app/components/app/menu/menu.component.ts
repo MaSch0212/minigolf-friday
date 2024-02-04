@@ -2,7 +2,10 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { selectAppTitle } from '../../../+state/app';
 import { AuthService } from '../../../services/auth.service';
@@ -13,7 +16,7 @@ import { chainSignals } from '../../../utils/signal.utils';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, MenubarModule],
+  imports: [ButtonModule, CommonModule, MenubarModule, MenuModule, TooltipModule],
   templateUrl: './menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -29,12 +32,15 @@ export class MenuComponent {
       title().translate ? this.translations[title().title as TranslationKey]() : title().title
     )
   );
+  protected isLoggedIn = this._authService.isAuthorized;
+  protected isAdmin = computed(() => this._authService.user()?.isAdmin === true);
 
   protected menuItems = computed<MenuItem[]>(() => [
     {
       label: this.translations.nav_home(),
       icon: 'i-[mdi--home]',
       routerLink: '/home',
+      visible: this.isLoggedIn(),
     },
     {
       label: this.translations.nav_manage(),
@@ -56,6 +62,12 @@ export class MenuComponent {
           routerLink: '/manage/users',
         },
       ],
+      visible: this.isAdmin(),
+    },
+    {
+      separator: true,
+      visible: !this.isAdmin(),
+      state: { grow: true },
     },
     {
       label: this.translations.nav_settings(),
@@ -73,13 +85,18 @@ export class MenuComponent {
         },
         {
           separator: true,
+          visible: this.isLoggedIn(),
         },
         {
           label: this.translations.settings_signOut(),
           icon: 'i-[mdi--logout]',
           command: () => this._authService.signOut(),
+          visible: this.isLoggedIn(),
         },
       ],
+      state: {
+        expand: true,
+      },
     },
   ]);
 }
