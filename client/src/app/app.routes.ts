@@ -18,6 +18,32 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: getCanActivate([
+      (_, state) => inject(AuthGuard).canActivate(state, { needsAdminRights: false }),
+    ]),
+    children: [
+      {
+        path: 'home',
+        resolve: {
+          title: getTitleResolver(undefined),
+        },
+        loadComponent: () =>
+          import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
+      },
+      {
+        path: 'events/:id',
+        resolve: {
+          title: getTitleResolver(undefined),
+        },
+        loadComponent: () =>
+          import('./components/events/event/event.component').then(
+            ({ EventComponent }) => EventComponent
+          ),
+      },
+    ],
+  },
+  {
+    path: '',
+    canActivate: getCanActivate([
       (_, state) => inject(AuthGuard).canActivate(state, { needsAdminRights: true }),
     ]),
     children: [
@@ -27,16 +53,6 @@ export const routes: Routes = [
           title: getTitleResolver('nav_manage', true),
         },
         children: [
-          {
-            path: 'players',
-            resolve: {
-              title: getTitleResolver('nav_players', true),
-            },
-            loadComponent: () =>
-              import('./components/players/players.component').then(
-                ({ PlayersComponent }) => PlayersComponent
-              ),
-          },
           {
             path: 'maps',
             resolve: {
@@ -55,23 +71,37 @@ export const routes: Routes = [
                 ({ UsersComponent }) => UsersComponent
               ),
           },
+          {
+            path: 'events',
+            resolve: {
+              title: getTitleResolver('nav_events', true),
+            },
+            loadComponent: () =>
+              import('./components/events/events.component').then(
+                ({ EventsComponent }) => EventsComponent
+              ),
+          },
+          {
+            path: 'events/:id',
+            resolve: {
+              title: getTitleResolver('nav_event', true),
+            },
+            loadComponent: () =>
+              import('./components/events/event-details/event-details.component').then(
+                ({ EventDetailsComponent }) => EventDetailsComponent
+              ),
+          },
+          {
+            path: 'events/:eventId/timeslots/:timeslotId',
+            resolve: {
+              title: getTitleResolver('nav_eventTimeslot', true),
+            },
+            loadComponent: () =>
+              import('./components/events/event-timeslot/event-timeslot.component').then(
+                ({ EventTimeslotComponent }) => EventTimeslotComponent
+              ),
+          },
         ],
-      },
-    ],
-  },
-  {
-    path: '',
-    canActivate: getCanActivate([
-      (_, state) => inject(AuthGuard).canActivate(state, { needsAdminRights: false }),
-    ]),
-    children: [
-      {
-        path: 'home',
-        resolve: {
-          title: getTitleResolver(undefined),
-        },
-        loadComponent: () =>
-          import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
       },
     ],
   },

@@ -4,6 +4,7 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -12,7 +13,6 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { DataViewModule } from 'primeng/dataview';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -46,7 +46,6 @@ function mapMatchesFilter(
   imports: [
     ButtonModule,
     CommonModule,
-    DataViewModule,
     FormsModule,
     InputTextModule,
     MessagesModule,
@@ -79,6 +78,7 @@ export class MapsComponent implements OnInit {
         .pipe(ofType(deleteMapFailureAction))
         .subscribe(({ map }) => this.onMapDeletionFailed(map))
     );
+    effect(() => console.log(this.maps()));
   }
 
   public ngOnInit(): void {

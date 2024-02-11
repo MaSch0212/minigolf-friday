@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.0.3
     version: 10.0.3
   primeng:
-    specifier: 17.5.0
-    version: 17.5.0(@angular/common@17.1.2)(@angular/core@17.1.2)(@angular/forms@17.1.2)(rxjs@7.8.1)(zone.js@0.14.3)
+    specifier: 17.6.0
+    version: 17.6.0(@angular/common@17.1.2)(@angular/core@17.1.2)(@angular/forms@17.1.2)(rxjs@7.8.1)(zone.js@0.14.3)
   rxjs:
     specifier: ~7.8.1
     version: 7.8.1
@@ -8782,8 +8782,8 @@ packages:
       react-is: 18.2.0
     dev: true
 
-  /primeng@17.5.0(@angular/common@17.1.2)(@angular/core@17.1.2)(@angular/forms@17.1.2)(rxjs@7.8.1)(zone.js@0.14.3):
-    resolution: {integrity: sha512-I5nH+KLi1gOiBXd8TlFOoqy+HVnBXnbLOo7+zvG5yNaLIEjGirHm1c+fi73imbyHGa0L0VtZeNNZDsS7poScrw==}
+  /primeng@17.6.0(@angular/common@17.1.2)(@angular/core@17.1.2)(@angular/forms@17.1.2)(rxjs@7.8.1)(zone.js@0.14.3):
+    resolution: {integrity: sha512-Q9wEbTE1D+Tt0dtCg1lTt7JcV5klQhRByciU67SySYNaDQDutKUKtvMs2AUF5iZAbh8mp1GHzElJWzrXa+TuGw==}
     peerDependencies:
       '@angular/common': ^17.0.0
       '@angular/core': ^17.0.0

@@ -142,7 +142,8 @@
   }
 
   .p-inputtext,
-  .p-password {
+  .p-password,
+  .p-calendar {
     width: 100%;
   }
 
@@ -156,8 +157,14 @@
   }
 
   .p-float-label {
+    @apply flex flex-col gap-1;
+
     label {
       top: 1.5rem;
+    }
+
+    small {
+      @apply px-3;
     }
 
     input,
@@ -175,7 +182,7 @@
     .p-inputwrapper-focus,
     .p-inputwrapper-filled {
       ~ label {
-        top: 3px;
+        top: 2px;
         padding: 0 4px;
         left: 8px;
         background: linear-gradient(180deg, var(--surface-a) 50%, var(--surface-b) 50%);

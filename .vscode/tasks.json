@@ -28,6 +28,17 @@
       "group": {
         "kind": "build"
       }
+    },
+    {
+      "label": "🚀 Start Client (Stubbed)",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/client"
+      },
+      "command": "pnpm run start:stub",
+      "group": {
+        "kind": "build"
+      }
     }
   ]
 }

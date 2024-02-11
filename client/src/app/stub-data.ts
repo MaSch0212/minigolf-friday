@@ -1,128 +1,158 @@
+import { Draft } from 'immer';
+
+import { MinigolfEvent } from './models/event';
 import { MinigolfMap } from './models/minigolf-map';
-import { Player } from './models/player';
+import { User } from './models/user';
+import { createTime } from './utils/date.utils';
 
-export const players: Player[] = [
+let nextId = 1;
+export function getId() {
+  return `${nextId++}`;
+}
+
+// #region Users
+export const users: Draft<User>[] = [
   {
-    id: '1',
-    alias: 'P1',
-    name: 'Player One',
-    facebookId: 'p1',
-    whatsAppNumber: null,
-    preferences: {
-      avoid: [],
-      prefer: [],
-    },
+    id: getId(),
+    isAdmin: true,
+    loginType: 'facebook',
+    name: 'Admin User',
   },
   {
-    id: '2',
-    alias: 'Cool Stuff',
-    name: 'Player Two',
-    facebookId: '123456',
-    whatsAppNumber: null,
-    preferences: {
-      avoid: ['3', '4'],
-      prefer: [],
-    },
+    id: getId(),
+    isAdmin: false,
+    loginType: 'facebook',
+    name: 'Normal User',
   },
   {
-    id: '3',
-    alias: 'Wow!!!',
-    name: 'Player Three',
-    facebookId: 'player.three',
-    whatsAppNumber: null,
-    preferences: {
-      avoid: [],
-      prefer: [],
-    },
+    id: getId(),
+    isAdmin: false,
+    loginType: 'email',
+    name: 'Email User',
   },
   {
-    id: '4',
-    alias: null,
-    name: 'Player Four',
-    facebookId: 'kgljdfhlgkjsh',
-    whatsAppNumber: null,
-    preferences: {
-      avoid: ['5'],
-      prefer: [],
-    },
+    id: getId(),
+    isAdmin: false,
+    loginType: 'email',
+    name: 'Another Email User',
   },
   {
-    id: '5',
-    alias: null,
-    name: 'Player Five',
-    facebookId: 'fljksdh',
-    whatsAppNumber: null,
-    preferences: {
-      avoid: [],
-      prefer: [],
-    },
+    id: getId(),
+    isAdmin: false,
+    loginType: 'email',
+    name: 'Yet Another Email User',
   },
   {
-    id: '6',
-    alias: 'Player 6',
-    name: 'Player Six',
-    facebookId: null,
-    whatsAppNumber: '123456789',
-    preferences: {
-      avoid: [],
-      prefer: [],
-    },
-  },
-  {
-    id: '7',
-    alias: 'Invalid Player',
-    name: 'Player Seven',
-    facebookId: null,
-    whatsAppNumber: null,
-    preferences: {
-      avoid: [],
-      prefer: [],
-    },
+    id: getId(),
+    isAdmin: false,
+    loginType: 'email',
+    name: 'Last Email User',
   },
 ];
+// #endregion
 
-// Maps from Walkabout Minigolf
-export const maps: MinigolfMap[] = [
-  { id: '1', name: 'Tourist Trap leicht' },
-  { id: '2', name: 'Tourist Trap hart' },
-  { id: '3', name: 'Cherry Blossom leicht' },
-  { id: '4', name: 'Cherry Blossom hart' },
-  { id: '5', name: 'Seagull Stacks leicht' },
-  { id: '6', name: 'Seagull Stacks hart' },
-  { id: '7', name: 'Arizona Modern leicht' },
-  { id: '8', name: 'Arizona Modern hart' },
-  { id: '9', name: 'Original Gothic leicht' },
-  { id: '10', name: 'Original Gothic hart' },
-  { id: '11', name: 'Bogeys Bonanza leicht' },
-  { id: '12', name: 'Bogeys Bonanza hart' },
-  { id: '13', name: 'Tethys Station leicht' },
-  { id: '14', name: 'Tethys Station hart' },
-  { id: '15', name: 'Quixote Valley leicht' },
-  { id: '16', name: 'Quixote Valley hart' },
-  { id: '17', name: 'Sweetopia leicht' },
-  { id: '18', name: 'Sweetopia hart' },
-  { id: '19', name: 'Upside Town leicht' },
-  { id: '20', name: 'Upside Town hart' },
-  { id: '21', name: 'Labyrinth leicht' },
-  { id: '22', name: 'Labyrinth hart' },
-  { id: '23', name: 'Myst leicht' },
-  { id: '24', name: 'Myst hart' },
-  { id: '25', name: 'Laser Lair leicht' },
-  { id: '26', name: 'Laser Lair hart' },
-  { id: '27', name: 'Alfheim leicht' },
-  { id: '28', name: 'Alfheim hart' },
-  { id: '29', name: "Widow's Walkabout leicht" },
-  { id: '30', name: "Widow's Walkabout hart" },
-  { id: '31', name: 'Shangri-La leicht' },
-  { id: '32', name: 'Shangri-La hart' },
-  { id: '33', name: 'El Dorado leicht' },
-  { id: '34', name: 'El Dorado hart' },
-  { id: '35', name: 'Atlantis leicht' },
-  { id: '36', name: 'Atlantis hart' },
-  { id: '37', name: 'Temple at Zerzura leicht' },
-  { id: '38', name: 'Temple at Zerzura hart' },
-  { id: '39', name: '20,000 Leagues leicht' },
-  { id: '40', name: '20,000 Leagues hart' },
-  { id: '41', name: 'Journey leicht' },
-  { id: '42', name: 'Journey hart' },
+// #region Maps
+export const maps: Draft<MinigolfMap>[] = [
+  { id: getId(), name: 'Tourist Trap leicht' },
+  { id: getId(), name: 'Tourist Trap hart' },
+  { id: getId(), name: 'Cherry Blossom leicht' },
+  { id: getId(), name: 'Cherry Blossom hart' },
+  { id: getId(), name: 'Seagull Stacks leicht' },
+  { id: getId(), name: 'Seagull Stacks hart' },
+  { id: getId(), name: 'Arizona Modern leicht' },
+  { id: getId(), name: 'Arizona Modern hart' },
+  { id: getId(), name: 'Original Gothic leicht' },
+  { id: getId(), name: 'Original Gothic hart' },
+  { id: getId(), name: 'Bogeys Bonanza leicht' },
+  { id: getId(), name: 'Bogeys Bonanza hart' },
+  { id: getId(), name: 'Tethys Station leicht' },
+  { id: getId(), name: 'Tethys Station hart' },
+  { id: getId(), name: 'Quixote Valley leicht' },
+  { id: getId(), name: 'Quixote Valley hart' },
+  { id: getId(), name: 'Sweetopia leicht' },
+  { id: getId(), name: 'Sweetopia hart' },
+  { id: getId(), name: 'Upside Town leicht' },
+  { id: getId(), name: 'Upside Town hart' },
+  { id: getId(), name: 'Labyrinth leicht' },
+  { id: getId(), name: 'Labyrinth hart' },
+  { id: getId(), name: 'Myst leicht' },
+  { id: getId(), name: 'Myst hart' },
+  { id: getId(), name: 'Laser Lair leicht' },
+  { id: getId(), name: 'Laser Lair hart' },
+  { id: getId(), name: 'Alfheim leicht' },
+  { id: getId(), name: 'Alfheim hart' },
+  { id: getId(), name: "Widow's Walkabout leicht" },
+  { id: getId(), name: "Widow's Walkabout hart" },
+  { id: getId(), name: 'Shangri-La leicht' },
+  { id: getId(), name: 'Shangri-La hart' },
+  { id: getId(), name: 'El Dorado leicht' },
+  { id: getId(), name: 'El Dorado hart' },
+  { id: getId(), name: 'Atlantis leicht' },
+  { id: getId(), name: 'Atlantis hart' },
+  { id: getId(), name: 'Temple at Zerzura leicht' },
+  { id: getId(), name: 'Temple at Zerzura hart' },
+  { id: getId(), name: '20,000 Leagues leicht' },
+  { id: getId(), name: '20,000 Leagues hart' },
+  { id: getId(), name: 'Journey leicht' },
+  { id: getId(), name: 'Journey hart' },
 ];
+// #endregion
+
+// #region Events
+export const events: Draft<MinigolfEvent>[] = [
+  {
+    id: getId(),
+    date: new Date('2024-02-09'),
+    registrationDeadline: new Date('2024-02-09T18:00:00Z'),
+    timeslots: [
+      {
+        id: getId(),
+        time: createTime(20, 0),
+        mapId: maps[0].id,
+        isFallbackAllowed: false,
+        preconfigurations: [
+          {
+            id: getId(),
+            playerIds: [users[0].id, users[1].id],
+          },
+        ],
+        playerIds: [],
+      },
+      {
+        id: getId(),
+        time: createTime(21, 0),
+        mapId: maps[1].id,
+        isFallbackAllowed: true,
+        preconfigurations: [],
+        playerIds: [],
+      },
+      {
+        id: getId(),
+        time: createTime(22, 0),
+        mapId: maps[2].id,
+        isFallbackAllowed: false,
+        preconfigurations: [],
+        playerIds: [],
+      },
+    ],
+  },
+  {
+    id: getId(),
+    date: new Date('2024-01-26'),
+    registrationDeadline: new Date('2024-01-26T18:00:00Z'),
+    timeslots: [],
+  },
+  {
+    id: getId(),
+    date: new Date('2024-02-02'),
+    registrationDeadline: new Date('2024-02-02T18:00:00Z'),
+    timeslots: [],
+  },
+  {
+    id: getId(),
+    date: new Date('2024-01-19'),
+    registrationDeadline: new Date('2024-01-19T18:00:00Z'),
+    timeslots: [],
+  },
+];
+// #endregion

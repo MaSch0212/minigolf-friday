@@ -9,6 +9,7 @@ using MinigolfFriday;
 using MinigolfFriday.Data;
 using MinigolfFriday.Middlewares;
 using MinigolfFriday.Models;
+using MinigolfFriday.Serialization;
 using MinigolfFriday.Services;
 using MinigolfFriday.Validators;
 
@@ -57,10 +58,10 @@ builder
     .AddControllers()
     .AddJsonOptions(options =>
     {
-        options
-            .JsonSerializerOptions
-            .Converters
-            .Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, false));
+        var converters = options.JsonSerializerOptions.Converters;
+        converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, false));
+        converters.Add(new DateOnlyJsonConverter());
+        converters.Add(new TimeOnlyJsonConverter());
     });
 builder.Services.AddDbContext<MinigolfFridayContext>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();

@@ -29,9 +29,12 @@
       />
     </div>
     <div class="overflow-auto grow">
-      <p-dataView [value]="maps()" [trackBy]="trackByMapId">
-        <ng-template let-map pTemplate="listItem">
-          <div class="flex flex-row items-center p-2 pl-4 gap-2 min-w-0">
+      <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
+        @for (map of maps(); track map.id; let index = $index) {
+          <div
+            class="flex flex-row items-center p-2 pl-4 gap-2 min-w-0 border-solid border-surface-d border-0"
+            [class.border-t-[1px]]="index > 0"
+          >
             <app-map-item [map]="map" class="grow min-w-0" />
             <p-button
               icon="i-[mdi--pencil-outline]"
@@ -49,8 +52,8 @@
               (onClick)="deleteMap(map)"
             />
           </div>
-        </ng-template>
-      </p-dataView>
+        }
+      </div>
     </div>
   </div>
 }

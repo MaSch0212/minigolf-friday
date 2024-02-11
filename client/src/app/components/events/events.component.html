@@ -1,0 +1,50 @@
+@if (events().length === 0 && isBusy()) {
+  <p-progressSpinner class="m-8" />
+} @else {
+  <div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
+    @if (hasFailed()) {
+      <p-messages severity="error">
+        <ng-template pTemplate>
+          <span class="i-[mdi--close-circle-outline] mr-2"></span>
+          <span
+            >{{ translations.events_error_load() }} {{ translations.shared_tryAgainLater() }}</span
+          >
+          <p-button
+            pTooltip="retry"
+            [text]="true"
+            icon="i-[mdi--reload]"
+            (onClick)="loadNextPage()"
+          />
+        </ng-template>
+      </p-messages>
+    }
+    @if (events().length > 0 || !hasFailed()) {
+      <p-button
+        [label]="translations.shared_add()"
+        icon="i-[mdi--plus]"
+        (onClick)="createDialog.open()"
+      ></p-button>
+    }
+    @if (events().length > 0) {
+      <div class="overflow-auto grow flex flex-col">
+        <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
+          @for (event of events(); track event.id; let index = $index) {
+            <a
+              class="block leading-8 min-w-0 px-4 py-2 truncate border-solid border-surface-d border-0 hover:bg-surface-c no-underline text-text-color"
+              [class.border-t-[1px]]="index > 0"
+              [routerLink]="[event.id]"
+              pRipple
+            >
+              {{ event.date | date: 'fullDate' : undefined : locale() }}
+            </a>
+          }
+        </div>
+        @if (isBusy()) {
+          <p-progressSpinner class="m-4 self-center" styleClass="w-16 h-16" strokeWidth="4" />
+        }
+      </div>
+    }
+  </div>
+}
+
+<app-create-event-dialog #createDialog />

@@ -1,0 +1,30 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="form">
+  @if (hasFailed()) {
+    <p-messages severity="error">
+      <ng-template pTemplate>
+        <span class="i-[mdi--close-circle-outline] mr-2"></span>
+        <span
+          >{{ translations.events_createDialog_error_save() }}
+          {{ translations.shared_tryAgainLater() }}</span
+        >
+      </ng-template>
+    </p-messages>
+  }
+
+  <span class="p-float-label required">
+    <p-calendar formControlName="date" appendTo="body"></p-calendar>
+    <label>{{ translations.events_date() }}</label>
+    <small [formControlErrors]="form.controls.date.errors"></small>
+  </span>
+
+  <span class="p-float-label required">
+    <p-calendar
+      formControlName="registrationDeadline"
+      [showTime]="true"
+      [showSeconds]="false"
+      appendTo="body"
+    ></p-calendar>
+    <label>{{ translations.events_registrationDeadline() }}</label>
+    <small [formControlErrors]="form.controls.registrationDeadline.errors"></small>
+  </span>
+</div>

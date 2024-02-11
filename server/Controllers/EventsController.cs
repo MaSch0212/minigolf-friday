@@ -10,19 +10,21 @@ namespace MinigolfFriday.Controllers;
 
 public record GetAllEventsResponse(IEnumerable<Event> Events, int TotalAmount);
 
-public record AddEventRequest(DateTimeOffset Date, DateTimeOffset RegistrationDeadline);
+public record AddEventRequest(DateOnly Date, DateTimeOffset RegistrationDeadline);
 
 public record AddEventResponse(Event Event);
 
 public record GetEventResponse(Event Event);
 
-public record AddTimeSlotRequest(DateTimeOffset Time, string MapId, bool IsFallbackAllowed);
+public record AddTimeSlotRequest(TimeOnly Time, string MapId, bool IsFallbackAllowed);
 
 public record AddTimeSlotResponse(EventTimeslot Timeslot);
 
-public record BuildInstancesResponse(Dictionary<string, EventInstance[]> Instanzen);
+public record BuildInstancesResponse(Dictionary<string, EventInstance[]> Instances);
 
-public record UpdateTimeslotRequest(DateTimeOffset Time, string MapId);
+public record UpdateTimeslotRequest(TimeOnly Time, string MapId, bool IsFallbackAllowed);
+
+public record AddPreconfigResponse(EventInstancePreconfiguration Preconfig);
 
 public record AddPlayerToPreconfigRequest(string PlayerId);
 
@@ -53,7 +55,7 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         var entity = new EventEntity
         {
             Id = Guid.NewGuid(),
-            Date = DateOnly.FromDateTime(request.Date.DateTime),
+            Date = request.Date,
             RegistrationDeadline = request.RegistrationDeadline
         };
         _dbContext.Events.Add(entity);
@@ -101,7 +103,7 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         {
             Id = Guid.NewGuid(),
             EventId = @event.Id,
-            Time = TimeOnly.FromDateTime(request.Time.DateTime),
+            Time = request.Time,
             MapId = map.Id,
             IsFallbackAllowed = request.IsFallbackAllowed
         };
@@ -135,8 +137,9 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         if (map is null)
             return BadRequest("Invalid map id.");
 
-        timeslot.Time = TimeOnly.FromDateTime(request.Time.DateTime);
+        timeslot.Time = request.Time;
         timeslot.Map = map;
+        timeslot.IsFallbackAllowed = request.IsFallbackAllowed;
         await _dbContext.SaveChangesAsync();
         return Ok();
     }
@@ -158,10 +161,12 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         };
         timeslot.Preconfigurations.Add(preconfig);
         await _dbContext.SaveChangesAsync();
-        return Ok();
+        return Ok(
+            new AddPreconfigResponse(new EventInstancePreconfiguration(preconfig.Id.ToString(), []))
+        );
     }
 
-    [HttpDelete("events:preconfig/{id}")]
+    [HttpDelete("events:preconfigs/{id}")]
     public async ValueTask<IActionResult> RemovePreconfig(string id)
     {
         if (!Guid.TryParse(id, out var preconfigId))
@@ -176,7 +181,7 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         return Ok();
     }
 
-    [HttpPost("events:preconfig/{id}/players")]
+    [HttpPost("events:preconfigs/{id}/players")]
     public async ValueTask<IActionResult> AddPlayerToPreconfig(
         string id,
         [FromBody] AddPlayerToPreconfigRequest request
@@ -200,7 +205,7 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         return Ok();
     }
 
-    [HttpDelete("events:preconfig/{id}/players/{playerId}")]
+    [HttpDelete("events:preconfigs/{id}/players/{playerId}")]
     public async ValueTask<IActionResult> RemovePlayerFromPreconfig(string id, string playerId)
     {
         if (!Guid.TryParse(id, out var preconfigId))

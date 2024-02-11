@@ -1,0 +1,22 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [header]="translations.events_createDialog_title()"
+>
+  <app-event-form #form [actionState]="actionState()" (submitted)="onSubmit($event)" />
+
+  <ng-template pTemplate="footer">
+    <p-button
+      [disabled]="isBusy()"
+      [text]="true"
+      [label]="translations.shared_cancel()"
+      (onClick)="visible.set(false)"
+    />
+    <p-button
+      [disabled]="isBusy()"
+      [label]="translations.shared_save()"
+      (onClick)="form.submit()"
+    />
+  </ng-template>
+</p-dialog>

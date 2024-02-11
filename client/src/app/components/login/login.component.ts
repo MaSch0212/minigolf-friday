@@ -116,11 +116,14 @@ export class LoginComponent {
       { allowSignalWrites: true }
     );
 
-    effect(() => {
-      if (this._authService.isAuthorized()) {
-        this._router.navigate([this._returnUrl()]);
-      }
-    });
+    effect(
+      () => {
+        if (this._authService.isAuthorized()) {
+          this._router.navigate([this._returnUrl()]);
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   protected loginWithFacebook(): void {

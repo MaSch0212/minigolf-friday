@@ -15,7 +15,9 @@
   "nav": {
     "home": "Startseite",
     "manage": "Verwalten",
-    "players": "Spieler",
+    "events": "Veranstaltungen",
+    "event": "Veranstaltung",
+    "eventTimeslot": "Zeitslot",
     "maps": "Bahnen",
     "users": "Benutzer",
     "settings": "Einstellungen"
@@ -29,34 +31,35 @@
     "lightTheme": "Hell",
     "signOut": "Abmelden"
   },
-  "players": {
-    "loadError": "Fehler beim Laden der Spieler.",
-    "deleteDialog": {
-      "title": "Spieler löschen",
-      "text": "Möchtest du den Spieler \"{{name}}\" wirklich löschen?"
+  "events": {
+    "notFound": "Diese Veranstaltung existiert nicht.",
+    "backToEvents": "Zurück zu den Veranstaltungen",
+    "backToEvent": "Zurück zur Veranstaltung",
+    "dates": "Daten",
+    "date": "Datum",
+    "registrationDeadline": "Anmeldeschluss",
+    "timeslots": "Zeitslots",
+    "playerAmount": "{{amount}} Spieler",
+    "noTimeslots": "Keine Zeitslots verfügbar.",
+    "timeslot": {
+      "notFound": "Dieser Zeitslot existiert nicht.",
+      "preconfiguredGroups": "Vordefinierte Gruppen",
+      "noPreconfigurations": "Keine vordefinierten Gruppen verfügbar.",
+      "preconfigNoPlayers": "Keine Spieler",
+      "registeredPlayers": "Angemeldete Spieler",
+      "noPlayers": "Bis jetzt hat sich noch kein Spieler für diesen Zeitslot angemeldet.",
+      "unknownPlayer": "Unbekannter Spieler"
     },
-    "playerDeleted": {
-      "summary": "Spieler gelöscht",
-      "detail": "Der Spieler \"{{name}}\" wurde erfolgreich gelöscht."
-    },
-    "playerDeletionFailed": {
-      "summary": "Fehler beim Löschen des Spielers",
-      "detail": "Der Spieler \"{{name}}\" konnte nicht gelöscht werden."
-    },
-    "dialog": {
-      "addHeader": "Spieler hinzufügen",
-      "editHeader": "Spieler \"{{name}}\" bearbeiten",
-      "name": "Name",
-      "alias": "Alias",
-      "facebookId": "Facebook ID",
-      "whatsAppNumber": "WhatsApp Nummer",
-      "preferences": "Präferenzen",
-      "avoid": "Gemiedene Spieler",
-      "prefer": "Bevorzugte Spieler",
+    "createDialog": {
+      "title": "Veranstaltung erstellen",
       "error": {
-        "commRequired": "Mindestens eine Kommunikationsmöglichkeit muss angegeben werden.",
-        "save": "Fehler beim Speichern des Spielers."
+        "save": "Fehler beim Erstellen der Veranstaltung."
       }
+    },
+    "error": {
+      "load": "Fehler beim Laden der Veranstaltungen.",
+      "loadOne": "Fehler beim Laden der Veranstaltung.",
+      "addPlayerToPreconfig": "Fehler beim Hinzufügen des Spielers zur vordefinierten Gruppe."
     }
   },
   "maps": {
@@ -83,10 +86,9 @@
     }
   },
   "users": {
-    "inviteAdmin": "Admin einladen",
-    "inviteLink": "Einladungslink",
-    "copyInviteLink": "Einladungslink kopieren",
-    "linkExpires": "Der Link läuft am {{date}} um {{time}} ab."
+    "error": {
+      "load": "Fehler beim Laden der Benutzer."
+    }
   },
   "shared": {
     "tryAgainLater": "Bitte versuche es später erneut.",
@@ -98,7 +100,8 @@
     "email": "E-Mail",
     "password": "Passwort",
     "name": "Name",
-    "or": "oder"
+    "or": "oder",
+    "back": "Zurück"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

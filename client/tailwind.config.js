@@ -24,6 +24,8 @@ module.exports = {
       'surface-d': 'var(--surface-d)',
       'surface-e': 'var(--surface-e)',
       'surface-f': 'var(--surface-f)',
+      'text-color': 'var(--text-color)',
+      'text-color-secondary': 'var(--text-color-secondary)',
       primary: 'var(--primary-color)',
       danger: 'var(--danger-color)',
       'surface-0': 'var(--surface-0)',
