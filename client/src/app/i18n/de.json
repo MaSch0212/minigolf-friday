@@ -48,12 +48,21 @@
       "preconfigNoPlayers": "Keine Spieler",
       "registeredPlayers": "Angemeldete Spieler",
       "noPlayers": "Bis jetzt hat sich noch kein Spieler für diesen Zeitslot angemeldet.",
-      "unknownPlayer": "Unbekannter Spieler"
+      "unknownPlayer": "Unbekannter Spieler",
+      "time": "Startzeit",
+      "map": "Zu spielende Bahn",
+      "isFallbackAllowed": "Spieler können einen Ausweichzeitslot festlegen"
     },
     "createDialog": {
       "title": "Veranstaltung erstellen",
       "error": {
         "save": "Fehler beim Erstellen der Veranstaltung."
+      }
+    },
+    "createTimeslotDialog": {
+      "title": "Zeitslot erstellen",
+      "error": {
+        "save": "Fehler beim Erstellen des Zeitslots."
       }
     },
     "error": {
@@ -108,7 +117,9 @@
     "minlength": "Darf nicht kürzer als {{requiredLength}} Zeichen sein.",
     "maxlength": "Darf nicht länger als {{requiredLength}} Zeichen sein.",
     "passwordsEqual": "Die Passwörter müssen übereinstimmen.",
-    "email": "Ungültige E-Mail-Adresse."
+    "email": "Ungültige E-Mail-Adresse.",
+    "duplicateTimeslot": "Es existiert bereits ein Zeitslot für diese Zeit.",
+    "afterRegistrationDeadline": "Muss nach dem Anmeldeschluss liegen."
   },
   "switchLanguage": "Sprache wechseln",
   "switchTheme": "Thema wechseln"

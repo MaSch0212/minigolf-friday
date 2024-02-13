@@ -14,7 +14,9 @@ import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import { loadEventAction, selectEvent, selectEventsActionState } from '../../../+state/events';
 import { InterpolatePipe } from '../../../directives/interpolate.pipe';
 import { TranslateService } from '../../../services/translate.service';
+import { compareTimes } from '../../../utils/date.utils';
 import { selectSignal } from '../../../utils/ngrx.utils';
+import { CreateEventTimeslotComponent } from '../create-event-timeslot/create-event-timeslot.component';
 import { EventFormComponent } from '../event-form/event-form.component';
 
 @Component({
@@ -24,6 +26,7 @@ import { EventFormComponent } from '../event-form/event-form.component';
     ButtonModule,
     CardModule,
     CommonModule,
+    CreateEventTimeslotComponent,
     EventFormComponent,
     InterpolatePipe,
     MessagesModule,
@@ -49,6 +52,9 @@ export class EventDetailsComponent {
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState(), [404]));
   protected readonly event = selectSignal(computed(() => selectEvent(this.eventId())));
+  protected readonly timeslots = computed(() =>
+    [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
+  );
 
   constructor() {
     effect(

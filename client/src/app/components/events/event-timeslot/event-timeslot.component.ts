@@ -22,6 +22,7 @@ import {
   selectEventTimeslot,
   selectEventsActionState,
 } from '../../../+state/events';
+import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
 import { loadUsersAction, selectUsersActionState, userSelectors } from '../../../+state/users';
 import { loadUsersByIdAction } from '../../../+state/users/actions/load-users-by-id.action';
 import { InterpolatePipe } from '../../../directives/interpolate.pipe';
@@ -68,6 +69,7 @@ export class EventTimeslotComponent {
   private readonly actionState = selectSignal(selectEventsActionState('loadOne'));
   private readonly loadUsersActionState = selectSignal(selectUsersActionState('load'));
   private readonly loadUsersByIdActionState = selectSignal(selectUsersActionState('loadByIds'));
+  private readonly addPreconfigActionState = selectSignal(selectEventsActionState('addPreconfig'));
   private readonly addPlayerToPreconfigActionState = selectSignal(
     selectEventsActionState('addPlayerToPreconfig')
   );
@@ -81,6 +83,9 @@ export class EventTimeslotComponent {
     () =>
       hasActionFailed(this.loadUsersByIdActionState()) ||
       hasActionFailed(this.loadUsersActionState())
+  );
+  protected readonly isAddPreconfigBusy = computed(() =>
+    isActionBusy(this.addPreconfigActionState())
   );
   protected readonly isAddPlayerToPreconfigBusy = computed(() =>
     isActionBusy(this.addPlayerToPreconfigActionState())
@@ -146,6 +151,15 @@ export class EventTimeslotComponent {
         this.loadUsersFromTimeslot(timeslot);
       }
     }
+  }
+
+  protected addPreconfig() {
+    this._store.dispatch(
+      addEventPreconfigAction({
+        eventId: this.eventId()!,
+        timeslotId: this.timeslotId()!,
+      })
+    );
   }
 
   protected addPlayerToPreconfig(preconfigId: string, userId: string) {

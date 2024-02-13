@@ -75,7 +75,7 @@ export class EventsService {
   public addPreconfig(timeslotId: string) {
     return this._http
       .post<AddPreconfigResponse>(`/api/events:timeslots/${timeslotId}/preconfig`, {})
-      .pipe(mapUsingZod(AddPreconfigResponse, x => x.preconfig));
+      .pipe(mapUsingZod(AddPreconfigResponse));
   }
 
   public removePreconfig(preconfigId: string) {

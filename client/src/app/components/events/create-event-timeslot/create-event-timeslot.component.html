@@ -1,0 +1,58 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [header]="translations.events_createTimeslotDialog_title()"
+>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="form">
+    @if (hasFailed()) {
+      <p-messages severity="error">
+        <ng-template pTemplate>
+          <span class="i-[mdi--close-circle-outline] mr-2"></span>
+          <span
+            >{{ translations.events_createTimeslotDialog_error_save() }}
+            {{ translations.shared_tryAgainLater() }}</span
+          >
+        </ng-template>
+      </p-messages>
+    }
+
+    <span class="p-float-label required">
+      <p-calendar
+        formControlName="time"
+        appendTo="body"
+        [timeOnly]="true"
+        [defaultDate]="event()!.registrationDeadline"
+      />
+      <label>{{ translations.events_timeslot_time() }}</label>
+      <small [formControlErrors]="form.controls.time.errors"></small>
+    </span>
+
+    <span class="p-float-label required">
+      <p-dropdown
+        formControlName="mapId"
+        [options]="maps()"
+        optionValue="id"
+        optionLabel="name"
+        appendTo="body"
+      />
+      <label>{{ translations.events_timeslot_map() }}</label>
+      <small [formControlErrors]="form.controls.mapId.errors"></small>
+    </span>
+
+    <div class="flex flex-row items-center sm:col-span-2 gap-4">
+      <p-inputSwitch formControlName="isFallbackAllowed" />
+      <span>{{ translations.events_timeslot_isFallbackAllowed() }}</span>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      [disabled]="isBusy()"
+      [text]="true"
+      [label]="translations.shared_cancel()"
+      (onClick)="visible.set(false)"
+    />
+    <p-button [disabled]="isBusy()" [label]="translations.shared_save()" (onClick)="submit()" />
+  </ng-template>
+</p-dialog>

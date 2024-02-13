@@ -58,7 +58,12 @@
               <h2 class="m-0 grow">
                 {{ translations.events_timeslot_preconfiguredGroups() }}
               </h2>
-              <p-button [label]="translations.shared_add()" icon="i-[mdi--plus]" />
+              <p-button
+                [label]="translations.shared_add()"
+                icon="i-[mdi--plus]"
+                [disabled]="isAddPreconfigBusy()"
+                (onClick)="addPreconfig()"
+              />
             </div>
 
             @if (timeslot.preconfigurations.length === 0) {
@@ -100,6 +105,11 @@
                         />
                       </div>
                     }
+                    @if (preconfig.playerIds.length === 0) {
+                      <div class="leading-8 px-4 py-2 text-center">
+                        {{ translations.events_timeslot_preconfigNoPlayers() }}
+                      </div>
+                    }
                     <div class="p-2 w-full relative">
                       <p-dropdown
                         #preconfigPlayerDropdown
@@ -124,11 +134,6 @@
                         />
                       }
                     </div>
-                    @if (preconfig.playerIds.length === 0) {
-                      <div class="leading-8 px-4 py-2 text-center">
-                        {{ translations.events_timeslot_preconfigNoPlayers() }}
-                      </div>
-                    }
                   </p-accordionTab>
                 }
               </p-accordion>

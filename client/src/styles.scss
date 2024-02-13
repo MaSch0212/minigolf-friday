@@ -143,12 +143,14 @@
 
   .p-inputtext,
   .p-password,
-  .p-calendar {
+  .p-calendar,
+  .p-dropdown {
     width: 100%;
   }
 
   .p-inputtext.ng-invalid.ng-touched,
-  .p-inputwrapper.ng-invalid.ng-touched input {
+  .p-inputwrapper.ng-invalid.ng-touched input,
+  .p-inputwrapper.ng-invalid.ng-touched .p-dropdown {
     @apply border-danger;
 
     &:enabled:focus {

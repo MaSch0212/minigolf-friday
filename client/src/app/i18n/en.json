@@ -48,12 +48,21 @@
       "preconfigNoPlayers": "No players",
       "registeredPlayers": "Registered players",
       "noPlayers": "For this timeslot, no players have registered yet.",
-      "unknownPlayer": "Unknown player"
+      "unknownPlayer": "Unknown player",
+      "time": "Start time",
+      "map": "Map to be played",
+      "isFallbackAllowed": "Players can define a fallback timeslot"
     },
     "createDialog": {
       "title": "Create event",
       "error": {
         "save": "Failed to create event."
+      }
+    },
+    "createTimeslotDialog": {
+      "title": "Create timeslot",
+      "error": {
+        "save": "Failed to create timeslot."
       }
     },
     "error": {
@@ -108,7 +117,9 @@
     "minlength": "Cannot be shorter than {{requiredLength}} characters.",
     "maxlength": "Cannot be longer than {{requiredLength}} characters.",
     "passwordsEqual": "Passwords do not match.",
-    "email": "Invalid email address."
+    "email": "Invalid email address.",
+    "duplicateTimeslot": "This timeslot already exists.",
+    "afterRegistrationDeadline": "Must be after the registration deadline."
   },
   "switchLanguage": "Switch language",
   "switchTheme": "Switch theme"

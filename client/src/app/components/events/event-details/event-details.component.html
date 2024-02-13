@@ -34,12 +34,16 @@
 
       <div class="flex flex-row mt-4 gap-2 items-center">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
-        <p-button [label]="translations.shared_add()" icon="i-[mdi--plus]" />
+        <p-button
+          [label]="translations.shared_add()"
+          icon="i-[mdi--plus]"
+          (onClick)="createTimeslotDialog.open()"
+        />
       </div>
 
       <div class="overflow-auto grow">
         <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
-          @for (timeslot of event.timeslots; track timeslot.id; let index = $index) {
+          @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
             <a
               class="block leading-8 min-w-0 px-4 py-2 truncate border-solid border-surface-d border-0 hover:bg-surface-c no-underline text-text-color"
               [class.border-t-[1px]]="index > 0"
@@ -67,6 +71,8 @@
           }
         </div>
       </div>
+
+      <app-create-event-timeslot #createTimeslotDialog [event]="event" />
     } @else {
       <div class="flex flex-col items-center gap-8 mt-16">
         <span class="i-[mdi--close-octagon] text-red-500 text-[8rem]"></span>

@@ -26,12 +26,43 @@ export function parseTime(time: string): Time | null {
   };
 }
 
-export function timeToString(time: Time): string {
-  return `${time.hour}:${time.minute}:${time.second}.${time.milisecond}`;
+export function timeToString(
+  time: Time,
+  precision: 'minutes' | 'seconds' | 'milliseconds' = 'milliseconds'
+): string {
+  let result = `${pad(time.hour)}:${pad(time.minute)}`;
+  if (precision === 'seconds' || precision === 'milliseconds') {
+    result += `:${pad(time.second)}`;
+  }
+  if (precision === 'milliseconds') {
+    result += `.${pad(time.milisecond, 3)}`;
+  }
+  return result;
+
+  function pad(value: number, length: number = 2): string {
+    return value.toString().padStart(length, '0');
+  }
 }
 
 export function dateWithTime(date: Date, time: Time): Date {
   const result = new Date(date);
   result.setHours(time.hour, time.minute, time.second, time.milisecond);
   return result;
+}
+
+export function getTimeFromDate(date: Date): Time {
+  return createTime(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
+}
+
+export function compareTimes(a: Time, b: Time): number {
+  if (a.hour !== b.hour) {
+    return a.hour - b.hour;
+  }
+  if (a.minute !== b.minute) {
+    return a.minute - b.minute;
+  }
+  if (a.second !== b.second) {
+    return a.second - b.second;
+  }
+  return a.milisecond - b.milisecond;
 }

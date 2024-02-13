@@ -11,12 +11,17 @@ import {
   AddEventRequest,
   AddEventResponse,
   AddPlayerToPreconfigRequest,
+  AddPreconfigResponse,
+  AddTimeSlotRequest,
+  AddTimeSlotResponse,
+  EventTimeslot,
   GetAllEventsResponse,
   GetEventResponse,
   toApiEvent,
+  toMinigolfEventTimeslot,
 } from './models/api/event';
 import { GetUsersByIdRequest } from './models/api/user';
-import { MinigolfEvent } from './models/event';
+import { MinigolfEvent, MinigolfEventTimeslot } from './models/event';
 import { AddMapResponse, GetMapsResponse } from './services/maps.service';
 import { events, getId, maps, users } from './stub-data';
 import { deepClone } from './utils/common.utils';
@@ -141,6 +146,37 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
       return respondWith(200);
     }
   );
+
+  stub.stub2<AddTimeSlotRequest>()(
+    'POST',
+    'events/{eventId:string}/timeslots',
+    async ({ body, params }) => {
+      await defaultDelay();
+      const event = events.find(p => p.id === params.eventId);
+      if (!event) {
+        return respondWith(404, { error: 'Event not found' });
+      }
+      const timeslot: z.infer<typeof EventTimeslot> = {
+        ...body,
+        id: getId(),
+        playerIds: [],
+        preconfigurations: [],
+      };
+      event.timeslots.push(toMinigolfEventTimeslot(timeslot) as Draft<MinigolfEventTimeslot>);
+      return respondWith<z.infer<typeof AddTimeSlotResponse>>(201, { timeslot });
+    }
+  );
+
+  stub.stub('POST', 'events:timeslots/{timeslotId:string}/preconfig', async ({ params }) => {
+    await defaultDelay();
+    const timeslot = events.flatMap(p => p.timeslots).find(p => p.id === params.timeslotId);
+    if (!timeslot) {
+      return respondWith(404, { error: 'Timeslot not found' });
+    }
+    const preconfig = { id: getId(), playerIds: [] };
+    timeslot.preconfigurations.push(preconfig);
+    return respondWith<z.infer<typeof AddPreconfigResponse>>(201, { preconfig });
+  });
   // #endregion
 }
 
