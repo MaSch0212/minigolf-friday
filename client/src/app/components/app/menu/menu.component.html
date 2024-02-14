@@ -1,7 +1,7 @@
 @if (isAdmin()) {
   <p-menubar class="block" [model]="menuItems()">
     <ng-template pTemplate="end">
-      <div class="flex flex-row items-end gap-x-8 flex-wrap justify-end">
+      <div class="flex flex-row flex-wrap items-end justify-end gap-x-8">
         @if (title()) {
           <span class="font-semibold">{{ title() }}</span>
           <span class="text-xs">{{ translations.title() }}</span>
@@ -27,7 +27,7 @@
       @if (item.state?.['grow']) {
         <div class="grow"></div>
       } @else {
-        <div class="mx-4 h-8 my-auto w-[1px] bg-surface-d"></div>
+        <div class="mx-4 my-auto h-8 w-[1px] bg-surface-d"></div>
       }
     } @else if (item.items) {
       @if (item.state?.['expand'] === true) {

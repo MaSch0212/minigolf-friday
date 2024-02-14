@@ -14,7 +14,6 @@
     "test": "ng test"
   },
   "private": true,
-  "prettier": "@ngneers/prettier-config",
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.2.0",
     "@angular/animations": "^17.1.2",
@@ -68,6 +67,7 @@
     "jest-preset-angular": "^14.0.0",
     "postcss": "^8.4.33",
     "prettier": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "run-script-os": "^1.1.6",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.1.2",

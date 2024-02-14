@@ -1,7 +1,7 @@
 @if (events().length === 0 && isBusy()) {
   <p-progressSpinner class="m-8" />
 } @else {
-  <div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
     @if (hasFailed()) {
       <p-messages severity="error">
         <ng-template pTemplate>
@@ -26,11 +26,11 @@
       ></p-button>
     }
     @if (events().length > 0) {
-      <div class="overflow-auto grow flex flex-col">
-        <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
+      <div class="flex grow flex-col overflow-auto">
+        <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
           @for (event of events(); track event.id; let index = $index) {
             <a
-              class="block leading-8 min-w-0 px-4 py-2 truncate border-solid border-surface-d border-0 hover:bg-surface-c no-underline text-text-color"
+              class="block min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
               [class.border-t-[1px]]="index > 0"
               [routerLink]="[event.id]"
               pRipple

@@ -130,6 +130,16 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     });
   });
 
+  stub.stub('DELETE', 'events/{id:string}', async ({ params }) => {
+    await defaultDelay();
+    const eventIndex = events.findIndex(p => p.id === params.id);
+    if (eventIndex === -1) {
+      return respondWith(404, { error: 'Event not found' });
+    }
+    events.splice(eventIndex, 1);
+    return respondWith(200);
+  });
+
   stub.stub2<AddPlayerToPreconfigRequest>()(
     'POST',
     'events:preconfigs/{preconfigId:string}/players',
@@ -143,6 +153,23 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
         return respondWith(404, { error: 'Preconfig not found' });
       }
       preconfig.playerIds.push(body.playerId);
+      return respondWith(200);
+    }
+  );
+
+  stub.stub(
+    'DELETE',
+    'events:preconfigs/{preconfigId:string}/players/{playerId:string}',
+    async ({ params }) => {
+      await defaultDelay();
+      const preconfig = events
+        .flatMap(p => p.timeslots)
+        .flatMap(p => p.preconfigurations)
+        .find(p => p.id === params.preconfigId);
+      if (!preconfig) {
+        return respondWith(404, { error: 'Preconfig not found' });
+      }
+      preconfig.playerIds = preconfig.playerIds.filter(p => p !== params.playerId);
       return respondWith(200);
     }
   );
@@ -167,6 +194,20 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     }
   );
 
+  stub.stub('DELETE', 'events:timeslots/{timeslotId:string}', async ({ params }) => {
+    await defaultDelay();
+    const timeslot = events.flatMap(p => p.timeslots).find(p => p.id === params.timeslotId);
+    if (!timeslot) {
+      return respondWith(404, { error: 'Timeslot not found' });
+    }
+    const event = events.find(p => p.timeslots.includes(timeslot));
+    if (!event) {
+      return respondWith(404, { error: 'Event not found' });
+    }
+    event.timeslots = event.timeslots.filter(p => p.id !== timeslot.id);
+    return respondWith(200);
+  });
+
   stub.stub('POST', 'events:timeslots/{timeslotId:string}/preconfig', async ({ params }) => {
     await defaultDelay();
     const timeslot = events.flatMap(p => p.timeslots).find(p => p.id === params.timeslotId);
@@ -176,6 +217,25 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     const preconfig = { id: getId(), playerIds: [] };
     timeslot.preconfigurations.push(preconfig);
     return respondWith<z.infer<typeof AddPreconfigResponse>>(201, { preconfig });
+  });
+
+  stub.stub('DELETE', 'events:preconfigs/{preconfigId:string}', async ({ params }) => {
+    await defaultDelay();
+    const preconfig = events
+      .flatMap(p => p.timeslots)
+      .flatMap(p => p.preconfigurations)
+      .find(p => p.id === params.preconfigId);
+    if (!preconfig) {
+      return respondWith(404, { error: 'Preconfig not found' });
+    }
+    const timeslot = events
+      .flatMap(p => p.timeslots)
+      .find(p => p.preconfigurations.includes(preconfig));
+    if (!timeslot) {
+      return respondWith(404, { error: 'Timeslot not found' });
+    }
+    timeslot.preconfigurations = timeslot.preconfigurations.filter(p => p.id !== preconfig.id);
+    return respondWith(200);
   });
   // #endregion
 }

@@ -8,9 +8,9 @@
     </ng-template>
   </p-messages>
 } @else {
-  <div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
-    <div class="flex flex-row gap-2 items-center">
-      <div class="grow min-w-0">
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
+    <div class="flex flex-row items-center gap-2">
+      <div class="min-w-0 grow">
         <span class="p-input-icon-left">
           <i class="i-[mdi--magnify]"></i>
           <input
@@ -28,14 +28,14 @@
         (onClick)="dialog.open()"
       />
     </div>
-    <div class="overflow-auto grow">
-      <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
+    <div class="grow overflow-auto">
+      <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
         @for (map of maps(); track map.id; let index = $index) {
           <div
-            class="flex flex-row items-center p-2 pl-4 gap-2 min-w-0 border-solid border-surface-d border-0"
+            class="flex min-w-0 flex-row items-center gap-2 border-0 border-solid border-surface-d p-2 pl-4"
             [class.border-t-[1px]]="index > 0"
           >
-            <app-map-item [map]="map" class="grow min-w-0" />
+            <app-map-item [map]="map" class="min-w-0 grow" />
             <p-button
               icon="i-[mdi--pencil-outline]"
               [rounded]="true"

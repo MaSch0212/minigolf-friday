@@ -41,6 +41,8 @@
     "timeslots": "Timeslots",
     "playerAmount": "{{amount}} Player(s)",
     "noTimeslots": "No timeslots available.",
+    "deleteEvent": "Delete event",
+    "deleteTimeslot": "Delete timeslot",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",
@@ -65,10 +67,26 @@
         "save": "Failed to create timeslot."
       }
     },
+    "deleteDialog": {
+      "title": "Delete event",
+      "text": "Are you sure you want to delete event {{date}}?"
+    },
+    "deleteTimeslotDialog": {
+      "title": "Delete timeslot",
+      "text": "Are you sure you want to delete timeslot {{time}}?"
+    },
+    "deletePreconfigDialog": {
+      "title": "Delete preconfigured group",
+      "text": "Are you sure you want to delete preconfigured group with {{playerIds.length}} players?"
+    },
     "error": {
       "load": "Failed to load events.",
       "loadOne": "Failed to load event.",
-      "addPlayerToPreconfig": "Failed to add player to preconfigured group."
+      "addPlayerToPreconfig": "Failed to add player to preconfigured group.",
+      "removePlayerFromPreconfig": "Failed to remove player from preconfigured group.",
+      "delete": "Failed to delete event.",
+      "deleteTimeslot": "Failed to delete timeslot.",
+      "deletePreconfig": "Failed to delete preconfigured group."
     }
   },
   "maps": {
@@ -77,14 +95,6 @@
       "title": "Delete map",
       "text": "Are you sure you want to delete map \"{{name}}\"?"
     },
-    "mapDeleted": {
-      "summary": "Map deleted",
-      "detail": "Map \"{{name}}\" was deleted successfully."
-    },
-    "mapDeletionFailed": {
-      "summary": "Failed to delete map",
-      "detail": "Map \"{{name}}\" could not be deleted."
-    },
     "dialog": {
       "addHeader": "Add map",
       "editHeader": "Edit map \"{{name}}\"",
@@ -92,6 +102,9 @@
       "error": {
         "save": "Failed to save map."
       }
+    },
+    "error": {
+      "delete": "Failed to delete map."
     }
   },
   "users": {

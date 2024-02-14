@@ -1,4 +1,4 @@
-<div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
+<div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
   <p-button
     [label]="translations.events_backToEvents()"
     [text]="true"
@@ -40,9 +40,9 @@
         <p-card>
           <div class="flex flex-col items-center">
             <div class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2">
-              <div class="font-semibold text-right truncate">{{ translations.events_date() }}:</div>
+              <div class="truncate text-right font-semibold">{{ translations.events_date() }}:</div>
               <div>{{ dateTime() | date: 'medium' : undefined : locale() }}</div>
-              <div class="font-semibold truncate">
+              <div class="truncate font-semibold">
                 {{ translations.events_registrationDeadline() }}:
               </div>
               <div>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</div>
@@ -50,11 +50,11 @@
           </div>
         </p-card>
 
-        <div class="overflow-auto grow flex flex-col gap-4">
+        <div class="flex grow flex-col gap-4 overflow-auto">
           @if (isUsersBusy()) {
             <p-progressSpinner class="m-4 self-center" styleClass="w-16 h-16" strokeWidth="4" />
           } @else if (!hasUsersFailed()) {
-            <div class="flex flex-row mt-4 items-center gap-2">
+            <div class="mt-4 flex flex-row items-center gap-2">
               <h2 class="m-0 grow">
                 {{ translations.events_timeslot_preconfiguredGroups() }}
               </h2>
@@ -68,23 +68,36 @@
 
             @if (timeslot.preconfigurations.length === 0) {
               <div
-                class="leading-8 px-4 py-2 text-center rounded-lg bg-surface-a border-solid border-[1px] border-surface-d"
+                class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a px-4 py-2 text-center leading-8"
               >
                 {{ translations.events_timeslot_noPreconfigurations() }}
               </div>
             } @else {
               <p-accordion>
                 @for (preconfig of timeslot.preconfigurations; track preconfig.id) {
-                  <p-accordionTab
-                    [header]="
-                      translations.events_playerAmount()
-                        | interpolate: { amount: preconfig.playerIds.length }
-                    "
-                    contentStyleClass="p-0"
-                  >
+                  <p-accordionTab contentStyleClass="p-0">
+                    <ng-template pTemplate="header">
+                      <span class="flex w-full flex-row items-center gap-2">
+                        <span class="min-w-0 grow truncate">{{
+                          translations.events_playerAmount()
+                            | interpolate: { amount: preconfig.playerIds.length }
+                        }}</span>
+                        <p-button
+                          class="-my-2"
+                          [pTooltip]="translations.shared_delete()"
+                          [text]="true"
+                          [rounded]="true"
+                          [severity]="'danger'"
+                          size="small"
+                          icon="i-[mdi--delete-outline]"
+                          (onClick)="$event.stopImmediatePropagation(); removePreconfig(preconfig)"
+                        />
+                      </span>
+                    </ng-template>
+
                     @for (playerId of preconfig.playerIds; track playerId; let index = $index) {
                       <div
-                        class="leading-8 min-w-0 pl-4 py-2 pr-2 border-solid border-surface-d border-0 hover:bg-surface-c flex flex-row items-center border-b-[1px]"
+                        class="flex min-w-0 flex-row items-center border-0 border-b-[1px] border-solid border-surface-d py-2 pl-4 pr-2 leading-8 hover:bg-surface-c"
                       >
                         <span class="truncate">
                           @if (allUsers()[playerId]; as user) {
@@ -96,21 +109,23 @@
                         </span>
                         <div class="grow"></div>
                         <p-button
+                          class="mr-3"
                           [pTooltip]="translations.shared_delete()"
                           [text]="true"
                           [rounded]="true"
                           [severity]="'danger'"
                           size="small"
                           icon="i-[mdi--delete-outline]"
+                          (onClick)="removePlayerFromPreconfig(preconfig.id, playerId)"
                         />
                       </div>
                     }
                     @if (preconfig.playerIds.length === 0) {
-                      <div class="leading-8 px-4 py-2 text-center">
+                      <div class="px-4 py-2 text-center leading-8">
                         {{ translations.events_timeslot_preconfigNoPlayers() }}
                       </div>
                     }
-                    <div class="p-2 w-full relative">
+                    <div class="relative w-full p-2">
                       <p-dropdown
                         #preconfigPlayerDropdown
                         class="grow"
@@ -144,10 +159,10 @@
                 timeslot.playerIds.length
               }})
             </h2>
-            <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
+            <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
               @for (playerId of timeslot.playerIds; track playerId; let index = $index) {
                 <div
-                  class="leading-8 min-w-0 px-4 py-2 truncate border-solid border-surface-d border-0 hover:bg-surface-c"
+                  class="min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 hover:bg-surface-c"
                   [class.border-t-[1px]]="index > 0"
                 >
                   @if (allUsers()[playerId]; as user) {
@@ -159,18 +174,26 @@
                 </div>
               }
               @if (timeslot.playerIds.length === 0) {
-                <div class="leading-8 px-4 py-2 text-center">
+                <div class="px-4 py-2 text-center leading-8">
                   {{ translations.events_timeslot_noPlayers() }}
                 </div>
               }
             </div>
           }
+
+          <p-button
+            class="mt-12 self-center"
+            severity="danger"
+            [label]="translations.events_deleteTimeslot()"
+            icon="i-[mdi--delete-outline]"
+            (onClick)="deleteTimeslot()"
+          />
         </div>
       }
     }
     @if (!event() && !timeslot()) {
-      <div class="flex flex-col items-center gap-8 mt-16">
-        <span class="i-[mdi--close-octagon] text-red-500 text-[8rem]"></span>
+      <div class="mt-16 flex flex-col items-center gap-8">
+        <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
         <h1 class="m-0 text-center">
           {{ event() ? translations.events_timeslot_notFound() : translations.events_notFound() }}
         </h1>

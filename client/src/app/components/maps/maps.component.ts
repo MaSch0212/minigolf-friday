@@ -22,7 +22,6 @@ import { MapItemComponent } from './map-item/map-item.component';
 import {
   deleteMapAction,
   deleteMapFailureAction,
-  deleteMapSuccessAction,
   loadMapsAction,
   mapSelectors,
   selectMapsLoadState,
@@ -71,9 +70,6 @@ export class MapsComponent implements OnInit {
   constructor() {
     const action$ = inject(Actions);
     autoDestroy(
-      action$.pipe(ofType(deleteMapSuccessAction)).subscribe(({ map }) => this.onMapDeleted(map))
-    );
-    autoDestroy(
       action$
         .pipe(ofType(deleteMapFailureAction))
         .subscribe(({ map }) => this.onMapDeletionFailed(map))
@@ -108,20 +104,11 @@ export class MapsComponent implements OnInit {
     return maps.filter((map): map is MinigolfMap => mapMatchesFilter(map, lowerCaseFilter));
   }
 
-  private onMapDeleted(map: MinigolfMap) {
-    this._messageService.add({
-      severity: 'success',
-      summary: this.translations.maps_mapDeleted_summary(),
-      detail: interpolate(this.translations.maps_mapDeleted_detail(), map),
-      life: 2000,
-    });
-  }
-
   private onMapDeletionFailed(map: MinigolfMap) {
     this._messageService.add({
       severity: 'error',
-      summary: this.translations.maps_mapDeletionFailed_summary(),
-      detail: interpolate(this.translations.maps_mapDeletionFailed_detail(), map),
+      summary: this.translations.maps_error_delete(),
+      detail: interpolate(this.translations.shared_tryAgainLater(), map),
       life: 2000,
     });
   }

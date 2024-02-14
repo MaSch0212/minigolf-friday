@@ -80,6 +80,21 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         return Ok(new GetEventResponse(@event));
     }
 
+    [HttpDelete("events/{id}")]
+    public async ValueTask<IActionResult> RemoveEvent(string id)
+    {
+        if (!Guid.TryParse(id, out var eventId))
+            return BadRequest("Invalid event id.");
+
+        var @event = await _dbContext.Events.FindAsync(eventId);
+        if (@event is null)
+            return NotFound();
+
+        _dbContext.Events.Remove(@event);
+        await _dbContext.SaveChangesAsync();
+        return Ok();
+    }
+
     [HttpPost("events/{id}/timeslots")]
     public async ValueTask<IActionResult> AddTimeSlot(
         string id,
@@ -140,6 +155,21 @@ public class EventsController(MinigolfFridayContext dbContext) : Controller
         timeslot.Time = request.Time;
         timeslot.Map = map;
         timeslot.IsFallbackAllowed = request.IsFallbackAllowed;
+        await _dbContext.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpDelete("events:timeslots/{id}")]
+    public async ValueTask<IActionResult> RemoveTimeslot(string id)
+    {
+        if (!Guid.TryParse(id, out var timeslotId))
+            return BadRequest("Invalid timeslot id.");
+
+        var timeslot = await _dbContext.EventTimeslots.FindAsync(timeslotId);
+        if (timeslot is null)
+            return NotFound();
+
+        _dbContext.EventTimeslots.Remove(timeslot);
         await _dbContext.SaveChangesAsync();
         return Ok();
     }

@@ -6,6 +6,10 @@ import { addEventReducers } from './actions/add-event.action';
 import { addPlayerToEventPreconfigurationReducers } from './actions/add-player-to-preconfig.action';
 import { loadEventReducers } from './actions/load-event.action';
 import { loadEventsReducers } from './actions/load-events.action';
+import { removeEventPreconfigReducers } from './actions/remove-event-preconfig.action';
+import { removeEventTimeslotReducers } from './actions/remove-event-timeslot.action';
+import { removeEventReducers } from './actions/remove-event.action';
+import { removePlayerFromPreconfigReducers } from './actions/remove-player-from-preconfig.action';
 import { EventsFeatureState, initialEventsFeatureState } from './events.state';
 
 export const eventsReducer = createReducer<EventsFeatureState>(
@@ -16,5 +20,9 @@ export const eventsReducer = createReducer<EventsFeatureState>(
   ...addEventReducers,
   ...addPlayerToEventPreconfigurationReducers,
   ...loadEventReducers,
-  ...loadEventsReducers
+  ...loadEventsReducers,
+  ...removeEventPreconfigReducers,
+  ...removeEventTimeslotReducers,
+  ...removeEventReducers,
+  ...removePlayerFromPreconfigReducers
 );

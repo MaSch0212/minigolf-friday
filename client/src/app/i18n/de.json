@@ -41,6 +41,8 @@
     "timeslots": "Zeitslots",
     "playerAmount": "{{amount}} Spieler",
     "noTimeslots": "Keine Zeitslots verfügbar.",
+    "deleteEvent": "Veranstaltung löschen",
+    "deleteTimeslot": "Zeitslot löschen",
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
@@ -65,10 +67,26 @@
         "save": "Fehler beim Erstellen des Zeitslots."
       }
     },
+    "deleteDialog": {
+      "title": "Veranstaltung löschen",
+      "text": "Möchtest du die Veranstaltung {{date}} wirklich löschen?"
+    },
+    "deleteTimeslotDialog": {
+      "title": "Zeitslot löschen",
+      "text": "Möchtest du den Zeitslot um {{time}} Uhr wirklich löschen?"
+    },
+    "deletePreconfigDialog": {
+      "title": "Vordefinierte Gruppe löschen",
+      "text": "Möchtest du die vordefinierte Gruppe mit {{playerIds.length}} Spielern wirklich löschen?"
+    },
     "error": {
       "load": "Fehler beim Laden der Veranstaltungen.",
       "loadOne": "Fehler beim Laden der Veranstaltung.",
-      "addPlayerToPreconfig": "Fehler beim Hinzufügen des Spielers zur vordefinierten Gruppe."
+      "addPlayerToPreconfig": "Fehler beim Hinzufügen des Spielers zur vordefinierten Gruppe.",
+      "removePlayerFromPreconfig": "Fehler beim Entfernen des Spielers von der vordefinierten Gruppe.",
+      "delete": "Fehler beim Löschen der Veranstaltung.",
+      "deleteTimeslot": "Fehler beim Löschen des Zeitslots.",
+      "deletePreconfig": "Fehler beim Löschen der vordefinierten Gruppe."
     }
   },
   "maps": {
@@ -77,14 +95,6 @@
       "title": "Bahn löschen",
       "text": "Möchtest du die Bahn \"{{name}}\" wirklich löschen?"
     },
-    "mapDeleted": {
-      "summary": "Bahn gelöscht",
-      "detail": "Die Bahn \"{{name}}\" wurde erfolgreich gelöscht."
-    },
-    "mapDeletionFailed": {
-      "summary": "Fehler beim Löschen der Bahn",
-      "detail": "Die Bahn \"{{name}}\" konnte nicht gelöscht werden."
-    },
     "dialog": {
       "addHeader": "Bahn hinzufügen",
       "editHeader": "Bahn \"{{name}}\" bearbeiten",
@@ -92,6 +102,9 @@
       "error": {
         "save": "Fehler beim Speichern der Bahn."
       }
+    },
+    "error": {
+      "delete": "Fehler beim Löschen der Bahn."
     }
   },
   "users": {

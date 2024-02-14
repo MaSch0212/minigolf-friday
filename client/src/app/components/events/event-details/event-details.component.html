@@ -1,4 +1,4 @@
-<div class="flex flex-col h-full w-full max-w-[40rem] gap-4">
+<div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
   <p-button
     [label]="translations.events_backToEvents()"
     [text]="true"
@@ -22,9 +22,9 @@
       <p-card>
         <div class="flex flex-col items-center">
           <div class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2">
-            <div class="font-semibold text-right truncate">{{ translations.events_date() }}:</div>
+            <div class="truncate text-right font-semibold">{{ translations.events_date() }}:</div>
             <div>{{ event.date | date: 'mediumDate' : undefined : locale() }}</div>
-            <div class="font-semibold truncate">
+            <div class="truncate font-semibold">
               {{ translations.events_registrationDeadline() }}:
             </div>
             <div>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</div>
@@ -32,7 +32,7 @@
         </div>
       </p-card>
 
-      <div class="flex flex-row mt-4 gap-2 items-center">
+      <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
         <p-button
           [label]="translations.shared_add()"
@@ -41,11 +41,11 @@
         />
       </div>
 
-      <div class="overflow-auto grow">
-        <div class="rounded-lg bg-surface-a border-solid border-[1px] border-surface-d">
+      <div class="flex grow flex-col overflow-auto">
+        <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
           @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
             <a
-              class="block leading-8 min-w-0 px-4 py-2 truncate border-solid border-surface-d border-0 hover:bg-surface-c no-underline text-text-color"
+              class="block min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
               [class.border-t-[1px]]="index > 0"
               [routerLink]="['timeslots', timeslot.id]"
               pRipple
@@ -65,17 +65,25 @@
             </a>
           }
           @if (event.timeslots.length === 0) {
-            <div class="leading-8 px-4 py-2 text-center">
+            <div class="px-4 py-2 text-center leading-8">
               {{ translations.events_noTimeslots() }}
             </div>
           }
         </div>
+
+        <p-button
+          class="mt-12 self-center"
+          severity="danger"
+          [label]="translations.events_deleteEvent()"
+          icon="i-[mdi--delete-outline]"
+          (onClick)="deleteEvent()"
+        />
       </div>
 
       <app-create-event-timeslot #createTimeslotDialog [event]="event" />
     } @else {
-      <div class="flex flex-col items-center gap-8 mt-16">
-        <span class="i-[mdi--close-octagon] text-red-500 text-[8rem]"></span>
+      <div class="mt-16 flex flex-col items-center gap-8">
+        <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
         <h1 class="m-0 text-center">{{ translations.events_notFound() }}</h1>
         <p-button
           [label]="translations.events_backToEvents()"

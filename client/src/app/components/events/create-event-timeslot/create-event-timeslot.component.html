@@ -4,7 +4,7 @@
   [modal]="true"
   [header]="translations.events_createTimeslotDialog_title()"
 >
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="form">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2" [formGroup]="form">
     @if (hasFailed()) {
       <p-messages severity="error">
         <ng-template pTemplate>
@@ -40,7 +40,7 @@
       <small [formControlErrors]="form.controls.mapId.errors"></small>
     </span>
 
-    <div class="flex flex-row items-center sm:col-span-2 gap-4">
+    <div class="flex flex-row items-center gap-4 sm:col-span-2">
       <p-inputSwitch formControlName="isFallbackAllowed" />
       <span>{{ translations.events_timeslot_isFallbackAllowed() }}</span>
     </div>

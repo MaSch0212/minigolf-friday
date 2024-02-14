@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -18,6 +18,9 @@ import { isActionBusy, hasActionFailed, hasActionSucceeded } from '../../../+sta
 import {
   addPlayerToEventPreconfigurationAction,
   loadEventAction,
+  removeEventPreconfigAction,
+  removeEventTimeslotAction,
+  removePlayerFromPreconfigAction,
   selectEvent,
   selectEventTimeslot,
   selectEventsActionState,
@@ -25,11 +28,14 @@ import {
 import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
 import { loadUsersAction, selectUsersActionState, userSelectors } from '../../../+state/users';
 import { loadUsersByIdAction } from '../../../+state/users/actions/load-users-by-id.action';
-import { InterpolatePipe } from '../../../directives/interpolate.pipe';
-import { MinigolfEventTimeslot } from '../../../models/event';
+import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
+import {
+  MinigolfEventInstancePreconfiguration,
+  MinigolfEventTimeslot,
+} from '../../../models/event';
 import { TranslateService } from '../../../services/translate.service';
-import { dateWithTime } from '../../../utils/date.utils';
-import { selectSignal } from '../../../utils/ngrx.utils';
+import { dateWithTime, timeToString } from '../../../utils/date.utils';
+import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
 
 @Component({
   selector: 'app-event-timeslot',
@@ -56,6 +62,7 @@ export class EventTimeslotComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _translateService = inject(TranslateService);
   private readonly _messageService = inject(MessageService);
+  private readonly _confirmationService = inject(ConfirmationService);
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
@@ -109,6 +116,8 @@ export class EventTimeslotComponent {
       () => {
         if (!this.event()) {
           this._store.dispatch(loadEventAction({ eventId: this.eventId() }));
+        } else if (!this.timeslot()) {
+          this.navigateBack();
         }
       },
       { allowSignalWrites: true }
@@ -124,15 +133,23 @@ export class EventTimeslotComponent {
       { allowSignalWrites: true }
     );
 
-    effect(() => {
-      if (hasActionFailed(this.addPlayerToPreconfigActionState())) {
-        this._messageService.add({
-          severity: 'error',
-          summary: this.translations.events_error_addPlayerToPreconfig(),
-          detail: this.translations.shared_tryAgainLater(),
-        });
-      }
-    });
+    errorToastEffect(
+      this.translations.events_error_addPlayerToPreconfig,
+      this.addPlayerToPreconfigActionState
+    );
+
+    errorToastEffect(
+      this.translations.events_error_deletePreconfig,
+      selectEventsActionState('removePreconfig')
+    );
+
+    errorToastEffect(
+      this.translations.events_error_removePlayerFromPreconfig,
+      selectEventsActionState('removePlayerFromPreconfig')
+    );
+
+    const removeTimeslotActionState = selectSignal(selectEventsActionState('removeTimeslot'));
+    errorToastEffect(this.translations.events_error_deleteTimeslot, removeTimeslotActionState);
   }
 
   protected navigateBack() {
@@ -162,6 +179,26 @@ export class EventTimeslotComponent {
     );
   }
 
+  protected removePreconfig(preconfig: MinigolfEventInstancePreconfiguration) {
+    this._confirmationService.confirm({
+      header: this.translations.events_deletePreconfigDialog_title(),
+      message: interpolate(this.translations.events_deletePreconfigDialog_text(), preconfig),
+      acceptLabel: this.translations.shared_delete(),
+      acceptButtonStyleClass: 'p-button-danger',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
+      rejectLabel: this.translations.shared_cancel(),
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () =>
+        this._store.dispatch(
+          removeEventPreconfigAction({
+            eventId: this.eventId()!,
+            timeslotId: this.timeslotId()!,
+            preconfigId: preconfig.id,
+          })
+        ),
+    });
+  }
+
   protected addPlayerToPreconfig(preconfigId: string, userId: string) {
     this._store.dispatch(
       addPlayerToEventPreconfigurationAction({
@@ -171,6 +208,37 @@ export class EventTimeslotComponent {
         playerId: userId,
       })
     );
+  }
+
+  protected removePlayerFromPreconfig(preconfigId: string, userId: string) {
+    this._store.dispatch(
+      removePlayerFromPreconfigAction({
+        eventId: this.eventId()!,
+        timeslotId: this.timeslotId()!,
+        preconfigId,
+        playerId: userId,
+      })
+    );
+  }
+
+  protected deleteTimeslot() {
+    this._confirmationService.confirm({
+      header: this.translations.events_deleteTimeslotDialog_title(),
+      message: interpolate(this.translations.events_deleteTimeslotDialog_text(), { time: timeToString(this.timeslot()!.time, 'minutes') }),
+      acceptLabel: this.translations.shared_delete(),
+      acceptButtonStyleClass: 'p-button-danger',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
+      rejectLabel: this.translations.shared_cancel(),
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this._store.dispatch(
+          removeEventTimeslotAction({
+            eventId: this.eventId()!,
+            timeslotId: this.timeslotId()!,
+          })
+        );
+      },
+    });
   }
 
   protected getAllPlayersExcept(playerIds: readonly string[]) {
@@ -183,5 +251,9 @@ export class EventTimeslotComponent {
       ...timeslot.preconfigurations.flatMap(x => x.playerIds),
     ];
     this._store.dispatch(loadUsersByIdAction({ userIds: allUserIds }));
+  }
+
+  protected testEvent(e: unknown) {
+    console.log(e);
   }
 }

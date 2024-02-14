@@ -45,6 +45,10 @@ export class EventsService {
       .pipe(mapUsingZod(GetEventResponse, x => ({ event: toMinigolfEvent(x.event) })));
   }
 
+  public removeEvent(id: string) {
+    return this._http.delete<void>(`/api/events/${id}`);
+  }
+
   public addTimeSlot(eventId: string, request: AddTimeSlotRequest) {
     return this._http
       .post<AddTimeSlotResponse>(`/api/events/${eventId}/timeslots`, request)
@@ -70,6 +74,10 @@ export class EventsService {
 
   public updateTimeslot(timeslotId: string, request: UpdateTimeslotRequest) {
     return this._http.put<void>(`/api/events:timeslots/${timeslotId}`, request);
+  }
+
+  public removeTimeslot(timeslotId: string) {
+    return this._http.delete<void>(`/api/events:timeslots/${timeslotId}`);
   }
 
   public addPreconfig(timeslotId: string) {

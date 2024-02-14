@@ -1,7 +1,7 @@
-<div class="h-full py-4 grid grid-rows-[1fr,auto,2fr] overflow-auto">
+<div class="grid h-full grid-rows-[1fr,auto,2fr] overflow-auto py-4">
   @if (!isRegister()) {
     <p-card
-      class="row-start-2 max-w-[600px] mx-auto"
+      class="row-start-2 mx-auto max-w-[600px]"
       [header]="translations.login_loginTo() | interpolate: { appName: translations.title() }"
     >
       <div class="flex flex-col">
@@ -23,7 +23,7 @@
             <label>{{ translations.shared_password() }}</label>
             <small [formControlErrors]="loginForm.controls.password.errors"></small>
           </span>
-          <div class="flex flex-row gap-2 justify-end flex-wrap-reverse">
+          <div class="flex flex-row flex-wrap-reverse justify-end gap-2">
             <p-button
               icon="i-[mdi--account-plus-outline]"
               [text]="true"
@@ -69,7 +69,7 @@
           <label for="register-confirm-password">{{ translations.login_confirmPassword() }}</label>
           <small [formControlErrors]="registerForm.controls.confirmPassword.errors"></small>
         </span>
-        <div class="flex flex-row gap-2 justify-end flex-wrap-reverse">
+        <div class="flex flex-row flex-wrap-reverse justify-end gap-2">
           <p-button
             icon="i-[mdi--close]"
             [text]="true"
