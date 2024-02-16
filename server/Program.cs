@@ -1,14 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MinigolfFriday;
 using MinigolfFriday.Data;
 using MinigolfFriday.Middlewares;
-using MinigolfFriday.Models;
 using MinigolfFriday.Serialization;
 using MinigolfFriday.Services;
 using MinigolfFriday.Validators;
@@ -52,6 +50,7 @@ builder
 
 builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
 builder.Services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName);
+builder.Services.AddOptions<AdminOptions>().BindConfiguration(AdminOptions.SectionName);
 
 builder
     .Services
@@ -84,7 +83,7 @@ builder
     .Services
     .AddSpaStaticFiles(options =>
     {
-        options.RootPath = "wwwroot";
+        options.RootPath = "wwwroot/browser";
     });
 
 var app = builder.Build();

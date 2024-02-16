@@ -1,6 +1,17 @@
 {
   "tasks": [
     {
+      "label": "✨ Setup",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/client"
+      },
+      "command": "pnpm run init",
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
       "label": "🚀 Start Client",
       "type": "shell",
       "options": {
@@ -36,6 +47,22 @@
         "cwd": "${workspaceFolder}/client"
       },
       "command": "pnpm run start:stub",
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "🐋 Build docker image",
+      "type": "shell",
+      "command": "docker build -t marc-nas:4000/minigolf-friday .",
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "🐋 Push docker image",
+      "type": "shell",
+      "command": "docker push marc-nas:4000/minigolf-friday",
       "group": {
         "kind": "build"
       }

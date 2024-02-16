@@ -23,6 +23,7 @@ import { ErrorTextDirective } from '../../../directives/error-text.directive';
 import { MinigolfEvent } from '../../../models/event';
 import { TranslateService } from '../../../services/translate.service';
 import { compareTimes, getTimeFromDate, timeToString } from '../../../utils/date.utils';
+import { hasTouchScreen } from '../../../utils/user-agent.utils';
 
 @Component({
   selector: 'app-create-event-timeslot',
@@ -48,6 +49,7 @@ export class CreateEventTimeslotComponent {
   public readonly event = input<MinigolfEvent>();
 
   protected readonly translations = inject(TranslateService).translations;
+  protected readonly hasTouchScreen = hasTouchScreen;
 
   protected readonly actionState = this._store.selectSignal(selectEventsActionState('addTimeslot'));
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState()));

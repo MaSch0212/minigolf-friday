@@ -1,88 +1,95 @@
-<div class="grid h-full grid-rows-[1fr,auto,2fr] overflow-auto py-4">
-  @if (!isRegister()) {
-    <p-card
-      class="row-start-2 mx-auto max-w-[600px]"
-      [header]="translations.login_loginTo() | interpolate: { appName: translations.title() }"
-    >
-      <div class="flex flex-col">
-        <p-button
-          class="self-center"
-          icon="i-[mdi--facebook]"
-          [label]="translations.login_loginWith() | interpolate: { provider: 'Facebook' }"
-          (onClick)="loginWithFacebook()"
-        />
-        <p-divider [align]="'center'">{{ translations.shared_or() }}</p-divider>
-        <div class="flex flex-col gap-4" [formGroup]="loginForm">
+@if (!isAuthInitialized()) {
+  <p-progressSpinner class="m-8 self-center" />
+} @else {
+  <div class="grid h-full grid-rows-[1fr,auto,2fr] overflow-auto py-4">
+    @if (!isRegister()) {
+      <p-card
+        class="row-start-2 mx-auto max-w-[600px]"
+        [header]="translations.login_loginTo() | interpolate: { appName: translations.title() }"
+      >
+        <div class="flex flex-col">
+          <p-button
+            class="self-center"
+            icon="i-[mdi--facebook]"
+            [label]="translations.login_loginWith() | interpolate: { provider: 'Facebook' }"
+            (onClick)="loginWithFacebook()"
+          />
+          <p-divider [align]="'center'">{{ translations.shared_or() }}</p-divider>
+          <form #form class="flex flex-col gap-4" [formGroup]="loginForm" (submit)="loginByEmail()">
+            <span class="p-float-label required">
+              <input pInputText id="login-email" type="email" formControlName="email" />
+              <label for="login-email">{{ translations.shared_email() }}</label>
+              <small [formControlErrors]="loginForm.controls.email.errors"></small>
+            </span>
+            <span class="p-float-label required">
+              <input
+                pInputText
+                type="password"
+                formControlName="password"
+                (keyup.enter)="form.submit()"
+              />
+              <label>{{ translations.shared_password() }}</label>
+              <small [formControlErrors]="loginForm.controls.password.errors"></small>
+            </span>
+            <div class="flex flex-row flex-wrap-reverse justify-end gap-2">
+              <p-button
+                icon="i-[mdi--account-plus-outline]"
+                [text]="true"
+                [label]="translations.login_register()"
+                (onClick)="isRegister.set(true)"
+              />
+              <p-button icon="i-[mdi--login]" [label]="translations.login_login()" type="submit" />
+            </div>
+          </form>
+        </div>
+      </p-card>
+    } @else {
+      <p-card
+        class="row-start-2"
+        [header]="translations.login_registerTo() | interpolate: { appName: translations.title() }"
+      >
+        <div class="flex flex-col gap-4" [formGroup]="registerForm">
           <span class="p-float-label required">
-            <input pInputText id="login-email" type="text" formControlName="email" />
-            <label for="login-email">{{ translations.shared_email() }}</label>
-            <small [formControlErrors]="loginForm.controls.email.errors"></small>
+            <input pInputText id="register-email" type="email" formControlName="email" />
+            <label for="register-email">{{ translations.shared_email() }}</label>
+            <small [formControlErrors]="registerForm.controls.email.errors"></small>
           </span>
           <span class="p-float-label required">
-            <input pInputText type="password" formControlName="password" />
-            <label>{{ translations.shared_password() }}</label>
-            <small [formControlErrors]="loginForm.controls.password.errors"></small>
+            <input pInputText id="register-name" type="text" formControlName="name" />
+            <label for="register-name">{{ translations.shared_name() }}</label>
+            <small [formControlErrors]="registerForm.controls.name.errors"></small>
+          </span>
+          <span class="p-float-label required">
+            <p-password id="register-password" formControlName="password" />
+            <label for="register-password">{{ translations.shared_password() }}</label>
+            <small [formControlErrors]="registerForm.controls.password.errors"></small>
+          </span>
+          <span class="p-float-label required">
+            <p-password
+              id="register-confirm-password"
+              formControlName="confirmPassword"
+              [feedback]="false"
+            />
+            <label for="register-confirm-password">{{
+              translations.login_confirmPassword()
+            }}</label>
+            <small [formControlErrors]="registerForm.controls.confirmPassword.errors"></small>
           </span>
           <div class="flex flex-row flex-wrap-reverse justify-end gap-2">
             <p-button
-              icon="i-[mdi--account-plus-outline]"
+              icon="i-[mdi--close]"
               [text]="true"
-              [label]="translations.login_register()"
-              (onClick)="isRegister.set(true)"
+              [label]="translations.shared_cancel()"
+              (onClick)="isRegister.set(false)"
             />
             <p-button
               icon="i-[mdi--login]"
-              [label]="translations.login_login()"
-              (onClick)="loginByEmail()"
+              [label]="translations.login_register()"
+              (onClick)="register()"
             />
           </div>
         </div>
-      </div>
-    </p-card>
-  } @else {
-    <p-card
-      class="row-start-2"
-      [header]="translations.login_registerTo() | interpolate: { appName: translations.title() }"
-    >
-      <div class="flex flex-col gap-4" [formGroup]="registerForm">
-        <span class="p-float-label required">
-          <input pInputText id="register-email" type="text" formControlName="email" />
-          <label for="register-email">{{ translations.shared_email() }}</label>
-          <small [formControlErrors]="registerForm.controls.email.errors"></small>
-        </span>
-        <span class="p-float-label required">
-          <input pInputText id="register-name" type="text" formControlName="name" />
-          <label for="register-name">{{ translations.shared_name() }}</label>
-          <small [formControlErrors]="registerForm.controls.name.errors"></small>
-        </span>
-        <span class="p-float-label required">
-          <p-password id="register-password" formControlName="password" />
-          <label for="register-password">{{ translations.shared_password() }}</label>
-          <small [formControlErrors]="registerForm.controls.password.errors"></small>
-        </span>
-        <span class="p-float-label required">
-          <p-password
-            id="register-confirm-password"
-            formControlName="confirmPassword"
-            [feedback]="false"
-          />
-          <label for="register-confirm-password">{{ translations.login_confirmPassword() }}</label>
-          <small [formControlErrors]="registerForm.controls.confirmPassword.errors"></small>
-        </span>
-        <div class="flex flex-row flex-wrap-reverse justify-end gap-2">
-          <p-button
-            icon="i-[mdi--close]"
-            [text]="true"
-            [label]="translations.shared_cancel()"
-            (onClick)="isRegister.set(false)"
-          />
-          <p-button
-            icon="i-[mdi--login]"
-            [label]="translations.login_register()"
-            (onClick)="register()"
-          />
-        </div>
-      </div>
-    </p-card>
-  }
-</div>
+      </p-card>
+    }
+  </div>
+}

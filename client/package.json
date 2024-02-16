@@ -9,11 +9,14 @@
     "start:windows": "ng serve --port 4200 --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
     "start:default": "ng serve --port 4200 --ssl --ssl-cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --ssl-key \"$HOME/.aspnet/https/${npm_package_name}.key\"",
     "start:stub": "ng serve --configuration stubbed",
+    "dev-cert": "dotnet dev-certs https --trust",
+    "init": "pnpm install && pnpm dev-cert && pnpm prestart",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
   "private": true,
+  "packageManager": "pnpm@8.15.3",
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.2.0",
     "@angular/animations": "^17.1.2",

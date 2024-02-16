@@ -16,6 +16,7 @@ import { MessagesModule } from 'primeng/messages';
 import { ActionState, hasActionFailed } from '../../../+state/action-state';
 import { ErrorTextDirective } from '../../../directives/error-text.directive';
 import { TranslateService } from '../../../services/translate.service';
+import { hasTouchScreen } from '../../../utils/user-agent.utils';
 
 @Component({
   selector: 'app-event-form',
@@ -32,6 +33,7 @@ export class EventFormComponent {
   public readonly value = input<{ date: Date; registrationDeadline: Date }>();
 
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState()));
+  protected readonly hasTouchScreen = hasTouchScreen;
 
   @Output()
   public readonly submitted = new EventEmitter<{ date: Date; registrationDeadline: Date }>();
@@ -52,7 +54,7 @@ export class EventFormComponent {
     this.form.controls.date.valueChanges.pipe(takeUntilDestroyed()).subscribe(date => {
       if (date !== null && this.form.controls.registrationDeadline.value === null) {
         const deadline = new Date(date.getTime());
-        deadline.setHours(23, 59);
+        deadline.setHours(19, 0);
         this.form.controls.registrationDeadline.setValue(deadline);
       }
     });

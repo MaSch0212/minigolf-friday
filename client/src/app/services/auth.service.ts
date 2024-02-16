@@ -44,9 +44,8 @@ export class AuthService implements OnDestroy {
 
   private readonly _token = signal<string | null | undefined>(undefined);
   private readonly _user = signal<User | null | undefined>(undefined);
-  private readonly _socialAuthState = toSignal(this._socialAuthService.authState, {
-    initialValue: null,
-  });
+  private readonly _userLoginType = computed(() => this._user()?.loginType);
+  private readonly _socialAuthState = toSignal(this._socialAuthService.authState);
 
   private _isTokenLoading = false;
   private _tokenRefreshTimeout?: number;
@@ -58,8 +57,6 @@ export class AuthService implements OnDestroy {
   constructor() {
     effect(
       () => {
-        const user = this._user();
-        if (user?.loginType !== 'facebook') return;
         const socialUser = this._socialAuthState();
         if (socialUser) {
           this.refreshToken();
@@ -94,16 +91,14 @@ export class AuthService implements OnDestroy {
       return;
     }
 
+    // Wait for the social auth service to initialize
+    await firstValueFrom(this._socialAuthService.authState);
+
     const token = localStorage.getItem(AuthService.TOKEN_KEY);
     const tokenExpiration = localStorage.getItem(AuthService.TOKEN_EXPIRATION_KEY);
     if (token && tokenExpiration && new Date(tokenExpiration) > new Date()) {
       await this.refreshToken(token);
       return;
-    }
-
-    const socialAuthState = await firstValueFrom(this._socialAuthService.authState);
-    if (socialAuthState) {
-      await this.refreshToken();
     }
 
     this._token.set(null);

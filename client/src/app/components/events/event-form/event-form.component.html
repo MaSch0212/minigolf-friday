@@ -12,7 +12,7 @@
   }
 
   <span class="p-float-label required">
-    <p-calendar formControlName="date" appendTo="body"></p-calendar>
+    <p-calendar formControlName="date" appendTo="body" [touchUI]="hasTouchScreen"></p-calendar>
     <label>{{ translations.events_date() }}</label>
     <small [formControlErrors]="form.controls.date.errors"></small>
   </span>
@@ -23,6 +23,7 @@
       [showTime]="true"
       [showSeconds]="false"
       appendTo="body"
+      [touchUI]="hasTouchScreen"
     ></p-calendar>
     <label>{{ translations.events_registrationDeadline() }}</label>
     <small [formControlErrors]="form.controls.registrationDeadline.errors"></small>

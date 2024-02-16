@@ -3,7 +3,8 @@
 public enum UserLoginType
 {
     Facebook,
-    Email
+    Email,
+    Admin
 }
 
 public class User

@@ -1,4 +1,5 @@
 module.exports = {
-  ...require("@ngneers/prettier-config"),
-  plugins: ["prettier-plugin-tailwindcss"],
+  ...require('@ngneers/prettier-config'),
+  tailwindAttributes: ['styleClass'],
+  plugins: ['prettier-plugin-tailwindcss'],
 };

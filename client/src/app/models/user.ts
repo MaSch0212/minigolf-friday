@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const UserLoginType = z.enum(['facebook', 'email']);
+export const UserLoginType = z.enum(['facebook', 'email', 'admin']);
 export const User = z
   .object({
     id: z.string(),

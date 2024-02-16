@@ -5,5 +5,6 @@ namespace MinigolfFriday.Services;
 public interface IJwtService
 {
     JwtSecurityToken GenerateToken(UserEntity user);
+    JwtSecurityToken GenerateAdminToken();
     string WriteToken(JwtSecurityToken token);
 }

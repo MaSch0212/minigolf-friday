@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -14,11 +21,13 @@ import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
 import { map, startWith } from 'rxjs';
 
 import { ErrorTextDirective } from '../../directives/error-text.directive';
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
+import { OnEnterDirective } from '../../directives/on-enter.directive';
 import { AuthService } from '../../services/auth.service';
 import { TranslateService } from '../../services/translate.service';
 
@@ -31,7 +40,9 @@ import { TranslateService } from '../../services/translate.service';
     CommonModule,
     DividerModule,
     ErrorTextDirective,
+    OnEnterDirective,
     ReactiveFormsModule,
+    ProgressSpinnerModule,
     InterpolatePipe,
     InputTextModule,
     PasswordModule,
@@ -55,16 +66,17 @@ export class LoginComponent {
 
   protected readonly translations = inject(TranslateService).translations;
   protected readonly isRegister = signal(false);
+  protected readonly isAuthInitialized = computed(() => this._authService.token() !== undefined);
 
   protected readonly loginForm = this._formBuilder.group({
     email: this._formBuilder.control<string>('', {
       nonNullable: true,
-      updateOn: 'blur',
+      updateOn: 'change',
       validators: [Validators.required],
     }),
     password: this._formBuilder.control<string>('', {
       nonNullable: true,
-      updateOn: 'blur',
+      updateOn: 'change',
       validators: [Validators.required],
     }),
   });
@@ -72,17 +84,17 @@ export class LoginComponent {
   protected readonly registerForm = this._formBuilder.group({
     email: this._formBuilder.control<string>('', {
       nonNullable: true,
-      updateOn: 'blur',
+      updateOn: 'change',
       validators: [Validators.required, Validators.email],
     }),
     name: this._formBuilder.control<string>('', {
       nonNullable: true,
-      updateOn: 'blur',
+      updateOn: 'change',
       validators: [Validators.required],
     }),
     password: this._formBuilder.control<string>('', {
       nonNullable: true,
-      updateOn: 'blur',
+      updateOn: 'change',
       validators: [
         Validators.required,
         Validators.minLength(6),
@@ -91,7 +103,7 @@ export class LoginComponent {
     }),
     confirmPassword: this._formBuilder.control<string>('', {
       nonNullable: true,
-      updateOn: 'blur',
+      updateOn: 'change',
       validators: [Validators.required, passwordsEqualValidator('password')],
     }),
   });

@@ -224,7 +224,9 @@ export class EventTimeslotComponent {
   protected deleteTimeslot() {
     this._confirmationService.confirm({
       header: this.translations.events_deleteTimeslotDialog_title(),
-      message: interpolate(this.translations.events_deleteTimeslotDialog_text(), { time: timeToString(this.timeslot()!.time, 'minutes') }),
+      message: interpolate(this.translations.events_deleteTimeslotDialog_text(), {
+        time: timeToString(this.timeslot()!.time, 'minutes'),
+      }),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
       acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
@@ -251,9 +253,5 @@ export class EventTimeslotComponent {
       ...timeslot.preconfigurations.flatMap(x => x.playerIds),
     ];
     this._store.dispatch(loadUsersByIdAction({ userIds: allUserIds }));
-  }
-
-  protected testEvent(e: unknown) {
-    console.log(e);
   }
 }

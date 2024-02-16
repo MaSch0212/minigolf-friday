@@ -43,7 +43,7 @@
             [pTooltip]="item.label"
             [rounded]="true"
             [text]="true"
-            [size]="'large'"
+            styleClass="h-14 w-14 text-[1.5rem] p-4"
             (onClick)="menu.toggle($event)"
           />
           <p-menu #menu [model]="item.items" [popup]="true" />
@@ -55,7 +55,7 @@
         [pTooltip]="item.label"
         [rounded]="true"
         [text]="true"
-        [size]="'large'"
+        styleClass="h-14 w-14 text-[1.5rem] p-4"
         [routerLink]="item.routerLink"
         (onClick)="item.command?.({ originalEvent: $event, item, index })"
       />

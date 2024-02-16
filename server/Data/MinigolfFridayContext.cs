@@ -22,7 +22,8 @@ public class MinigolfFridayContext : DbContext
     {
         _loggerFactory = loggerFactory;
         var folder = AppDomain.CurrentDomain.BaseDirectory;
-        DbPath = Path.Combine(folder, "MinigolfFriday.db");
+        DbPath = Path.Combine(folder, "data/MinigolfFriday.db");
+        Directory.CreateDirectory(Path.GetDirectoryName(DbPath) ?? string.Empty);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options) =>

@@ -13,6 +13,42 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
 
     public JwtSecurityToken GenerateToken(UserEntity user)
     {
+        return GenerateToken(
+            user.Id.ToString(),
+            user.Name,
+            user.GetLoginType(),
+            user.IsAdmin ? Roles.Admin : Roles.Player,
+            user.Email,
+            user.FacebookId
+        );
+    }
+
+    public JwtSecurityToken GenerateAdminToken()
+    {
+        return GenerateToken(
+            Globals.AdminUser.Id,
+            Globals.AdminUser.Name,
+            Globals.AdminUser.LoginType,
+            Roles.Admin,
+            null,
+            null
+        );
+    }
+
+    public string WriteToken(JwtSecurityToken token)
+    {
+        return _tokenHandler.WriteToken(token);
+    }
+
+    private JwtSecurityToken GenerateToken(
+        string userid,
+        string name,
+        UserLoginType loginType,
+        string role,
+        string? email,
+        string? facebookId
+    )
+    {
         var jwtOptions = _jwtOptions.CurrentValue;
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
@@ -20,17 +56,17 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Name, user.Name),
-            new(CustomClaimNames.LoginType, user.GetLoginType().ToString()),
-            new("role", user.IsAdmin ? Roles.Admin : Roles.Player),
+            new(JwtRegisteredClaimNames.Sub, userid),
+            new(JwtRegisteredClaimNames.Name, name),
+            new(CustomClaimNames.LoginType, loginType.ToString()),
+            new("role", role),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        if (user.FacebookId is not null)
-            claims.Add(new(CustomClaimNames.FacebookId, user.FacebookId));
-        if (user.Email is not null)
-            claims.Add(new(JwtRegisteredClaimNames.Email, user.Email));
+        if (facebookId is not null)
+            claims.Add(new(CustomClaimNames.FacebookId, facebookId));
+        if (email is not null)
+            claims.Add(new(JwtRegisteredClaimNames.Email, email));
 
         var token = new JwtSecurityToken(
             jwtOptions.Issuer,
@@ -41,10 +77,5 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
         );
 
         return token;
-    }
-
-    public string WriteToken(JwtSecurityToken token)
-    {
-        return _tokenHandler.WriteToken(token);
     }
 }

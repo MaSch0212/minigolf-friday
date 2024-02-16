@@ -4,7 +4,6 @@ import {
   Component,
   OnInit,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -74,7 +73,6 @@ export class MapsComponent implements OnInit {
         .pipe(ofType(deleteMapFailureAction))
         .subscribe(({ map }) => this.onMapDeletionFailed(map))
     );
-    effect(() => console.log(this.maps()));
   }
 
   public ngOnInit(): void {

@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MinigolfFriday.Data;
 using MinigolfFriday.Services;
 
@@ -32,7 +33,8 @@ public class AuthController(
     MinigolfFridayContext dbContext,
     IValidator<RegisterRequest> registerRequestValidator,
     IValidator<ChangePasswordRequest> changePasswordRequestValidator,
-    IValidator<UpdateEmailRequest> updateEmailRequestValidator
+    IValidator<UpdateEmailRequest> updateEmailRequestValidator,
+    IOptionsMonitor<AdminOptions> adminOptions
 ) : Controller
 {
     private readonly IFacebookService _facebookService = facebookService;
@@ -46,6 +48,7 @@ public class AuthController(
         changePasswordRequestValidator;
     private readonly IValidator<UpdateEmailRequest> _updateEmailRequestValidator =
         updateEmailRequestValidator;
+    private readonly IOptionsMonitor<AdminOptions> _adminOptions = adminOptions;
 
     [HttpPost("token")]
     [AllowAnonymous]
@@ -54,7 +57,20 @@ public class AuthController(
         UserEntity? user = null;
         if (User.Identity?.IsAuthenticated == true)
         {
-            user = User.GetLoginType() switch
+            var loginType = User.GetLoginType();
+            if (loginType == UserLoginType.Admin)
+            {
+                var t = _jwtService.GenerateAdminToken();
+                return Ok(
+                    new GetAccessTokenResponse(
+                        _jwtService.WriteToken(t),
+                        t.ValidTo,
+                        Globals.AdminUser
+                    )
+                );
+            }
+
+            user = loginType switch
             {
                 UserLoginType.Facebook
                     => await _userService.GetUserByFacebookIdAsync(
@@ -106,6 +122,15 @@ public class AuthController(
     [AllowAnonymous]
     public async ValueTask<IActionResult> Login([FromBody] LoginRequest request)
     {
+        if (
+            _adminOptions.CurrentValue.Username == request.Email
+            && _adminOptions.CurrentValue.Password == request.Password
+        )
+        {
+            var t = _jwtService.GenerateAdminToken();
+            return Ok(new LoginResponse(_jwtService.WriteToken(t), t.ValidTo, Globals.AdminUser));
+        }
+
         var user = await _userService.GetUserByEmailAsync(request.Email);
         if (user is null || !_hashingService.VerifyPassword(request.Password, user.Password!))
             return Unauthorized();
@@ -172,8 +197,8 @@ public class AuthController(
     [HttpPost("update-email")]
     public async ValueTask<IActionResult> UpdateEmail([FromBody] UpdateEmailRequest request)
     {
-        if (User.GetLoginType() == UserLoginType.Facebook)
-            return BadRequest("Cannot change E-Mail for facebook users.");
+        if (User.GetLoginType() != UserLoginType.Email)
+            return BadRequest("Can only update email for email users.");
 
         var validationResult = await _updateEmailRequestValidator.ValidateAsync(request);
         if (!validationResult.IsValid)

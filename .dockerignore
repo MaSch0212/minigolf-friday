@@ -1,0 +1,7 @@
+.vs/
+.vscode/
+client/.angular/
+client/node_modules/
+server/bin/
+server/dist/
+server/obj/
