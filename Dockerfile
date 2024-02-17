@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
+ARG BUILDTIME=Unknown
+ENV BUILDTIME=$BUILDTIME
 ENV ASPNETCORE_URLS=http://+:80
 ENV ADMIN__USERNAME=admin
 ENV ADMIN__PASSWORD=admin

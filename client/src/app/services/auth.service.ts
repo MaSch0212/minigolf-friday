@@ -60,7 +60,7 @@ export class AuthService implements OnDestroy {
         const socialUser = this._socialAuthState();
         if (socialUser) {
           this.refreshToken();
-        } else {
+        } else if (this._userLoginType() === 'facebook') {
           this._token.set(null);
           this._user.set(null);
         }
@@ -72,7 +72,7 @@ export class AuthService implements OnDestroy {
       const token = this._token();
       if (token) {
         localStorage.setItem(AuthService.TOKEN_KEY, token);
-      } else {
+      } else if (token === null) {
         this.clearTokenRefreshTimeout();
         localStorage.removeItem(AuthService.TOKEN_KEY);
         localStorage.removeItem(AuthService.TOKEN_EXPIRATION_KEY);

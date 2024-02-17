@@ -15,7 +15,7 @@ public class TimeOnlyJsonConverter : JsonConverter<TimeOnly>
     )
     {
         var timeString = reader.GetString() ?? throw new JsonException();
-        return TimeOnly.ParseExact(timeString, TimeFormat);
+        return TimeOnly.Parse(timeString);
     }
 
     public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)

@@ -14,14 +14,16 @@ import {
   AddPreconfigResponse,
   AddTimeSlotRequest,
   AddTimeSlotResponse,
+  BuildInstancesResponse,
   EventTimeslot,
   GetAllEventsResponse,
   GetEventResponse,
   toApiEvent,
   toMinigolfEventTimeslot,
 } from './models/api/event';
+import { RegisterForEventRequest } from './models/api/player-event';
 import { GetUsersByIdRequest } from './models/api/user';
-import { MinigolfEvent, MinigolfEventTimeslot } from './models/event';
+import { MinigolfEvent, MinigolfEventInstance, MinigolfEventTimeslot } from './models/event';
 import { AddMapResponse, GetMapsResponse } from './services/maps.service';
 import { events, getId, maps, users } from './stub-data';
 import { deepClone } from './utils/common.utils';
@@ -39,18 +41,18 @@ export function provideStubs() {
 
 function configureStub(stub: HttpClientEasyNetworkStub) {
   // #region Users
-  stub.stub('GET', 'users', async () => {
+  stub.stub('GET', 'administration/users', async () => {
     await defaultDelay();
     return respondWith(200, { users: users.map(deepClone) });
   });
 
-  stub.stub2<GetUsersByIdRequest>()('POST', 'users:by-ids', async ({ body }) => {
+  stub.stub2<GetUsersByIdRequest>()('POST', 'administration/users:by-ids', async ({ body }) => {
     await defaultDelay();
     const usersById = users.filter(p => body.userIds.includes(p.id));
     return respondWith(200, { users: usersById.map(deepClone) });
   });
 
-  stub.stub('GET', 'users/{id:string}', async ({ params }) => {
+  stub.stub('GET', 'administration/users/{id:string}', async ({ params }) => {
     await defaultDelay();
     const user = users.find(p => p.id === params.id);
     if (!user) {
@@ -61,19 +63,19 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
   // #endregion
 
   // #region Maps
-  stub.stub('GET', 'maps', async () => {
+  stub.stub('GET', 'administration/maps', async () => {
     await defaultDelay();
     return respondWith<GetMapsResponse>(200, { maps: maps.map(deepClone) });
   });
 
-  stub.stub('POST', 'maps', async ({ body }) => {
+  stub.stub('POST', 'administration/maps', async ({ body }) => {
     await defaultDelay();
     const map = { ...body.map, id: getId() };
     maps.push(map);
     return respondWith<AddMapResponse>(201, { id: map.id });
   });
 
-  stub.stub('PUT', 'maps', async ({ body }) => {
+  stub.stub('PUT', 'administration/maps', async ({ body }) => {
     await defaultDelay();
     const mapIndex = maps.findIndex(p => p.id === body.map.id);
     if (mapIndex === -1) {
@@ -83,7 +85,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     return respondWith(200);
   });
 
-  stub.stub('DELETE', 'maps/{id:string}', async ({ params }) => {
+  stub.stub('DELETE', 'administration/maps/{id:string}', async ({ params }) => {
     await defaultDelay();
     const mapIndex = maps.findIndex(p => p.id === params.id);
     if (mapIndex === -1) {
@@ -95,22 +97,26 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
   // #endregion
 
   // #region Events
-  stub.stub('GET', 'events?page={page?:number}&pageSize={pageSize?:number}', async ({ params }) => {
-    await defaultDelay();
+  stub.stub(
+    'GET',
+    'administration/events?page={page?:number}&pageSize={pageSize?:number}',
+    async ({ params }) => {
+      await defaultDelay();
 
-    const page = params.page ?? 1;
-    const pageSize = params.pageSize ?? 10;
+      const page = params.page ?? 1;
+      const pageSize = params.pageSize ?? 10;
 
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
 
-    return respondWith<z.infer<typeof GetAllEventsResponse>>(200, {
-      events: events.slice(start, end).map(x => toApiEvent(deepClone(x))),
-      totalAmount: events.length,
-    });
-  });
+      return respondWith<z.infer<typeof GetAllEventsResponse>>(200, {
+        events: events.slice(start, end).map(x => toApiEvent(deepClone(x))),
+        totalAmount: events.length,
+      });
+    }
+  );
 
-  stub.stub('GET', 'events/{id:string}', async ({ params }) => {
+  stub.stub('GET', 'administration/events/{id:string}', async ({ params }) => {
     await defaultDelay();
     const event = events.find(p => p.id === params.id);
     if (!event) {
@@ -121,7 +127,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     });
   });
 
-  stub.stub2<AddEventRequest>()('POST', 'events', async ({ body }) => {
+  stub.stub2<AddEventRequest>()('POST', 'administration/events', async ({ body }) => {
     await defaultDelay();
     const event: Draft<MinigolfEvent> = { ...body, id: getId(), timeslots: [] };
     events.push(event);
@@ -130,7 +136,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     });
   });
 
-  stub.stub('DELETE', 'events/{id:string}', async ({ params }) => {
+  stub.stub('DELETE', 'administration/events/{id:string}', async ({ params }) => {
     await defaultDelay();
     const eventIndex = events.findIndex(p => p.id === params.id);
     if (eventIndex === -1) {
@@ -142,7 +148,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
 
   stub.stub2<AddPlayerToPreconfigRequest>()(
     'POST',
-    'events:preconfigs/{preconfigId:string}/players',
+    'administration/events:preconfigs/{preconfigId:string}/players',
     async ({ body, params }) => {
       await defaultDelay();
       const preconfig = events
@@ -159,7 +165,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
 
   stub.stub(
     'DELETE',
-    'events:preconfigs/{preconfigId:string}/players/{playerId:string}',
+    'administration/events:preconfigs/{preconfigId:string}/players/{playerId:string}',
     async ({ params }) => {
       await defaultDelay();
       const preconfig = events
@@ -176,7 +182,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
 
   stub.stub2<AddTimeSlotRequest>()(
     'POST',
-    'events/{eventId:string}/timeslots',
+    'administration/events/{eventId:string}/timeslots',
     async ({ body, params }) => {
       await defaultDelay();
       const event = events.find(p => p.id === params.eventId);
@@ -194,7 +200,7 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     }
   );
 
-  stub.stub('DELETE', 'events:timeslots/{timeslotId:string}', async ({ params }) => {
+  stub.stub('DELETE', 'administration/events:timeslots/{timeslotId:string}', async ({ params }) => {
     await defaultDelay();
     const timeslot = events.flatMap(p => p.timeslots).find(p => p.id === params.timeslotId);
     if (!timeslot) {
@@ -208,35 +214,104 @@ function configureStub(stub: HttpClientEasyNetworkStub) {
     return respondWith(200);
   });
 
-  stub.stub('POST', 'events:timeslots/{timeslotId:string}/preconfig', async ({ params }) => {
-    await defaultDelay();
-    const timeslot = events.flatMap(p => p.timeslots).find(p => p.id === params.timeslotId);
-    if (!timeslot) {
-      return respondWith(404, { error: 'Timeslot not found' });
+  stub.stub(
+    'POST',
+    'administration/events:timeslots/{timeslotId:string}/preconfig',
+    async ({ params }) => {
+      await defaultDelay();
+      const timeslot = events.flatMap(p => p.timeslots).find(p => p.id === params.timeslotId);
+      if (!timeslot) {
+        return respondWith(404, { error: 'Timeslot not found' });
+      }
+      const preconfig = { id: getId(), playerIds: [] };
+      timeslot.preconfigurations.push(preconfig);
+      return respondWith<z.infer<typeof AddPreconfigResponse>>(201, { preconfig });
     }
-    const preconfig = { id: getId(), playerIds: [] };
-    timeslot.preconfigurations.push(preconfig);
-    return respondWith<z.infer<typeof AddPreconfigResponse>>(201, { preconfig });
-  });
+  );
 
-  stub.stub('DELETE', 'events:preconfigs/{preconfigId:string}', async ({ params }) => {
+  stub.stub(
+    'DELETE',
+    'administration/events:preconfigs/{preconfigId:string}',
+    async ({ params }) => {
+      await defaultDelay();
+      const preconfig = events
+        .flatMap(p => p.timeslots)
+        .flatMap(p => p.preconfigurations)
+        .find(p => p.id === params.preconfigId);
+      if (!preconfig) {
+        return respondWith(404, { error: 'Preconfig not found' });
+      }
+      const timeslot = events
+        .flatMap(p => p.timeslots)
+        .find(p => p.preconfigurations.includes(preconfig));
+      if (!timeslot) {
+        return respondWith(404, { error: 'Timeslot not found' });
+      }
+      timeslot.preconfigurations = timeslot.preconfigurations.filter(p => p.id !== preconfig.id);
+      return respondWith(200);
+    }
+  );
+
+  stub.stub(
+    'POST',
+    'administration/events/{eventId:string}/build-instances',
+    async ({ params }) => {
+      await defaultDelay();
+      const event = events.find(p => p.id === params.eventId);
+      if (!event) {
+        return respondWith(404, { error: 'Event not found' });
+      }
+      const instances: { [timeslotId: string]: Draft<MinigolfEventInstance>[] } = {};
+      for (const timeslot of event.timeslots) {
+        instances[timeslot.id] = new Array(Math.ceil(timeslot.playerIds.length / 5)).map(() => {
+          const id = getId();
+          return <Draft<MinigolfEventInstance>>{ id, groupCode: `group${id}`, playerIds: [] };
+        });
+        for (let i = 0; i < instances[timeslot.id].length; i++) {
+          instances[timeslot.id][i].playerIds = timeslot.playerIds.slice(i * 5, (i + 1) * 5);
+        }
+      }
+
+      const persist = Date.now() >= event.registrationDeadline.getTime();
+      if (persist) {
+        Object.entries(instances).forEach(([timeslotId, instances]) => {
+          const timeslot = event.timeslots.find(p => p.id === timeslotId);
+          if (timeslot) {
+            timeslot.instances = instances;
+          }
+        });
+      }
+      return respondWith<z.infer<typeof BuildInstancesResponse>>(200, {
+        isPersisted: persist,
+        instances,
+      });
+    }
+  );
+
+  stub.stub('GET', 'administration/events/{eventId:string}/instances', async ({ params }) => {
     await defaultDelay();
-    const preconfig = events
-      .flatMap(p => p.timeslots)
-      .flatMap(p => p.preconfigurations)
-      .find(p => p.id === params.preconfigId);
-    if (!preconfig) {
-      return respondWith(404, { error: 'Preconfig not found' });
+    const event = events.find(p => p.id === params.eventId);
+    if (!event) {
+      return respondWith(404, { error: 'Event not found' });
     }
-    const timeslot = events
-      .flatMap(p => p.timeslots)
-      .find(p => p.preconfigurations.includes(preconfig));
-    if (!timeslot) {
-      return respondWith(404, { error: 'Timeslot not found' });
+    const instances: { [timeslotId: string]: Draft<MinigolfEventInstance>[] } = {};
+    for (const timeslot of event.timeslots) {
+      instances[timeslot.id] = timeslot.instances ?? [];
     }
-    timeslot.preconfigurations = timeslot.preconfigurations.filter(p => p.id !== preconfig.id);
-    return respondWith(200);
+    return respondWith(200, { instances });
   });
+  // #endregion
+
+  // #region Player Events
+  stub.stub('GET', 'events', async ({ params }) => {});
+
+  stub.stub('GET', 'events/{id:string}', async ({ params }) => {});
+
+  stub.stub2<RegisterForEventRequest>()(
+    'POST',
+    'events/{id:string}/register',
+    async ({ body, params }) => {}
+  );
   // #endregion
 }
 

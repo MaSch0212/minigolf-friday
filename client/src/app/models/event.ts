@@ -5,6 +5,7 @@ export type MinigolfEvent = {
   readonly date: Date;
   readonly registrationDeadline: Date;
   readonly timeslots: readonly MinigolfEventTimeslot[];
+  readonly isStarted: boolean;
 };
 
 export type MinigolfEventTimeslot = {
@@ -14,7 +15,7 @@ export type MinigolfEventTimeslot = {
   readonly isFallbackAllowed: boolean;
   readonly preconfigurations: readonly MinigolfEventInstancePreconfiguration[];
   readonly playerIds: readonly string[];
-  readonly instances?: readonly MinigolfEventInstance[];
+  readonly instances: readonly MinigolfEventInstance[];
 };
 
 export type MinigolfEventInstancePreconfiguration = {

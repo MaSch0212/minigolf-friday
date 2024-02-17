@@ -1,10 +1,13 @@
-<div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
-  <p-button
-    [label]="translations.events_backToEvents()"
-    [text]="true"
-    icon="i-[mdi--arrow-left]"
-    (onClick)="navigateBack()"
-  />
+<div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto pb-4">
+  @if (hasFailed() || isBusy() || event()) {
+    <p-button
+      [label]="translations.shared_back()"
+      [pTooltip]="translations.events_backToEvents()"
+      [text]="true"
+      icon="i-[mdi--arrow-left]"
+      [routerLink]="['..']"
+    />
+  }
 
   @if (isBusy()) {
     <p-progressSpinner class="m-8 self-center" />
@@ -20,67 +23,149 @@
   } @else {
     @if (event(); as event) {
       <p-card>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center gap-4">
           <div class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2">
-            <div class="truncate text-right font-semibold">{{ translations.events_date() }}:</div>
-            <div>{{ event.date | date: 'mediumDate' : undefined : locale() }}</div>
-            <div class="truncate font-semibold">
-              {{ translations.events_registrationDeadline() }}:
-            </div>
-            <div>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</div>
+            <span>
+              <span class="i-[mdi--calendar-month] mr-2"></span>
+              <span class="truncate font-semibold">{{ translations.events_date() }}:</span>
+            </span>
+            <span>{{ event.date | date: 'mediumDate' : undefined : locale() }}</span>
+            <span>
+              <span class="i-[mdi--sign-caution] mr-2"></span>
+              <span class="truncate font-semibold"
+                >{{ translations.events_registrationDeadline() }}:</span
+              >
+            </span>
+            <span>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</span>
           </div>
+          @if (canStart()) {
+            <p-button
+              class="self-center"
+              icon="i-[mdi--play]"
+              [label]="translations.events_start()"
+              (onClick)="startEvent()"
+              [loading]="isStartBusy()"
+            />
+          }
         </div>
       </p-card>
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
-        <p-button
-          [label]="translations.shared_add()"
-          icon="i-[mdi--plus]"
-          (onClick)="createTimeslotDialog.open()"
-        />
+        @if (!event.isStarted) {
+          <p-button
+            [label]="translations.shared_add()"
+            icon="i-[mdi--plus]"
+            (onClick)="createTimeslotDialog.open()"
+          />
+        }
       </div>
 
-      <div class="flex grow flex-col overflow-auto">
-        <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
-          @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
-            <a
-              class="block min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
-              [class.border-t-[1px]]="index > 0"
-              [routerLink]="['timeslots', timeslot.id]"
-              pRipple
-            >
-              <div class="flex flex-row">
-                <span>
-                  {{ timeslot.time.hour | number: '2.0-0' }}:{{
-                    timeslot.time.minute | number: '2.0-0'
-                  }}</span
-                >
-                <div class="grow"></div>
-                <span>{{
-                  translations.events_playerAmount()
-                    | interpolate: { amount: timeslot.playerIds.length }
-                }}</span>
-              </div>
-            </a>
-          }
-          @if (event.timeslots.length === 0) {
-            <div class="px-4 py-2 text-center leading-8">
-              {{ translations.events_noTimeslots() }}
+      <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
+        @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
+          <a
+            class="block min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+            [class.border-t-[1px]]="index > 0"
+            [routerLink]="['timeslots', timeslot.id]"
+            pRipple
+          >
+            <div class="flex flex-row items-center gap-2">
+              <span class="i-[mdi--clock-time-four-outline]"></span>
+              <span class="grow">
+                {{ timeslot.time.hour | number: '2.0-0' }}:{{
+                  timeslot.time.minute | number: '2.0-0'
+                }}</span
+              >
+              @if (maps()[timeslot.mapId]; as map) {
+                <span class="i-[mdi--golf] ml-4"></span>
+                <span class="truncate">{{ map.name }}</span>
+              }
+              <span class="i-[mdi--account] ml-2"></span>
+              <span>{{ timeslot.playerIds.length }}</span>
             </div>
+          </a>
+        }
+        @if (event.timeslots.length === 0) {
+          <div class="px-4 py-2 text-center leading-8">
+            {{ translations.events_noTimeslots() }}
+          </div>
+        }
+      </div>
+
+      @if (canBuildInstances()) {
+        <div class="flex flex-row items-center pt-4">
+          <h2 class="m-0 grow">{{ translations.events_groups() }}</h2>
+          @if (!event.isStarted) {
+            <p-button
+              icon="i-[mdi--shuffle]"
+              [label]="
+                hasInstances()
+                  ? translations.events_rebuildGroups()
+                  : translations.events_buildGroups()
+              "
+              (onClick)="buildInstances()"
+              [loading]="isBuildBusy()"
+            />
           }
         </div>
+        <p-accordion>
+          @for (timeslot of timeslots(); track timeslot.id; let ti = $index) {
+            @if (timeslot.instances.length > 0) {
+              <h3 class="m-0 flex flex-row items-center gap-2 pb-2" [class.pt-4]="ti > 0">
+                <span class="i-[mdi--clock-time-four-outline]"></span>
+                <span class="grow">
+                  {{ timeslot.time.hour | number: '2.0-0' }}:{{
+                    timeslot.time.minute | number: '2.0-0'
+                  }}
+                </span>
+                @if (maps()[timeslot.mapId]; as map) {
+                  <span class="i-[mdi--golf] ml-4"></span>
+                  <span class="truncate">{{ map.name }}</span>
+                }
+              </h3>
+              @for (instance of timeslot.instances; track ii; let ii = $index) {
+                <p-accordionTab>
+                  <ng-template pTemplate="header">
+                    <span class="i-[mdi--pound] mr-2"></span>
+                    <span class="grow uppercase">{{ instance.groupCode }}</span>
+                    <span class="i-[mdi--account-group] mr-2"></span>
+                    <span>{{ instance.playerIds.length }}</span>
+                  </ng-template>
 
+                  <div class="flex flex-col gap-2">
+                    @for (playerId of instance.playerIds; track playerId; let pi = $index) {
+                      <div class="flex flex-row items-center gap-2">
+                        <span class="i-[mdi--account]"></span>
+                        <span>
+                          @if (allUsers()[playerId]; as user) {
+                            {{ user.name }}
+                          } @else {
+                            &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
+                            <span class="opacity-50">({{ playerId }})</span>
+                          }
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </p-accordionTab>
+              }
+            }
+          }
+        </p-accordion>
+      }
+
+      @if (!event.isStarted) {
         <p-button
-          class="mt-12 self-center"
+          class="mt-8 self-center"
           severity="danger"
+          [text]="true"
           [label]="translations.events_deleteEvent()"
-          icon="i-[mdi--delete-outline]"
+          icon="i-[mdi--delete]"
           (onClick)="deleteEvent()"
         />
-      </div>
+      }
 
-      <app-create-event-timeslot #createTimeslotDialog [event]="event" />
+      <app-event-timeslot-dialog #createTimeslotDialog [event]="event" />
     } @else {
       <div class="mt-16 flex flex-col items-center gap-8">
         <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
@@ -88,7 +173,7 @@
         <p-button
           [label]="translations.events_backToEvents()"
           icon="i-[mdi--arrow-left]"
-          (onClick)="navigateBack()"
+          [routerLink]="['..']"
         />
       </div>
     }

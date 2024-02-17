@@ -9,18 +9,20 @@ export class UsersService {
   private readonly _http = inject(HttpClient);
 
   public getUsers() {
-    return this._http.get<GetUsersResponse>('/api/users').pipe(mapUsingZod(GetUsersResponse));
+    return this._http
+      .get<GetUsersResponse>('/api/administration/users')
+      .pipe(mapUsingZod(GetUsersResponse));
   }
 
   public getUsersByIds(request: GetUsersByIdRequest) {
     return this._http
-      .post<GetUsersResponse>('/api/users:by-ids', request)
+      .post<GetUsersResponse>('/api/administration/users:by-ids', request)
       .pipe(mapUsingZod(GetUsersResponse));
   }
 
   public getUser(userId: string) {
     return this._http
-      .get<GetUsersResponse>(`/api/users/${userId}`)
+      .get<GetUsersResponse>(`/api/administration/users/${userId}`)
       .pipe(mapUsingZod(GetUsersResponse));
   }
 }

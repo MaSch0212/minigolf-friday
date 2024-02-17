@@ -49,7 +49,7 @@
 
   @layer components {
     .helper-text {
-      @apply px-4 line-clamp-2;
+      @apply line-clamp-2 px-4;
       &::before {
         @extend [class^='i-['];
         @extend [class^='i-[mdi--'];
@@ -98,19 +98,27 @@
   * {
     box-sizing: border-box;
   }
+
+  a {
+    color: inherit;
+  }
 }
 
 @layer adjustments {
   p-button[size='small'] .p-button-icon-only.p-button-rounded {
-    @apply w-8 h-8 p-0;
+    @apply h-8 w-8 p-0;
   }
 
   p-menubar .p-menuitem-icon:has(+ .p-menuitem-text:empty) {
     margin-right: 0;
   }
 
+  .p-component {
+    transition: opacity 0.3s ease-in-out;
+  }
+
   .p-dialog {
-    @apply p-6 gap-6 bg-surface-a;
+    @apply gap-6 bg-surface-a p-6;
   }
 
   .p-dialog-header,
@@ -124,7 +132,7 @@
   }
 
   .p-dialog-footer {
-    @apply flex flex-row gap-2 items-center justify-end flex-wrap-reverse;
+    @apply flex flex-row flex-wrap-reverse items-center justify-end gap-2;
 
     button {
       margin-right: 0;
@@ -169,14 +177,6 @@
       @apply px-3;
     }
 
-    input,
-    textarea,
-    .p-inputwrapper {
-      ~ label {
-        background: var(--surface-b);
-      }
-    }
-
     input:focus,
     input.p-filled,
     textarea:focus,
@@ -188,6 +188,17 @@
         padding: 0 4px;
         left: 8px;
         background: linear-gradient(180deg, var(--surface-a) 50%, var(--surface-b) 50%);
+      }
+
+      &:disabled,
+      &:has(input:disabled) {
+        ~ label {
+          background: linear-gradient(
+            180deg,
+            var(--surface-a) 50%,
+            color-mix(in srgb, var(--surface-a), var(--surface-b) 40%) 50%
+          );
+        }
       }
     }
 

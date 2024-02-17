@@ -21,20 +21,20 @@ export class MapsService {
   private readonly _http = inject(HttpClient);
 
   public getMaps() {
-    return this._http.get<GetMapsResponse>('/api/maps');
+    return this._http.get<GetMapsResponse>('/api/administration/maps');
   }
 
   public addMap(map: MinigolfMap) {
-    return this._http.post<AddMapResponse>('/api/maps', {
+    return this._http.post<AddMapResponse>('/api/administration/maps', {
       map,
     } satisfies AddMapRequest);
   }
 
   public updateMap(map: MinigolfMap) {
-    return this._http.put('/api/maps', { map } satisfies UpdateMapRequest);
+    return this._http.put('/api/administration/maps', { map } satisfies UpdateMapRequest);
   }
 
   public deleteMap(map: MinigolfMap) {
-    return this._http.delete(`/api/maps/${map.id}`);
+    return this._http.delete(`/api/administration/maps/${map.id}`);
   }
 }

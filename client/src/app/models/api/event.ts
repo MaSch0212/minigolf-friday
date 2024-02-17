@@ -32,7 +32,7 @@ export const EventTimeslot = z
     isFallbackAllowed: z.boolean(),
     preconfigurations: z.array(EventInstancePreconfiguration).readonly(),
     playerIds: z.array(z.string()).readonly(),
-    instances: z.array(EventInstance).optional().readonly(),
+    instances: z.array(EventInstance).readonly(),
   })
   .readonly();
 
@@ -42,6 +42,7 @@ export const Event = z
     date: z.string(),
     registrationDeadline: z.string(),
     timeslots: z.array(EventTimeslot).readonly(),
+    isStarted: z.boolean(),
   })
   .readonly();
 
@@ -64,6 +65,11 @@ export const AddTimeSlotResponse = z.object({
 
 export const BuildInstancesResponse = z.object({
   instances: z.record(z.array(EventInstance)),
+  isPersisted: z.boolean(),
+});
+
+export const GetInstancesResponse = z.object({
+  instances: z.record(z.array(EventInstance)),
 });
 
 export const AddPreconfigResponse = z.object({
@@ -74,12 +80,16 @@ export type GetAllEventsResponse = { events: MinigolfEvent[]; totalAmount: numbe
 export type AddEventResponse = { event: MinigolfEvent };
 export type GetEventResponse = { event: MinigolfEvent };
 export type AddTimeSlotResponse = { timeslot: MinigolfEventTimeslot };
-export type BuildInstancesResponse = { instances: Record<string, MinigolfEventInstance[]> };
+export type BuildInstancesResponse = {
+  instances: Record<string, MinigolfEventInstance[]>;
+  isPersisted: boolean;
+};
+export type GetInstancesResponse = { instances: Record<string, MinigolfEventInstance[]> };
 export type AddPreconfigResponse = { preconfig: MinigolfEventInstancePreconfiguration };
 
-export type AddEventRequest = { date: Date; registrationDeadline: Date };
+export type AddEventRequest = { date: string; registrationDeadline: Date };
 export type AddTimeSlotRequest = { time: string; mapId: string; isFallbackAllowed: boolean };
-export type UpdateTimeslotRequest = { time: string; mapId: string; isFallbackAllowed: boolean };
+export type UpdateTimeslotRequest = { mapId?: string; isFallbackAllowed?: boolean };
 export type AddPlayerToPreconfigRequest = { playerId: string };
 
 export function toMinigolfEvent(event: z.infer<typeof Event>): MinigolfEvent {
@@ -88,6 +98,7 @@ export function toMinigolfEvent(event: z.infer<typeof Event>): MinigolfEvent {
     date: new Date(event.date),
     registrationDeadline: new Date(event.registrationDeadline),
     timeslots: event.timeslots.map(toMinigolfEventTimeslot),
+    isStarted: event.isStarted,
   };
 }
 
@@ -114,6 +125,7 @@ export function toApiEvent(event: MinigolfEvent): z.infer<typeof Event> {
         ? event.registrationDeadline.toISOString()
         : event.registrationDeadline,
     timeslots: event.timeslots.map(toApiEventTimeslot),
+    isStarted: event.isStarted,
   };
 }
 
@@ -125,5 +137,6 @@ export function toApiEventTimeslot(timeslot: MinigolfEventTimeslot): z.infer<typ
     isFallbackAllowed: timeslot.isFallbackAllowed,
     preconfigurations: timeslot.preconfigurations,
     playerIds: timeslot.playerIds,
+    instances: timeslot.instances,
   };
 }

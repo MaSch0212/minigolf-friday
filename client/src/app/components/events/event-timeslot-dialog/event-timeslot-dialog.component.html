@@ -2,7 +2,11 @@
   [visible]="visible()"
   (visibleChange)="visible.set($event)"
   [modal]="true"
-  [header]="translations.events_createTimeslotDialog_title()"
+  [header]="
+    timeslot()
+      ? translations.events_updateTimeslotDialog_title()
+      : translations.events_createTimeslotDialog_title()
+  "
 >
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2" [formGroup]="form">
     @if (hasFailed()) {
@@ -10,7 +14,11 @@
         <ng-template pTemplate>
           <span class="i-[mdi--close-circle-outline] mr-2"></span>
           <span
-            >{{ translations.events_createTimeslotDialog_error_save() }}
+            >{{
+              timeslot()
+                ? translations.events_updateTimeslotDialog_error_save()
+                : translations.events_createTimeslotDialog_error_save()
+            }}
             {{ translations.shared_tryAgainLater() }}</span
           >
         </ng-template>
@@ -36,8 +44,10 @@
         optionValue="id"
         optionLabel="name"
         appendTo="body"
+        [filter]="true"
+        [filterFields]="['name']"
       />
-      <label>{{ translations.events_timeslot_map() }}</label>
+      <label>{{ translations.events_timeslot_mapToPlay() }}</label>
       <small [formControlErrors]="form.controls.mapId.errors"></small>
     </span>
 

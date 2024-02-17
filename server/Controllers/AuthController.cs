@@ -78,7 +78,7 @@ public class AuthController(
                     ),
                 UserLoginType.Email
                     => await _userService.GetUserByEmailAsync(
-                        User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value
+                        User.Claims.First(x => x.Type == ClaimTypes.Email).Value
                     ),
                 _ => null
             };
@@ -173,8 +173,8 @@ public class AuthController(
     [HttpPost("change-password")]
     public async ValueTask<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        if (User.GetLoginType() == UserLoginType.Facebook)
-            return BadRequest("Cannot change password for facebook users.");
+        if (User.GetLoginType() != UserLoginType.Email)
+            return BadRequest("Cannot only change password for email users.");
 
         var validationResult = await _changePasswordRequestValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -225,6 +225,9 @@ public class AuthController(
     [HttpPost("delete-account")]
     public async ValueTask<IActionResult> DeleteAccount()
     {
+        if (User.GetLoginType() == UserLoginType.Admin)
+            return BadRequest("Cannot delete admin account.");
+
         var user = await _userService.GetUserByEmailAsync(
             User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Email).Value
         );

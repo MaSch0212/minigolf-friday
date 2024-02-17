@@ -20,6 +20,7 @@
     }
     @if (events().length > 0 || !hasFailed()) {
       <p-button
+        class="self-end"
         [label]="translations.shared_add()"
         icon="i-[mdi--plus]"
         (onClick)="createDialog.open()"
@@ -38,9 +39,12 @@
               {{ event.date | date: 'fullDate' : undefined : locale() }}
             </a>
           }
+          @if (events().length === 0) {
+            <div class="px-4 py-2 text-center leading-8">{{ translations.events_noEvents() }}</div>
+          }
         </div>
         @if (isBusy()) {
-          <p-progressSpinner class="m-4 self-center" styleClass="w-16 h-16" strokeWidth="4" />
+          <p-progressSpinner class="m-4 self-center" styleClass="h-16 w-16" strokeWidth="4" />
         }
       </div>
     }

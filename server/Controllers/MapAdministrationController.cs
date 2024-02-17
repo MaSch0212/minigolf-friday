@@ -16,8 +16,8 @@ public record AddMapResponse(string Id);
 public record UpdateMapRequest(MinigolfMap Map);
 
 [Authorize(Roles = Roles.Admin)]
-[Route("api/maps")]
-public class MapsController(MinigolfFridayContext dbContext) : Controller
+[Route("api/administration/maps")]
+public class MapAdministrationController(MinigolfFridayContext dbContext) : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;
 

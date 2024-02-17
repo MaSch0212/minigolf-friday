@@ -16,6 +16,7 @@ import { MessagesModule } from 'primeng/messages';
 import { ActionState, hasActionFailed } from '../../../+state/action-state';
 import { ErrorTextDirective } from '../../../directives/error-text.directive';
 import { TranslateService } from '../../../services/translate.service';
+import { toDateOnlyString } from '../../../utils/date.utils';
 import { hasTouchScreen } from '../../../utils/user-agent.utils';
 
 @Component({
@@ -36,7 +37,7 @@ export class EventFormComponent {
   protected readonly hasTouchScreen = hasTouchScreen;
 
   @Output()
-  public readonly submitted = new EventEmitter<{ date: Date; registrationDeadline: Date }>();
+  public readonly submitted = new EventEmitter<{ date: string; registrationDeadline: Date }>();
 
   protected readonly form = this._formBuilder.group({
     date: this._formBuilder.control<Date | null>(null, Validators.required),
@@ -73,6 +74,6 @@ export class EventFormComponent {
     const { date, registrationDeadline } = this.form.value;
     if (!date || !registrationDeadline) return;
 
-    this.submitted.emit({ date, registrationDeadline });
+    this.submitted.emit({ date: toDateOnlyString(date), registrationDeadline });
   }
 }

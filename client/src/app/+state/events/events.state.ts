@@ -10,6 +10,7 @@ export type EventsFeatureState = EntityState<MinigolfEvent> & {
     loadOne: ActionState;
     add: ActionState;
     remove: ActionState;
+    start: ActionState;
     addTimeslot: ActionState;
     removeTimeslot: ActionState;
     buildInstances: ActionState;
@@ -33,6 +34,7 @@ export const initialEventsFeatureState: EventsFeatureState = eventEntityAdapter.
     loadOne: initialActionState,
     add: initialActionState,
     remove: initialActionState,
+    start: initialActionState,
     addTimeslot: initialActionState,
     removeTimeslot: initialActionState,
     buildInstances: initialActionState,

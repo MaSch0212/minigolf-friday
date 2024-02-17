@@ -44,6 +44,13 @@ export function timeToString(
   }
 }
 
+export function toDateOnlyString(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function dateWithTime(date: Date, time: Time): Date {
   const result = new Date(date);
   result.setHours(time.hour, time.minute, time.second, time.milisecond);
@@ -65,4 +72,10 @@ export function compareTimes(a: Time, b: Time): number {
     return a.second - b.second;
   }
   return a.milisecond - b.milisecond;
+}
+
+export function getTimeDifference(a: Time, b: Time): number {
+  const dateA = dateWithTime(new Date(), a);
+  const dateB = dateWithTime(new Date(), b);
+  return dateB.getTime() - dateA.getTime();
 }

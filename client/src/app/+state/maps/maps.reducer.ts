@@ -56,7 +56,7 @@ export const mapsReducer = createReducer<MapsFeatureState>(
     })
   ),
   on(actions.addMapSuccessAction, (state, { map }) =>
-    mapsEntityAdapter.addOne(
+    mapsEntityAdapter.upsertOne(
       map,
       produce(state, draft => {
         draft.actionState = { loading: false, loaded: true, error: null };

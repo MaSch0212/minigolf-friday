@@ -16,28 +16,34 @@ export const routes: Routes = [
     redirectTo: '/home',
   },
   {
+    path: 'home',
+    redirectTo: '/events',
+  },
+  {
     path: '',
     canActivate: getCanActivate([
       (_, state) => inject(AuthGuard).canActivate(state, { needsAdminRights: false }),
     ]),
     children: [
       {
-        path: 'home',
+        path: 'events',
         resolve: {
-          title: getTitleResolver(undefined),
+          title: getTitleResolver('nav_events', true),
         },
         loadComponent: () =>
-          import('./components/home/home.component').then(({ HomeComponent }) => HomeComponent),
+          import('./components/player-events/player-events.component').then(
+            ({ PlayerEventsComponent }) => PlayerEventsComponent
+          ),
       },
       {
         path: 'events/:id',
         resolve: {
-          title: getTitleResolver(undefined),
+          title: getTitleResolver('nav_event', true),
         },
         loadComponent: () =>
-          import('./components/events/event/event.component').then(
-            ({ EventComponent }) => EventComponent
-          ),
+          import(
+            './components/player-events/player-event-details/player-event-details.component'
+          ).then(({ PlayerEventDetailsComponent }) => PlayerEventDetailsComponent),
       },
     ],
   },

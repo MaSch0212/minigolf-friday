@@ -1,0 +1,183 @@
+<div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
+  @if (hasFailed() || isBusy() || event()) {
+    <p-button
+      [label]="translations.playerEvents_backToEvents()"
+      [text]="true"
+      icon="i-[mdi--arrow-left]"
+      [routerLink]="['..']"
+    />
+  }
+
+  @if (isBusy()) {
+    <p-progressSpinner class="m-8 self-center" />
+  } @else if (hasFailed()) {
+    <p-messages severity="error">
+      <ng-template pTemplate>
+        <span class="i-[mdi--close-circle-outline] mr-2"></span>
+        <span
+          >{{ translations.playerEvents_error_loadOne() }}
+          {{ translations.shared_tryAgainLater() }}</span
+        >
+      </ng-template>
+    </p-messages>
+  } @else {
+    <div class="flex flex-col gap-4 overflow-auto pb-4">
+      @if (event(); as event) {
+        <p-card>
+          <div class="flex flex-col items-center">
+            <div class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2">
+              <div class="truncate text-right font-semibold">{{ translations.events_date() }}:</div>
+              <div>{{ event.date | date: 'mediumDate' : undefined : locale() }}</div>
+              <div class="truncate font-semibold">
+                {{ translations.events_registrationDeadline() }}:
+              </div>
+              <div>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</div>
+            </div>
+          </div>
+        </p-card>
+
+        @if (!canRegister() && !event.isStarted) {
+          <p-messages severity="info">
+            <ng-template pTemplate>
+              <span class="i-[mdi--info-circle-outline] mr-2"></span>
+              <span>{{ translations.playerEvents_registrationClosed() }}</span>
+            </ng-template>
+          </p-messages>
+        }
+        @if (hasRegistrationFailed()) {
+          <p-messages severity="error">
+            <ng-template pTemplate>
+              <span class="i-[mdi--close-circle-outline] mr-2"></span>
+              <span
+                >{{ translations.playerEvents_error_registration() }}
+                {{ translations.shared_tryAgainLater() }}</span
+              >
+            </ng-template>
+          </p-messages>
+        }
+
+        @if (canRegister() || !event.isStarted) {
+          <h2 class="m-0 pt-4">{{ translations.playerEvents_registrations() }}</h2>
+          @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
+            <p-card>
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-row items-center gap-4">
+                  <ng-container
+                    *ngTemplateOutlet="timeslotTemplate; context: { $implicit: timeslot }"
+                  ></ng-container>
+                  <div class="grow"></div>
+                  <p-inputSwitch
+                    class="-my-4"
+                    [disabled]="
+                      !canRegister() || isChanginRegistration() || !canRegisterForTimeslot(timeslot)
+                    "
+                    [ngModel]="timeslot.isRegistered"
+                    (ngModelChange)="setTimeslotRegistration(timeslot, $event)"
+                  />
+                </div>
+                @if (timeslot.isRegistered && timeslot.isFallbackAllowed) {
+                  <div class="flex flex-row items-center">
+                    <span>{{ translations.playerEvents_fallbackTimeslot() }}</span>
+                    <p-button
+                      [pTooltip]="translations.shared_why()"
+                      icon="i-[mdi--help-circle-outline]"
+                      styleClass="h-8 w-8 p-2"
+                      [text]="true"
+                      [rounded]="true"
+                      (onClick)="fallbackInfo.toggle($event)"
+                    />
+                    <p-overlayPanel #fallbackInfo styleClass="max-w-96">
+                      {{ translations.playerEvents_fallbackTimeslotDescription() }}
+                    </p-overlayPanel>
+                    <p-dropdown
+                      class="ml-4 grow"
+                      appendTo="body"
+                      [disabled]="!canRegister() || isChanginRegistration()"
+                      [ngModel]="timeslot.chosenFallbackTimeslotId"
+                      (ngModelChange)="setFallbackTimeslot(timeslot, $event)"
+                      [options]="timeslotsWithoutFallback()"
+                      [optionValue]="'id'"
+                      [placeholder]="translations.playerEvents_noFallbackTimeslot()"
+                      [showClear]="true"
+                    >
+                      <ng-template pTemplate="selectedItem" let-item>
+                        <ng-container
+                          *ngTemplateOutlet="timeslotTemplate; context: { $implicit: item }"
+                        ></ng-container>
+                      </ng-template>
+                      <ng-template pTemplate="item" let-item>
+                        <ng-container
+                          *ngTemplateOutlet="timeslotTemplate; context: { $implicit: item }"
+                        ></ng-container>
+                      </ng-template>
+                    </p-dropdown>
+                  </div>
+                  @if (!timeslot.chosenFallbackTimeslotId) {
+                    <small class="-mt-2 text-yellow-400">
+                      {{ translations.playerEvents_warning_noFallbackTimeslot() }}
+                    </small>
+                  }
+                }
+              </div>
+            </p-card>
+          }
+        }
+        @if (event.isStarted) {
+          <h2 class="m-0 pt-4">{{ translations.playerEvents_games() }}</h2>
+          @for (game of games(); track game.timeslot.id) {
+            <p-card>
+              <h3 class="m-0 pb-8">
+                <span class="i-[mdi--clock-time-four-outline]"></span>
+                <span>
+                  {{ game.timeslot.time.hour | number: '2.0-0' }}:{{
+                    game.timeslot.time.minute | number: '2.0-0'
+                  }}
+                </span>
+              </h3>
+              <div class="grid grid-cols-[auto,1fr] gap-x-8 gap-y-4">
+                <span>
+                  <span class="i-[mdi--pound] mr-2"></span>
+                  <span>{{ translations.playerEvents_groupCode() }}:</span>
+                </span>
+                <span class="uppercase">{{ game.instance.groupCode }}</span>
+                <span>
+                  <span class="i-[mdi--golf] mr-2"></span>
+                  <span>{{ translations.playerEvents_map() }}</span>
+                </span>
+                <span>{{ game.instance.map.name }}</span>
+                <span>
+                  <span class="i-[mdi--account-group] mr-2"></span>
+                  <span>{{ translations.playerEvents_coPlayers() }}:</span>
+                </span>
+                <div class="flex flex-col">
+                  @for (player of game.instance.coPlayers; track player.id) {
+                    @if (player.id !== user()?.id) {
+                      <span>{{ player.name }}</span>
+                    }
+                  }
+                </div>
+              </div>
+            </p-card>
+          }
+        }
+      } @else {
+        <div class="mt-16 flex flex-col items-center gap-8">
+          <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
+          <h1 class="m-0 text-center">{{ translations.playerEvents_notFound() }}</h1>
+          <p-button
+            [label]="translations.playerEvents_backToEvents()"
+            icon="i-[mdi--arrow-left]"
+            [routerLink]="['..']"
+          />
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<ng-template let-item #timeslotTemplate>
+  <div class="flex flex-row items-center gap-4">
+    <span class="i-[mdi--clock-time-four-outline]"></span>
+    <span> {{ item.time.hour | number: '2.0-0' }}:{{ item.time.minute | number: '2.0-0' }} </span>
+  </div>
+</ng-template>

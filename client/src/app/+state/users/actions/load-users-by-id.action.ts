@@ -24,7 +24,7 @@ export const loadUsersByIdAction = createHttpAction<
 
 export const loadUsersByIdReducers: Reducers<UsersFeatureState> = [
   on(loadUsersByIdAction.success, (state, { response }) =>
-    userEntityAdapter.addMany(response.users, state)
+    userEntityAdapter.upsertMany(response.users, state)
   ),
   handleHttpAction(
     'loadByIds',

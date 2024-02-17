@@ -24,7 +24,7 @@ export const loadEventsAction = createHttpAction<{ reload?: boolean }, GetAllEve
 
 export const loadEventsReducers: Reducers<EventsFeatureState> = [
   on(loadEventsAction.success, (state, { props, response }) =>
-    eventEntityAdapter.addMany(
+    eventEntityAdapter.upsertMany(
       response.events,
       props.reload
         ? eventEntityAdapter.removeAll(

@@ -10,7 +10,14 @@
 >
   <div class="grid grid-cols-1 gap-4" [formGroup]="form">
     <span class="p-float-label required">
-      <input pInputText [id]="id('name')" type="text" formControlName="name" autofocus />
+      <input
+        pInputText
+        [id]="id('name')"
+        type="text"
+        formControlName="name"
+        autofocus
+        (keyup.enter)="submit()"
+      />
       <label [htmlFor]="id('name')">{{ translations.maps_dialog_name() }}</label>
     </span>
   </div>

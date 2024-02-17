@@ -54,7 +54,10 @@
     {
       "label": "🐋 Build docker image",
       "type": "shell",
-      "command": "docker build -t marc-nas:4000/minigolf-friday .",
+      "options": {
+        "cwd": "${workspaceFolder}/scripts"
+      },
+      "command": "pnpm docker:build",
       "group": {
         "kind": "build"
       }
@@ -62,7 +65,10 @@
     {
       "label": "🐋 Push docker image",
       "type": "shell",
-      "command": "docker push marc-nas:4000/minigolf-friday",
+      "options": {
+        "cwd": "${workspaceFolder}/scripts"
+      },
+      "command": "pnpm docker:push",
       "group": {
         "kind": "build"
       }

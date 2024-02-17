@@ -9,6 +9,7 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideAppState } from './+state/app';
 import { provideEventsState } from './+state/events';
 import { provideMapsState } from './+state/maps';
+import { providePlayerEventsState } from './+state/player-events';
 import { provideUsersState } from './+state/users';
 import { routes } from './app.routes';
 import { environment } from './environments/environment';
@@ -28,6 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideUsersState(),
     provideMapsState(),
     provideEventsState(),
+    providePlayerEventsState(),
     environment.getProviders(),
     provideAuth(),
   ],

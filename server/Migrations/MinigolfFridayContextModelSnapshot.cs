@@ -29,7 +29,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("PlayersId");
 
-                    b.ToTable("EventInstanceEntityUserEntity", (string)null);
+                    b.ToTable("EventInstanceEntityUserEntity");
                 });
 
             modelBuilder.Entity("EventInstancePreconfigurationEntityUserEntity", b =>
@@ -44,7 +44,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("PlayersId");
 
-                    b.ToTable("EventInstancePreconfigurationEntityUserEntity", (string)null);
+                    b.ToTable("EventInstancePreconfigurationEntityUserEntity");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.EventEntity", b =>
@@ -56,12 +56,15 @@ namespace MinigolfFriday.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsStarted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTimeOffset>("RegistrationDeadline")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.EventInstanceEntity", b =>
@@ -81,7 +84,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("EventTimeslotId");
 
-                    b.ToTable("EventInstances", (string)null);
+                    b.ToTable("EventInstances");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.EventInstancePreconfigurationEntity", b =>
@@ -97,7 +100,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("EventTimeslotId");
 
-                    b.ToTable("EventInstancePreconfigurations", (string)null);
+                    b.ToTable("EventInstancePreconfigurations");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.EventPlayerRegistrationEntity", b =>
@@ -117,7 +120,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("EventPlayerRegistration", (string)null);
+                    b.ToTable("EventPlayerRegistration");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.EventTimeslotEntity", b =>
@@ -145,7 +148,7 @@ namespace MinigolfFriday.Migrations
                     b.HasIndex("EventId", "Time")
                         .IsUnique();
 
-                    b.ToTable("EventTimeslots", (string)null);
+                    b.ToTable("EventTimeslots");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.MinigolfMapEntity", b =>
@@ -160,7 +163,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MinigolfMaps", (string)null);
+                    b.ToTable("MinigolfMaps");
                 });
 
             modelBuilder.Entity("MinigolfFriday.UserEntity", b =>
@@ -190,7 +193,7 @@ namespace MinigolfFriday.Migrations
                     b.HasIndex("FacebookId")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("UserEntityUserEntity", b =>
@@ -205,7 +208,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("AvoidedById");
 
-                    b.ToTable("UserEntityUserEntity", (string)null);
+                    b.ToTable("UserEntityUserEntity");
                 });
 
             modelBuilder.Entity("UserEntityUserEntity1", b =>
@@ -220,7 +223,7 @@ namespace MinigolfFriday.Migrations
 
                     b.HasIndex("PreferredById");
 
-                    b.ToTable("UserEntityUserEntity1", (string)null);
+                    b.ToTable("UserEntityUserEntity1");
                 });
 
             modelBuilder.Entity("EventInstanceEntityUserEntity", b =>

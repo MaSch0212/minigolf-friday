@@ -40,9 +40,14 @@
     "registrationDeadline": "Registration deadline",
     "timeslots": "Timeslots",
     "playerAmount": "{{amount}} Player(s)",
+    "noEvents": "No events available.",
     "noTimeslots": "No timeslots available.",
     "deleteEvent": "Delete event",
     "deleteTimeslot": "Delete timeslot",
+    "start": "Start event",
+    "groups": "Groups",
+    "buildGroups": "Build groups",
+    "rebuildGroups": "Rebuild groups",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",
@@ -52,7 +57,8 @@
       "noPlayers": "For this timeslot, no players have registered yet.",
       "unknownPlayer": "Unknown player",
       "time": "Start time",
-      "map": "Map to be played",
+      "mapToPlay": "Map to be played",
+      "map": "Map",
       "isFallbackAllowed": "Players can define a fallback timeslot"
     },
     "createDialog": {
@@ -67,6 +73,12 @@
         "save": "Failed to create timeslot."
       }
     },
+    "updateTimeslotDialog": {
+      "title": "Zeitslot bearbeiten",
+      "error": {
+        "save": "Fehler beim Speichern des Zeitslots."
+      }
+    },
     "deleteDialog": {
       "title": "Delete event",
       "text": "Are you sure you want to delete event {{date}}?"
@@ -79,6 +91,10 @@
       "title": "Delete preconfigured group",
       "text": "Are you sure you want to delete preconfigured group with {{playerIds.length}} players?"
     },
+    "startDialog": {
+      "title": "Start event",
+      "text": "Are you sure you want to start event {{date}}? The groups cannot be changed after the event has started."
+    },
     "error": {
       "load": "Failed to load events.",
       "loadOne": "Failed to load event.",
@@ -86,7 +102,9 @@
       "removePlayerFromPreconfig": "Failed to remove player from preconfigured group.",
       "delete": "Failed to delete event.",
       "deleteTimeslot": "Failed to delete timeslot.",
-      "deletePreconfig": "Failed to delete preconfigured group."
+      "deletePreconfig": "Failed to delete preconfigured group.",
+      "start": "Failed to start event.",
+      "buildGroups": "Failed to build groups."
     }
   },
   "maps": {
@@ -112,18 +130,50 @@
       "load": "Failed to load users."
     }
   },
+  "playerEvents": {
+    "notFound": "This event does not exist.",
+    "currentEvents": "Current events",
+    "pastEvents": "Past events",
+    "noEvents": "No events available.",
+    "notRegistered": "Not registered",
+    "registered": "Registered ({{timeslots}} timeslot(s))",
+    "backToEvents": "Back to events",
+    "registrationClosed": "The registration for this event is closed.",
+    "registrations": "Registrations",
+    "fallbackTimeslot": "Fallback timeslot",
+    "fallbackTimeslotDescription": "This timeslot is not as popular as the others. It can happend that if too few peaple register for this timeslot, it will not take place. Therefore you can specify a fallback timeslot that will be used if this timeslot is canceled.",
+    "noFallbackTimeslot": "None",
+    "games": "Games",
+    "time": "Time",
+    "groupCode": "Group code",
+    "coPlayers": "Co-players",
+    "map": "Map",
+    "error": {
+      "load": "Failed to load events.",
+      "loadOne": "Failed to load event.",
+      "registration": "Failed to update your registrations."
+    },
+    "warning": {
+      "noFallbackTimeslot": "Without a fallback timeslot your might not get into a game."
+    }
+  },
   "shared": {
     "tryAgainLater": "Please try again later.",
     "add": "Add",
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
+    "edit": "Edit",
     "ok": "OK",
     "email": "Email",
     "password": "Password",
     "name": "Name",
     "or": "or",
-    "back": "Back"
+    "back": "Back",
+    "why": "Why?",
+    "start": "Start",
+    "yes": "Yes",
+    "no": "No"
   },
   "validation": {
     "required": "Cannot be blank.",

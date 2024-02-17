@@ -15,7 +15,7 @@
             (onClick)="loginWithFacebook()"
           />
           <p-divider [align]="'center'">{{ translations.shared_or() }}</p-divider>
-          <form #form class="flex flex-col gap-4" [formGroup]="loginForm" (submit)="loginByEmail()">
+          <form class="flex flex-col gap-4" [formGroup]="loginForm" (ngSubmit)="loginByEmail()">
             <span class="p-float-label required">
               <input pInputText id="login-email" type="email" formControlName="email" />
               <label for="login-email">{{ translations.shared_email() }}</label>
@@ -26,14 +26,14 @@
                 pInputText
                 type="password"
                 formControlName="password"
-                (keyup.enter)="form.submit()"
+                (keyup.enter)="loginByEmail()"
               />
               <label>{{ translations.shared_password() }}</label>
               <small [formControlErrors]="loginForm.controls.password.errors"></small>
             </span>
             <div class="flex flex-row flex-wrap-reverse justify-end gap-2">
               <p-button
-                icon="i-[mdi--account-plus-outline]"
+                icon="i-[mdi--account-plus]"
                 [text]="true"
                 [label]="translations.login_register()"
                 (onClick)="isRegister.set(true)"
@@ -69,6 +69,7 @@
               id="register-confirm-password"
               formControlName="confirmPassword"
               [feedback]="false"
+              (keyup.enter)="register()"
             />
             <label for="register-confirm-password">{{
               translations.login_confirmPassword()

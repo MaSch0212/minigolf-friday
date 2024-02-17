@@ -12,7 +12,8 @@ public static class EventMapper
             entity.Id.ToString(),
             entity.Date,
             entity.RegistrationDeadline,
-            entity.Timeslots.Select(ToModel)
+            entity.Timeslots?.Select(ToModel) ?? [],
+            entity.IsStarted
         );
     }
 
@@ -24,7 +25,8 @@ public static class EventMapper
             entity.MapId.ToString(),
             entity.IsFallbackAllowed,
             entity.Preconfigurations.Select(ToModel),
-            entity.Registrations.Select(x => x.PlayerId.ToString()).Distinct()
+            entity.Registrations.Select(x => x.PlayerId.ToString()).Distinct(),
+            entity.Instances.Select(ToModel)
         );
     }
 
@@ -55,6 +57,9 @@ public static class EventMapper
             .ThenInclude(x => x.Players)
             .Include(x => x.Timeslots)
             .ThenInclude(x => x.Registrations)
+            .Include(x => x.Timeslots)
+            .ThenInclude(x => x.Instances)
+            .ThenInclude(x => x.Players)
             .AsSplitQuery();
     }
 }

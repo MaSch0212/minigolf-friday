@@ -14,7 +14,7 @@ public class DateOnlyJsonConverter : JsonConverter<DateOnly>
     )
     {
         var dateString = reader.GetString() ?? throw new JsonException();
-        return DateOnly.ParseExact(dateString, DateFormat);
+        return DateOnly.Parse(dateString);
     }
 
     public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)

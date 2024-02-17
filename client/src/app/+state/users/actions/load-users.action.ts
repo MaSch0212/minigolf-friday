@@ -23,7 +23,7 @@ export const loadUsersAction = createHttpAction<{ reload?: boolean }, GetUsersRe
 
 export const loadUsersReducers: Reducers<UsersFeatureState> = [
   on(loadUsersAction.success, (state, { response }) =>
-    userEntityAdapter.addMany(response.users, state)
+    userEntityAdapter.upsertMany(response.users, state)
   ),
   handleHttpAction(
     'load',

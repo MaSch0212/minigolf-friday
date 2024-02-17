@@ -1,258 +1,133 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using MinigolfFriday.Data;
 using MinigolfFriday.Mappers;
-using MinigolfFriday.Migrations;
 using MinigolfFriday.Models;
 
 namespace MinigolfFriday.Controllers;
 
-public record GetAllEventsResponse(IEnumerable<Event> Events, int TotalAmount);
+public record GetPlayerEventsResponse(IEnumerable<PlayerEvent> Events, int TotalAmount);
 
-public record AddEventRequest(DateOnly Date, DateTimeOffset RegistrationDeadline);
+public record GetPlayerEventResponse(PlayerEvent Event);
 
-public record AddEventResponse(Event Event);
+public record RegisterForEventRequest(IEnumerable<EventTimeslotRegistration> TimeslotRegistrations);
 
-public record GetEventResponse(Event Event);
-
-public record AddTimeSlotRequest(TimeOnly Time, string MapId, bool IsFallbackAllowed);
-
-public record AddTimeSlotResponse(EventTimeslot Timeslot);
-
-public record BuildInstancesResponse(Dictionary<string, EventInstance[]> Instances);
-
-public record UpdateTimeslotRequest(TimeOnly Time, string MapId, bool IsFallbackAllowed);
-
-public record AddPreconfigResponse(EventInstancePreconfiguration Preconfig);
-
-public record AddPlayerToPreconfigRequest(string PlayerId);
-
-[Authorize(Roles = Roles.Admin)]
-[Route("api")]
+[Authorize(Roles = $"{Roles.Admin},{Roles.Player}")]
+[Route("api/events")]
 public class EventsController(MinigolfFridayContext dbContext) : Controller
 {
     private readonly MinigolfFridayContext _dbContext = dbContext;
 
-    [HttpGet("events")]
-    public async ValueTask<IActionResult> GetAllEvents(int page = 1, int pageSize = 25)
+    [HttpGet]
+    public async ValueTask<IActionResult> GetEvents(int page = 1, int pageSize = 25)
     {
-        var eventCount = await _dbContext.Events.CountAsync();
+        var strUserId = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (strUserId is null || !Guid.TryParse(strUserId, out var userId))
+            return Forbid();
+
         var events = await _dbContext
             .Events
-            .WithIncludes()
+            .WithPlayerIncludes()
             .OrderByDescending(e => e.Date)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(x => x.ToModel())
+            .Select(@event => @event.ToPlayerModel(userId))
             .ToListAsync();
-        return Ok(new GetAllEventsResponse(events, eventCount));
+        return Ok(new GetPlayerEventsResponse(events, await _dbContext.Events.CountAsync()));
     }
 
-    [HttpPost("events")]
-    public async ValueTask<IActionResult> AddEvent([FromBody] AddEventRequest request)
+    [HttpGet("{eventId}")]
+    public async ValueTask<IActionResult> GetEvent(string eventId)
     {
-        var entity = new EventEntity
-        {
-            Id = Guid.NewGuid(),
-            Date = request.Date,
-            RegistrationDeadline = request.RegistrationDeadline
-        };
-        _dbContext.Events.Add(entity);
-        await _dbContext.SaveChangesAsync();
-        return Ok(new AddEventResponse(entity.ToModel()));
-    }
-
-    [HttpGet("events/{id}")]
-    public async ValueTask<IActionResult> GetEvent(string id)
-    {
-        if (!Guid.TryParse(id, out var eventId))
+        var strUserId = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (strUserId is null || !Guid.TryParse(strUserId, out var userId))
+            return Forbid();
+        if (!Guid.TryParse(eventId, out var eventIdGuid))
             return BadRequest("Invalid event id.");
 
         var @event = await _dbContext
             .Events
-            .WithIncludes()
-            .Where(x => x.Id == eventId)
-            .Select(x => x.ToModel())
+            .WithPlayerIncludes()
+            .Where(x => x.Id == eventIdGuid)
+            .Select(@event => @event.ToPlayerModel(userId))
             .FirstOrDefaultAsync();
         if (@event is null)
-            return NotFound();
-        return Ok(new GetEventResponse(@event));
+            return NotFound("Event not found.");
+
+        return Ok(new GetPlayerEventResponse(@event));
     }
 
-    [HttpDelete("events/{id}")]
-    public async ValueTask<IActionResult> RemoveEvent(string id)
+    [HttpPost("{eventId}/register")]
+    public async ValueTask<IActionResult> RegisterForEvent(
+        string eventId,
+        [FromBody] RegisterForEventRequest request
+    )
     {
-        if (!Guid.TryParse(id, out var eventId))
+        if (User.GetLoginType() == UserLoginType.Admin)
+            return BadRequest("The admin account cannot register for events.");
+
+        var strUserId = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (strUserId is null || !Guid.TryParse(strUserId, out var userId))
+            return Forbid();
+        if (!Guid.TryParse(eventId, out var eventIdGuid))
             return BadRequest("Invalid event id.");
 
-        var @event = await _dbContext.Events.FindAsync(eventId);
+        var @event = await _dbContext.Events.FindAsync(eventIdGuid);
         if (@event is null)
-            return NotFound();
+            return NotFound("Event not found.");
+        if (@event.RegistrationDeadline < DateTime.UtcNow)
+            return BadRequest("Event registration deadline has passed.");
+        if (@event.IsStarted)
+            return BadRequest("Event has already started.");
 
-        _dbContext.Events.Remove(@event);
-        await _dbContext.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPost("events/{id}/timeslots")]
-    public async ValueTask<IActionResult> AddTimeSlot(
-        string id,
-        [FromBody] AddTimeSlotRequest request
-    )
-    {
-        if (!Guid.TryParse(id, out var eventId))
-            return BadRequest("Invalid event id.");
-        if (!Guid.TryParse(request.MapId, out var mapId))
-            return BadRequest("Invalid map id.");
-
-        var @event = await _dbContext.Events.FindAsync(eventId);
-        if (@event is null)
-            return NotFound();
-
-        var map = await _dbContext.Maps.FindAsync(mapId);
-        if (map is null)
-            return BadRequest("Invalid map id.");
-
-        var timeslot = new EventTimeslotEntity
+        var registrations = await _dbContext
+            .EventPlayerRegistrations
+            .Where(x => x.PlayerId == userId && x.EventTimeslot.EventId == eventIdGuid)
+            .ToArrayAsync();
+        _dbContext
+            .EventPlayerRegistrations
+            .RemoveRange(
+                registrations.Where(
+                    x =>
+                        !request
+                            .TimeslotRegistrations
+                            .Any(y => y.TimeslotId == x.EventTimeslotId.ToString())
+                )
+            );
+        foreach (var reg in request.TimeslotRegistrations)
         {
-            Id = Guid.NewGuid(),
-            EventId = @event.Id,
-            Time = request.Time,
-            MapId = map.Id,
-            IsFallbackAllowed = request.IsFallbackAllowed
-        };
-        _dbContext.EventTimeslots.Add(timeslot);
+            var existing = registrations.FirstOrDefault(
+                x => x.EventTimeslotId.ToString() == reg.TimeslotId
+            );
+            if (existing is null)
+            {
+                _dbContext
+                    .EventPlayerRegistrations
+                    .Add(
+                        new EventPlayerRegistrationEntity
+                        {
+                            EventTimeslotId = Guid.Parse(reg.TimeslotId),
+                            PlayerId = userId,
+                            FallbackEventTimeslotId = reg.FallbackTimeslotId is null
+                                ? null
+                                : Guid.Parse(reg.FallbackTimeslotId)
+                        }
+                    );
+            }
+            else
+            {
+                existing.FallbackEventTimeslotId = reg.FallbackTimeslotId is null
+                    ? null
+                    : Guid.Parse(reg.FallbackTimeslotId);
+            }
+        }
         await _dbContext.SaveChangesAsync();
-        return Ok(new AddTimeSlotResponse(timeslot.ToModel()));
-    }
 
-    [HttpGet("events/{id}/build-instances")]
-    public async ValueTask<IActionResult> BuildInstances(string id)
-    {
-        throw new NotImplementedException();
-    }
-
-    [HttpPatch("events:timeslots/{id}")]
-    public async ValueTask<IActionResult> UpdateTimeslot(
-        string id,
-        [FromBody] UpdateTimeslotRequest request
-    )
-    {
-        if (!Guid.TryParse(id, out var timeslotId))
-            return BadRequest("Invalid timeslot id.");
-        if (!Guid.TryParse(request.MapId, out var mapId))
-            return BadRequest("Invalid map id.");
-
-        var timeslot = await _dbContext.EventTimeslots.FindAsync(timeslotId);
-        if (timeslot is null)
-            return NotFound();
-
-        var map = await _dbContext.Maps.FindAsync(mapId);
-        if (map is null)
-            return BadRequest("Invalid map id.");
-
-        timeslot.Time = request.Time;
-        timeslot.Map = map;
-        timeslot.IsFallbackAllowed = request.IsFallbackAllowed;
-        await _dbContext.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpDelete("events:timeslots/{id}")]
-    public async ValueTask<IActionResult> RemoveTimeslot(string id)
-    {
-        if (!Guid.TryParse(id, out var timeslotId))
-            return BadRequest("Invalid timeslot id.");
-
-        var timeslot = await _dbContext.EventTimeslots.FindAsync(timeslotId);
-        if (timeslot is null)
-            return NotFound();
-
-        _dbContext.EventTimeslots.Remove(timeslot);
-        await _dbContext.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPost("events:timeslots/{id}/preconfig")]
-    public async ValueTask<IActionResult> AddPreconfig(string id)
-    {
-        if (!Guid.TryParse(id, out var timeslotId))
-            return BadRequest("Invalid timeslot id.");
-
-        var timeslot = await _dbContext.EventTimeslots.FindAsync(timeslotId);
-        if (timeslot is null)
-            return NotFound();
-
-        var preconfig = new EventInstancePreconfigurationEntity
-        {
-            Id = Guid.NewGuid(),
-            EventTimeslotId = timeslot.Id
-        };
-        timeslot.Preconfigurations.Add(preconfig);
-        await _dbContext.SaveChangesAsync();
-        return Ok(
-            new AddPreconfigResponse(new EventInstancePreconfiguration(preconfig.Id.ToString(), []))
-        );
-    }
-
-    [HttpDelete("events:preconfigs/{id}")]
-    public async ValueTask<IActionResult> RemovePreconfig(string id)
-    {
-        if (!Guid.TryParse(id, out var preconfigId))
-            return BadRequest("Invalid preconfig id.");
-
-        var preconfig = await _dbContext.EventInstancePreconfigurations.FindAsync(preconfigId);
-        if (preconfig is null)
-            return NotFound();
-
-        _dbContext.EventInstancePreconfigurations.Remove(preconfig);
-        await _dbContext.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPost("events:preconfigs/{id}/players")]
-    public async ValueTask<IActionResult> AddPlayerToPreconfig(
-        string id,
-        [FromBody] AddPlayerToPreconfigRequest request
-    )
-    {
-        if (!Guid.TryParse(id, out var preconfigId))
-            return BadRequest("Invalid preconfig id.");
-        if (!Guid.TryParse(request.PlayerId, out var playerId))
-            return BadRequest("Invalid player id.");
-
-        var preconfig = await _dbContext.EventInstancePreconfigurations.FindAsync(preconfigId);
-        if (preconfig is null)
-            return NotFound();
-
-        var player = await _dbContext.Users.FindAsync(playerId);
-        if (player is null)
-            return BadRequest("Invalid player id.");
-
-        preconfig.Players.Add(player);
-        await _dbContext.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpDelete("events:preconfigs/{id}/players/{playerId}")]
-    public async ValueTask<IActionResult> RemovePlayerFromPreconfig(string id, string playerId)
-    {
-        if (!Guid.TryParse(id, out var preconfigId))
-            return BadRequest("Invalid preconfig id.");
-        if (!Guid.TryParse(playerId, out var playerUId))
-            return BadRequest("Invalid player id.");
-
-        var preconfig = await _dbContext.EventInstancePreconfigurations.FindAsync(preconfigId);
-        if (preconfig is null)
-            return NotFound();
-
-        var player = await _dbContext.Users.FindAsync(playerUId);
-        if (player is null)
-            return BadRequest("Invalid player id.");
-
-        preconfig.Players.Remove(player);
-        await _dbContext.SaveChangesAsync();
         return Ok();
     }
 }

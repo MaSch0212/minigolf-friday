@@ -4,36 +4,43 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { filter, map } from 'rxjs';
+import { filter, map, timer } from 'rxjs';
 
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import {
+  buildEventInstancesAction,
   loadEventAction,
   removeEventAction,
   selectEvent,
   selectEventsActionState,
+  startEventAction,
 } from '../../../+state/events';
+import { loadMapsAction, mapSelectors } from '../../../+state/maps';
+import { loadUsersAction, userSelectors } from '../../../+state/users';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { TranslateService } from '../../../services/translate.service';
+import { ifTruthy } from '../../../utils/common.utils';
 import { compareTimes } from '../../../utils/date.utils';
 import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
-import { CreateEventTimeslotComponent } from '../create-event-timeslot/create-event-timeslot.component';
 import { EventFormComponent } from '../event-form/event-form.component';
+import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-timeslot-dialog.component';
 
 @Component({
   selector: 'app-event-details',
   standalone: true,
   imports: [
+    AccordionModule,
     ButtonModule,
     CardModule,
     CommonModule,
-    CreateEventTimeslotComponent,
+    EventTimeslotDialogComponent,
     EventFormComponent,
     InterpolatePipe,
     MessagesModule,
@@ -54,27 +61,47 @@ export class EventDetailsComponent {
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
+  private readonly now = toSignal(timer(1000).pipe(map(() => Date.now())), {
+    initialValue: Date.now(),
+  });
 
   private readonly eventId = toSignal(this._activatedRoute.params.pipe(map(data => data['id'])));
   private readonly actionState = selectSignal(selectEventsActionState('loadOne'));
+  private readonly startActionState = selectSignal(selectEventsActionState('start'));
+  private readonly buildActionState = selectSignal(selectEventsActionState('buildInstances'));
+
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState(), [404]));
+  protected readonly isStartBusy = computed(() => isActionBusy(this.startActionState()));
+  protected readonly isBuildBusy = computed(() => isActionBusy(this.buildActionState()));
   protected readonly event = selectSignal(computed(() => selectEvent(this.eventId())));
   protected readonly timeslots = computed(() =>
     [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
   );
+  protected readonly maps = selectSignal(mapSelectors.selectEntities);
+  protected readonly allUsers = selectSignal(userSelectors.selectEntities);
+  protected readonly hasInstances = computed(() =>
+    this.timeslots().some(x => x.instances.length > 0)
+  );
+
+  protected readonly canBuildInstances = computed(() =>
+    ifTruthy(this.event(), event => event.registrationDeadline.getTime() < this.now(), false)
+  );
+  protected readonly canStart = computed(
+    () => this.canBuildInstances() && this.event()?.isStarted === false && this.hasInstances()
+  );
 
   constructor() {
-    effect(
-      () => {
-        if (!this.event()) {
-          this._store.dispatch(loadEventAction({ eventId: this.eventId() }));
-        }
-      },
-      { allowSignalWrites: true }
-    );
+    this._store.dispatch(loadMapsAction({ reload: false }));
+    this._store.dispatch(loadUsersAction({ reload: false }));
+
+    effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
+      allowSignalWrites: true,
+    });
 
     errorToastEffect(this.translations.events_error_delete, selectEventsActionState('remove'));
+    errorToastEffect(this.translations.events_error_start, this.startActionState);
+    errorToastEffect(this.translations.events_error_buildGroups, this.buildActionState);
 
     const actions$ = inject(Actions);
     actions$
@@ -93,10 +120,12 @@ export class EventDetailsComponent {
   protected deleteEvent() {
     this._confirmationService.confirm({
       header: this.translations.events_deleteDialog_title(),
-      message: interpolate(this.translations.events_deleteDialog_text(), { date: formatDate(this.event()!.date, 'mediumDate', this.locale()) }),
+      message: interpolate(this.translations.events_deleteDialog_text(), {
+        date: formatDate(this.event()!.date, 'mediumDate', this.locale()),
+      }),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
-      acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete]',
       rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {
@@ -107,5 +136,30 @@ export class EventDetailsComponent {
         );
       },
     });
+  }
+
+  protected startEvent() {
+    this._confirmationService.confirm({
+      header: this.translations.events_startDialog_title(),
+      message: interpolate(this.translations.events_startDialog_text(), {
+        date: formatDate(this.event()!.date, 'mediumDate', this.locale()),
+      }),
+      acceptLabel: this.translations.shared_start(),
+      acceptButtonStyleClass: 'p-button-success',
+      acceptIcon: 'p-button-icon-left i-[mdi--play]',
+      rejectLabel: this.translations.shared_cancel(),
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this._store.dispatch(
+          startEventAction({
+            eventId: this.eventId()!,
+          })
+        );
+      },
+    });
+  }
+
+  protected buildInstances() {
+    this._store.dispatch(buildEventInstancesAction({ eventId: this.eventId() }));
   }
 }

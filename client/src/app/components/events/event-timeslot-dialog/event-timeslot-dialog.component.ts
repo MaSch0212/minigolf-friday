@@ -6,6 +6,7 @@ import {
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -17,16 +18,26 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { MessagesModule } from 'primeng/messages';
 
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
-import { addEventTimeslotAction, selectEventsActionState } from '../../../+state/events';
+import {
+  addEventTimeslotAction,
+  selectEventsActionState,
+  updateEventTimeslotAction,
+} from '../../../+state/events';
 import { loadMapsAction, mapSelectors, selectMapsLoadState } from '../../../+state/maps';
 import { ErrorTextDirective } from '../../../directives/error-text.directive';
-import { MinigolfEvent } from '../../../models/event';
+import { MinigolfEvent, MinigolfEventTimeslot } from '../../../models/event';
 import { TranslateService } from '../../../services/translate.service';
-import { compareTimes, getTimeFromDate, timeToString } from '../../../utils/date.utils';
+import {
+  compareTimes,
+  dateWithTime,
+  getTimeFromDate,
+  timeToString,
+} from '../../../utils/date.utils';
+import { selectSignal } from '../../../utils/ngrx.utils';
 import { hasTouchScreen } from '../../../utils/user-agent.utils';
 
 @Component({
-  selector: 'app-create-event-timeslot',
+  selector: 'app-event-timeslot-dialog',
   standalone: true,
   imports: [
     DialogModule,
@@ -38,20 +49,23 @@ import { hasTouchScreen } from '../../../utils/user-agent.utils';
     ReactiveFormsModule,
     ErrorTextDirective,
   ],
-  templateUrl: './create-event-timeslot.component.html',
-  styleUrl: './create-event-timeslot.component.scss',
+  templateUrl: './event-timeslot-dialog.component.html',
+  styleUrl: './event-timeslot-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateEventTimeslotComponent {
+export class EventTimeslotDialogComponent {
   private readonly _store = inject(Store);
   private readonly _formBuilder = inject(FormBuilder);
 
-  public readonly event = input<MinigolfEvent>();
+  public readonly event = input.required<MinigolfEvent>();
+  public readonly timeslot = input<MinigolfEventTimeslot | null>(null);
 
   protected readonly translations = inject(TranslateService).translations;
   protected readonly hasTouchScreen = hasTouchScreen;
 
-  protected readonly actionState = this._store.selectSignal(selectEventsActionState('addTimeslot'));
+  protected readonly actionState = selectSignal(
+    computed(() => selectEventsActionState(this.timeslot() ? 'updateTimeslot' : 'addTimeslot'))
+  );
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState()));
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly visible = signal(false);
@@ -82,6 +96,20 @@ export class CreateEventTimeslotComponent {
         if (!this.visible()) {
           this.form.reset();
           this.form.controls.mapId.markAsPristine();
+          this.form.controls.time.enable();
+        }
+
+        const timeslot = untracked(() => this.timeslot());
+        if (this.visible() && timeslot) {
+          console.log('timeslot', timeslot);
+          untracked(() =>
+            this.form.setValue({
+              time: dateWithTime(new Date(), timeslot.time),
+              mapId: timeslot.mapId,
+              isFallbackAllowed: timeslot.isFallbackAllowed,
+            })
+          );
+          this.form.controls.time.disable();
         }
       },
       { allowSignalWrites: true }
@@ -116,28 +144,51 @@ export class CreateEventTimeslotComponent {
     }
 
     const { time, mapId, isFallbackAllowed } = this.form.value;
-    if (!time || !mapId) return;
+    const timeslot = this.timeslot();
 
-    this._store.dispatch(
-      addEventTimeslotAction({
-        eventId: event.id,
-        time: timeToString(getTimeFromDate(time), 'minutes'),
-        mapId,
-        isFallbackAllowed: !!isFallbackAllowed,
-      })
-    );
+    if (timeslot) {
+      if (!mapId) return;
+      this._store.dispatch(
+        updateEventTimeslotAction({
+          eventId: event.id,
+          timeslotId: timeslot.id,
+          changes: {
+            mapId,
+            isFallbackAllowed: !!isFallbackAllowed,
+          },
+        })
+      );
+    } else {
+      if (!time || !mapId) return;
+      this._store.dispatch(
+        addEventTimeslotAction({
+          eventId: event.id,
+          time: timeToString(getTimeFromDate(time), 'minutes'),
+          mapId,
+          isFallbackAllowed: !!isFallbackAllowed,
+        })
+      );
+    }
   }
 
   private getTimeValidator(): ValidatorFn {
     return control => {
-      const event = this.event();
-      if (!event) return null;
+      let event: MinigolfEvent;
+      try {
+        event = this.event();
+      } catch {
+        return null;
+      }
 
       if (!(control.value instanceof Date)) return null;
       const time = getTimeFromDate(control.value);
 
       if (
-        event.timeslots.some(t => timeToString(t.time, 'minutes') === timeToString(time, 'minutes'))
+        event.timeslots.some(
+          t =>
+            timeToString(t.time, 'minutes') === timeToString(time, 'minutes') &&
+            t.id !== this.timeslot()?.id
+        )
       ) {
         return { duplicateTimeslot: true };
       }

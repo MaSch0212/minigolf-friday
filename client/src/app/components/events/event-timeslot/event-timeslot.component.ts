@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -26,6 +26,7 @@ import {
   selectEventsActionState,
 } from '../../../+state/events';
 import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
+import { loadMapsAction, mapSelectors } from '../../../+state/maps';
 import { loadUsersAction, selectUsersActionState, userSelectors } from '../../../+state/users';
 import { loadUsersByIdAction } from '../../../+state/users/actions/load-users-by-id.action';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
@@ -33,9 +34,12 @@ import {
   MinigolfEventInstancePreconfiguration,
   MinigolfEventTimeslot,
 } from '../../../models/event';
+import { User } from '../../../models/user';
 import { TranslateService } from '../../../services/translate.service';
+import { ifTruthy } from '../../../utils/common.utils';
 import { dateWithTime, timeToString } from '../../../utils/date.utils';
 import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
+import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-timeslot-dialog.component';
 
 @Component({
   selector: 'app-event-timeslot',
@@ -46,6 +50,7 @@ import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
     CardModule,
     CommonModule,
     DropdownModule,
+    EventTimeslotDialogComponent,
     FormsModule,
     InterpolatePipe,
     MessagesModule,
@@ -61,7 +66,6 @@ export class EventTimeslotComponent {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _translateService = inject(TranslateService);
-  private readonly _messageService = inject(MessageService);
   private readonly _confirmationService = inject(ConfirmationService);
 
   protected readonly translations = this._translateService.translations;
@@ -102,7 +106,23 @@ export class EventTimeslotComponent {
   protected readonly timeslot = selectSignal(
     computed(() => selectEventTimeslot(this.eventId(), this.timeslotId()))
   );
+  protected readonly maps = selectSignal(mapSelectors.selectEntities);
   protected readonly allUsers = selectSignal(userSelectors.selectEntities);
+  protected readonly players = computed(() =>
+    ifTruthy(
+      this.timeslot(),
+      timeslot =>
+        timeslot.playerIds
+          .map<Partial<User> & { id: string }>(x => this.allUsers()[x] ?? { id: x })
+          .sort((a, b) => (a?.name ?? '').localeCompare(b?.name ?? '')),
+      []
+    )
+  );
+  protected readonly preconfigPlayerOptions = computed(() =>
+    this.players().filter(
+      x => !this.timeslot()?.preconfigurations.some(p => p.playerIds.includes(x.id))
+    )
+  );
   protected readonly dateTime = computed(() => {
     const event = this.event();
     const timeslot = this.timeslot();
@@ -110,18 +130,12 @@ export class EventTimeslotComponent {
   });
 
   constructor() {
+    this._store.dispatch(loadMapsAction({ reload: false }));
     this._store.dispatch(loadUsersAction({ reload: false }));
 
-    effect(
-      () => {
-        if (!this.event()) {
-          this._store.dispatch(loadEventAction({ eventId: this.eventId() }));
-        } else if (!this.timeslot()) {
-          this.navigateBack();
-        }
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
+      allowSignalWrites: true,
+    });
 
     effect(
       () => {
@@ -185,7 +199,7 @@ export class EventTimeslotComponent {
       message: interpolate(this.translations.events_deletePreconfigDialog_text(), preconfig),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
-      acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete]',
       rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
       accept: () =>
@@ -229,7 +243,7 @@ export class EventTimeslotComponent {
       }),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
-      acceptIcon: 'p-button-icon-left i-[mdi--delete-outline]',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete]',
       rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {
@@ -241,10 +255,6 @@ export class EventTimeslotComponent {
         );
       },
     });
-  }
-
-  protected getAllPlayersExcept(playerIds: readonly string[]) {
-    return Object.values(this.allUsers()).filter(user => user && !playerIds.includes(user.id));
   }
 
   private loadUsersFromTimeslot(timeslot: MinigolfEventTimeslot) {

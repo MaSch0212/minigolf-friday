@@ -40,9 +40,14 @@
     "registrationDeadline": "Anmeldeschluss",
     "timeslots": "Zeitslots",
     "playerAmount": "{{amount}} Spieler",
+    "noEvents": "Keine Veranstaltungen verfügbar.",
     "noTimeslots": "Keine Zeitslots verfügbar.",
     "deleteEvent": "Veranstaltung löschen",
     "deleteTimeslot": "Zeitslot löschen",
+    "start": "Veranstaltung starten",
+    "groups": "Gruppen",
+    "buildGroups": "Gruppen bilden",
+    "rebuildGroups": "Gruppen neu bilden",
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
@@ -52,7 +57,8 @@
       "noPlayers": "Bis jetzt hat sich noch kein Spieler für diesen Zeitslot angemeldet.",
       "unknownPlayer": "Unbekannter Spieler",
       "time": "Startzeit",
-      "map": "Zu spielende Bahn",
+      "mapToPlay": "Zu spielende Bahn",
+      "map": "Bahn",
       "isFallbackAllowed": "Spieler können einen Ausweichzeitslot festlegen"
     },
     "createDialog": {
@@ -67,6 +73,12 @@
         "save": "Fehler beim Erstellen des Zeitslots."
       }
     },
+    "updateTimeslotDialog": {
+      "title": "Zeitslot bearbeiten",
+      "error": {
+        "save": "Fehler beim Speichern des Zeitslots."
+      }
+    },
     "deleteDialog": {
       "title": "Veranstaltung löschen",
       "text": "Möchtest du die Veranstaltung {{date}} wirklich löschen?"
@@ -79,6 +91,10 @@
       "title": "Vordefinierte Gruppe löschen",
       "text": "Möchtest du die vordefinierte Gruppe mit {{playerIds.length}} Spielern wirklich löschen?"
     },
+    "startDialog": {
+      "title": "Veranstaltung starten",
+      "text": "Möchtest du die Veranstaltung {{date}} wirklich starten? Die Gruppen können danach nicht mehr geändert werden."
+    },
     "error": {
       "load": "Fehler beim Laden der Veranstaltungen.",
       "loadOne": "Fehler beim Laden der Veranstaltung.",
@@ -86,7 +102,9 @@
       "removePlayerFromPreconfig": "Fehler beim Entfernen des Spielers von der vordefinierten Gruppe.",
       "delete": "Fehler beim Löschen der Veranstaltung.",
       "deleteTimeslot": "Fehler beim Löschen des Zeitslots.",
-      "deletePreconfig": "Fehler beim Löschen der vordefinierten Gruppe."
+      "deletePreconfig": "Fehler beim Löschen der vordefinierten Gruppe.",
+      "start": "Fehler beim Starten der Veranstaltung.",
+      "buildGroups": "Fehler beim Bilden der Gruppen."
     }
   },
   "maps": {
@@ -112,18 +130,50 @@
       "load": "Fehler beim Laden der Benutzer."
     }
   },
+  "playerEvents": {
+    "notFound": "Diese Veranstaltung existiert nicht.",
+    "currentEvents": "Aktuelle Veranstaltungen",
+    "pastEvents": "Vergangene Veranstaltungen",
+    "noEvents": "Keine Veranstaltungen verfügbar.",
+    "notRegistered": "Nicht registriert",
+    "registered": "Registriert ({{timeslots}} Zeitslot(s))",
+    "backToEvents": "Zurück zu den Veranstaltungen",
+    "registrationClosed": "Die Anmeldung für diese Veranstaltung ist geschlossen.",
+    "registrations": "Anmeldungen",
+    "fallbackTimeslot": "Ersatzzeitslot",
+    "fallbackTimeslotDescription": "Dieser Zeitslot ist nicht so beliebt wie die anderen. Wenn sich zu wenige Personen für diesen Zeitslot anmelden, kann es passieren, dass er nicht stattfindet. Daher kannst du einen Ersatzzeitslot angeben, der verwendet wird, wenn dieser Zeitslot nicht stattfindet.",
+    "noFallbackTimeslot": "Keiner",
+    "games": "Spiele",
+    "time": "Uhrzeit",
+    "groupCode": "Gruppencode",
+    "coPlayers": "Mitspieler",
+    "map": "Bahn",
+    "error": {
+      "load": "Fehler beim Laden der Veranstaltungen.",
+      "loadOne": "Fehler beim Laden der Veranstaltung.",
+      "registration": "Fehler beim Aktualisieren deiner Anmeldungen."
+    },
+    "warning": {
+      "noFallbackTimeslot": "Ohne Ersatzzeitslot kann es passieren, dass du keinem Spiel zugeordnet wirst."
+    }
+  },
   "shared": {
     "tryAgainLater": "Bitte versuche es später erneut.",
     "add": "Hinzufügen",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "delete": "Löschen",
+    "edit": "Bearbeiten",
     "ok": "OK",
     "email": "E-Mail",
     "password": "Passwort",
     "name": "Name",
     "or": "oder",
-    "back": "Zurück"
+    "back": "Zurück",
+    "why": "Warum?",
+    "start": "Start",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

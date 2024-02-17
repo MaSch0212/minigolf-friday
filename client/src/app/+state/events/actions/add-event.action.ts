@@ -23,7 +23,7 @@ export const addEventAction = createHttpAction<AddEventRequest, AddEventResponse
 
 export const addEventReducers: Reducers<EventsFeatureState> = [
   on(addEventAction.success, (state, { response }) =>
-    eventEntityAdapter.addOne(response.event, state)
+    eventEntityAdapter.upsertOne(response.event, state)
   ),
   handleHttpAction('add', addEventAction),
 ];

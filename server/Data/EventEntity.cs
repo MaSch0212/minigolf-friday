@@ -10,6 +10,7 @@ public class EventEntity
     public required Guid Id { get; set; }
     public required DateOnly Date { get; set; }
     public required DateTimeOffset RegistrationDeadline { get; set; }
+    public bool IsStarted { get; set; } = false;
 
     public List<EventTimeslotEntity> Timeslots { get; set; } = [];
 }

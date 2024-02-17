@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MinigolfFriday;
@@ -67,6 +68,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.AddHttpClient();
+builder
+    .Services
+    .AddResponseCompression(options =>
+    {
+        options.EnableForHttps = true;
+    });
 
 builder.Services.AddSingleton<IFacebookAccessTokenProvider, FacebookAccessTokenProvider>();
 
@@ -74,6 +81,7 @@ builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFacebookService, FacebookService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEventInstanceService, EVentInstanceService>();
 
 builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
@@ -96,6 +104,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 
 app.UsePathBaseResolver();
 app.UseForwardedHeaders();

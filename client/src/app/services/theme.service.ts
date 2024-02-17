@@ -43,7 +43,10 @@ export class ThemeService {
 
   constructor() {
     effect(() => {
-      this._linkElement.href = `${this.theme()}-theme.css`;
+      const css = `${this.theme()}-theme.css`;
+      if (!this._linkElement.href.endsWith(css)) {
+        this._linkElement.href = css;
+      }
     });
   }
 

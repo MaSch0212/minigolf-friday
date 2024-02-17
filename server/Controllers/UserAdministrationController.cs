@@ -11,12 +11,13 @@ public record GetUsersByIdRequest(string[] UserIds);
 public record GetUsersResponse(User[] Users);
 
 [Authorize(Roles = Roles.Admin)]
-[Route("api")]
-public class UsersController(MinigolfFridayContext dbContext) : Controller
+public class UserAdministrationController(MinigolfFridayContext dbContext) : Controller
 {
+    const string ROUTE = "api/administration/users";
+
     private readonly MinigolfFridayContext _dbContext = dbContext;
 
-    [HttpGet("users")]
+    [HttpGet(ROUTE)]
     public async ValueTask<IActionResult> GetAllUsers()
     {
         var entities = await _dbContext.Users.ToArrayAsync();
@@ -24,7 +25,7 @@ public class UsersController(MinigolfFridayContext dbContext) : Controller
         return Ok(new GetUsersResponse(users));
     }
 
-    [HttpPost("users:by-ids")]
+    [HttpPost(ROUTE + ":by-ids")]
     public async ValueTask<IActionResult> GetUsersById([FromBody] GetUsersByIdRequest request)
     {
         var ids = new Guid[request.UserIds.Length];
@@ -39,7 +40,7 @@ public class UsersController(MinigolfFridayContext dbContext) : Controller
         return Ok(new GetUsersResponse(users));
     }
 
-    [HttpGet("users/{id}")]
+    [HttpGet(ROUTE + "/{id}")]
     public async ValueTask<IActionResult> GetUser([FromRoute] string id)
     {
         if (!Guid.TryParse(id, out var userId))

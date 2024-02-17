@@ -1,0 +1,79 @@
+@if (!hasEvents() && isLoading()) {
+  <p-progressSpinner class="m-8" />
+} @else if (hasLoadFailed()) {
+  <p-messages severity="error">
+    <ng-template pTemplate>
+      <span class="i-[mdi--close-circle-outline] mr-2"></span>
+      <span
+        >{{ translations.playerEvents_error_load() }}
+        {{ translations.shared_tryAgainLater() }}</span
+      >
+    </ng-template>
+  </p-messages>
+} @else {
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto">
+    <h2 class="m-0">{{ translations.playerEvents_currentEvents() }}</h2>
+    <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
+      @for (event of currentEvents(); track event.id; let index = $index) {
+        <a
+          class="flex min-w-0 flex-row flex-wrap items-center justify-between gap-x-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+          [class.border-t-[1px]]="index > 0"
+          [routerLink]="[event.id]"
+          pRipple
+        >
+          <span class="font-semibold">{{
+            event.date | date: 'fullDate' : undefined : locale()
+          }}</span>
+          <span class="text-sm">
+            @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
+              {{
+                translations.playerEvents_registered() | interpolate: { timeslots: timeslotCount }
+              }}
+            } @else {
+              {{ translations.playerEvents_notRegistered() }}
+            }
+          </span>
+        </a>
+      }
+      @if (currentEvents().length === 0) {
+        <div class="px-4 py-2 text-center leading-8">
+          {{ translations.playerEvents_noEvents() }}
+        </div>
+      }
+    </div>
+
+    <h2 class="m-0 pt-4">{{ translations.playerEvents_pastEvents() }}</h2>
+    <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
+      @for (event of pastEvents(); track event.id; let index = $index) {
+        <a
+          class="flex min-w-0 flex-row flex-wrap items-center justify-between gap-x-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+          [class.border-t-[1px]]="index > 0"
+          [routerLink]="[event.id]"
+          pRipple
+        >
+          <span class="font-semibold">{{
+            event.date | date: 'fullDate' : undefined : locale()
+          }}</span>
+          <span class="text-sm">
+            @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
+              {{
+                translations.playerEvents_registered() | interpolate: { timeslots: timeslotCount }
+              }}
+            } @else {
+              {{ translations.playerEvents_notRegistered() }}
+            }
+          </span>
+        </a>
+      }
+      @if (pastEvents().length === 0) {
+        <div class="px-4 py-2 text-center leading-8">
+          {{ translations.playerEvents_noEvents() }}
+        </div>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <p-progressSpinner class="m-4 self-center" styleClass="h-16 w-16" strokeWidth="4" />
+    }
+  </div>
+}
