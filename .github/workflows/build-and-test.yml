@@ -23,11 +23,12 @@ jobs:
         with:
           dotnet-version: "8.x"
           cache: true
+          cache-dependency-path: ./server/packages.lock.json
       - run: pnpm i
 
       - name: Lint client
         run: pnpm lint
-        working-directory: "./client"
+        working-directory: ./client
 
       - name: Build client
         run: pnpm client:build

@@ -7,6 +7,7 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <UserSecretsId>d202c6ce-6225-4dd2-a10e-291bb0b1131a</UserSecretsId>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
     <ItemGroup>
