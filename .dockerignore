@@ -1,7 +1,3 @@
-.vs/
-.vscode/
-client/.angular/
-client/node_modules/
-server/bin/
-server/dist/
-server/obj/
+**/*
+!server/bin/Release/publish/**/*
+!client/dist/minigolf-friday/browser/**/*
