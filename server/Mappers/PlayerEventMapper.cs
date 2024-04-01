@@ -44,8 +44,7 @@ public static class PlayerEventMapper
         return new PlayerEventInstance(
             entity.Id.ToString(),
             entity.GroupCode,
-            entity.EventTimeSlot.Map.ToModel(),
-            entity.Players.Select(p => p.ToPlayerModel())
+            entity.EventTimeSlot.Map.ToModel()
         );
     }
 

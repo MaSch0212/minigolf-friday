@@ -26,11 +26,14 @@ public class MinigolfFridayContext : DbContext
         Directory.CreateDirectory(Path.GetDirectoryName(DbPath) ?? string.Empty);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
-        options
-            .UseLoggerFactory(_loggerFactory)
-            .EnableSensitiveDataLogging()
-            .UseSqlite($"Data Source={DbPath}");
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        options.UseLoggerFactory(_loggerFactory).UseSqlite($"Data Source={DbPath}");
+
+#if DEBUG
+        options.EnableSensitiveDataLogging();
+#endif
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

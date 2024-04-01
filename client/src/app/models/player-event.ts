@@ -27,5 +27,4 @@ export type MinigolfPlayerEventInstance = {
   readonly id: string;
   readonly groupCode: string;
   readonly map: MinigolfMap;
-  readonly coPlayers: readonly Player[];
 };

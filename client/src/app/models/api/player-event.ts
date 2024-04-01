@@ -27,7 +27,6 @@ export const PlayerEventInstance = z
     id: z.string(),
     groupCode: z.string(),
     map: Map,
-    coPlayers: z.array(Player).readonly(),
   })
   .readonly();
 
@@ -102,6 +101,5 @@ function toMinigolfPlayerEventInstance(
     id: instance.id,
     groupCode: instance.groupCode,
     map: instance.map,
-    coPlayers: instance.coPlayers,
   };
 }

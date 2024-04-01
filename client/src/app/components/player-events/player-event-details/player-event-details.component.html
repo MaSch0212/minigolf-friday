@@ -145,17 +145,6 @@
                   <span>{{ translations.playerEvents_map() }}</span>
                 </span>
                 <span>{{ game.instance.map.name }}</span>
-                <span>
-                  <span class="i-[mdi--account-group] mr-2"></span>
-                  <span>{{ translations.playerEvents_coPlayers() }}:</span>
-                </span>
-                <div class="flex flex-col">
-                  @for (player of game.instance.coPlayers; track player.id) {
-                    @if (player.id !== user()?.id) {
-                      <span>{{ player.name }}</span>
-                    }
-                  }
-                </div>
               </div>
             </p-card>
           }

@@ -19,9 +19,4 @@ public record PlayerEventTimeslot(
 
 public record Player(string Id, string Name);
 
-public record PlayerEventInstance(
-    string Id,
-    string GroupCode,
-    MinigolfMap Map,
-    IEnumerable<Player> CoPlayers
-);
+public record PlayerEventInstance(string Id, string GroupCode, MinigolfMap Map);

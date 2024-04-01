@@ -146,7 +146,6 @@
     "games": "Games",
     "time": "Time",
     "groupCode": "Group code",
-    "coPlayers": "Co-players",
     "map": "Map",
     "error": {
       "load": "Failed to load events.",

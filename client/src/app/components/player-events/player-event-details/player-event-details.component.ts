@@ -1,12 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  computed,
-  effect,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -65,7 +58,6 @@ export class PlayerEventDetailsComponent {
   private readonly _store = inject(Store);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _translateService = inject(TranslateService);
-  private readonly _changeDetectorRef = inject(ChangeDetectorRef);
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
