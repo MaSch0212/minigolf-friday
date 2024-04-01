@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const imageName = "minigolf-friday";
-const repository = "marc-nas:4000";
+const repository = "masch0212";
 
 yargs(hideBin(process.argv))
   .command(
