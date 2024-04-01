@@ -22,6 +22,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.x"
+          cache: true
       - run: pnpm i
 
       - name: Lint client
