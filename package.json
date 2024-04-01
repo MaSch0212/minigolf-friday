@@ -1,0 +1,15 @@
+{
+  "name": "minigolf-friday-repo",
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@8.15.3",
+  "scripts": {
+    "preinstall": "pnpm install -C client && dotnet restore server",
+    "build": "pnpm server:build && pnpm client:build && pnpm docker:build",
+    "push": "pnpm docker:push",
+    "server:build": "dotnet publish server -c Release",
+    "client:build": "pnpm run -C client build",
+    "docker:build": "node scripts/docker-build.js",
+    "docker:push": "node scripts/docker-push.js"
+  }
+}
