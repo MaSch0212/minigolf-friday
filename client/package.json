@@ -5,7 +5,7 @@
     "ng": "ng",
     "lint": "eslint ./src --ext .ts --ext .html",
     "prestart": "node tools/aspnetcore-https",
-    "prepare": "dotnet run --project ../server/MinigolfFriday.csproj --OpenApiOutput ../client/openapi.yml && node scripts/openapi-gen.js",
+    "prepare": "dotnet build ../server/MinigolfFriday.csproj && node scripts/openapi-gen.js",
     "start": "run-script-os",
     "start:windows": "ng serve --port 4200 --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
     "start:default": "ng serve --port 4200 --ssl --ssl-cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --ssl-key \"$HOME/.aspnet/https/${npm_package_name}.key\"",

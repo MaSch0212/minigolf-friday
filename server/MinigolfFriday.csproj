@@ -34,6 +34,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.5" />
+    <PackageReference Include="NSwag.MSBuild" Version="14.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Sqids" Version="3.1.0" />
   </ItemGroup>
 
@@ -45,5 +50,10 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
+
+  <Target Name="NSwag" AfterTargets="Build">
+    <Exec EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="dotnet run --no-build --OpenApiOutput openapi.yml" />
+    <Exec Command="$(NSwagExe) openapi2csclient /input:openapi.yml /classname:MinigolfFridayClient /namespace:MinigolfFriday.IntegrationTests.Api /output:$(ProjectDir)../test/MinigolfFriday.IntegrationTests/Api/MinigolfFridayClient.cs" />
+  </Target>
 
 </Project>

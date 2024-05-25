@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Models;
+using MinigolfFriday.Options;
 
 namespace MinigolfFriday.Data;
 
 public class DatabaseContext : DbContext
 {
     private readonly ILoggerFactory? _loggerFactory;
+    private readonly IOptionsMonitor<LoggingOptions>? _loggingOptions;
 
     public DbSet<MinigolfMapEntity> Maps { get; set; }
     public DbSet<UserEntity> Users { get; set; }
@@ -18,9 +21,13 @@ public class DatabaseContext : DbContext
 
     public string DbPath { get; }
 
-    public DatabaseContext(ILoggerFactory? loggerFactory = null)
+    public DatabaseContext(
+        ILoggerFactory? loggerFactory = null,
+        IOptionsMonitor<LoggingOptions>? loggingOptions = null
+    )
     {
         _loggerFactory = loggerFactory;
+        _loggingOptions = loggingOptions;
         var folder = AppDomain.CurrentDomain.BaseDirectory;
         DbPath = Path.Combine(folder, "data/MinigolfFriday.db");
         Directory.CreateDirectory(Path.GetDirectoryName(DbPath) ?? string.Empty);
@@ -105,11 +112,15 @@ public class DatabaseContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.UseSqlite(o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-        options.UseLoggerFactory(_loggerFactory).UseSqlite($"Data Source={DbPath}");
+        options.UseSqlite($"Data Source={DbPath}");
 
+        if (_loggingOptions?.CurrentValue.EnableDbLogging == true)
+        {
+            options.UseLoggerFactory(_loggerFactory);
 #if DEBUG
-        options.EnableSensitiveDataLogging();
+            options.EnableSensitiveDataLogging();
 #endif
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

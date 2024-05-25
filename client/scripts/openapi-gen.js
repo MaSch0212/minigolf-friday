@@ -7,4 +7,4 @@ new OpenApiGenerator({ outputDir: path.join(__dirname, '../src/app/api') })
   .useType(TypeScriptModelsGenerator)
   .useType(TypeScriptAngularServicesGenerator)
   .useType(TypeScriptEasyNetworkStubsGenerator)
-  .parseAndGenerate(path.join(__dirname, '../openapi.yml'));
+  .parseAndGenerate(path.join(__dirname, '../../server/openapi.yml'));

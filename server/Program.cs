@@ -17,16 +17,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAndBindOptions<JwtOptions>();
 builder.Services.AddAndBindOptions<AdminOptions>();
 builder.Services.AddAndBindOptions<IdOptions>();
+builder.Services.AddAndBindOptions<LoggingOptions>();
 
 var configureJsonSerializerOptions = new ConfigureJsonSerializerOptions();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.ConfigureOptions(configureJsonSerializerOptions);
 
+builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddScoped<IEventMapper, EventMapper>();
+builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
+builder.Services.AddSingleton<IIdService, IdService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
+
+builder.Services.AddHealthChecks().AddDbContextCheck<DatabaseContext>();
 builder
     .Services
     .AddFastEndpoints(o =>
     {
-        o.SourceGeneratorDiscoveredTypes.AddRange(MinigolfFriday.DiscoveredTypes.All);
+        IEnumerable<Type> endpointTypes = MinigolfFriday.DiscoveredTypes.All;
+        if (Environment.GetEnvironmentVariable("ENABLE_DEV_ENDPOINTS") != "true")
+            endpointTypes = endpointTypes.Where(x => !x.FullName!.Contains(".Dev."));
+        o.SourceGeneratorDiscoveredTypes.AddRange(endpointTypes);
     });
 builder.Services.AddEndpointsApiExplorer();
 builder
@@ -58,13 +70,6 @@ builder
         options.RootPath = "wwwroot/browser";
     });
 
-builder.Services.AddDbContext<DatabaseContext>();
-builder.Services.AddScoped<IEventMapper, EventMapper>();
-builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
-builder.Services.AddSingleton<IIdService, IdService>();
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
-
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -86,6 +91,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/healthz");
 app.UseFastEndpoints(c =>
     {
         configureJsonSerializerOptions.Configure(c.Serializer.Options);
