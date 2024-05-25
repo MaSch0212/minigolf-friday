@@ -1,59 +1,66 @@
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Data;
+using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Models;
+using MinigolfFriday.Services;
 
 namespace MinigolfFriday.Mappers;
 
-public static class PlayerEventMapper
+[GenerateAutoInterface]
+public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
 {
-    public static PlayerEvent ToPlayerModel(this EventEntity entity, Guid userId)
+    public PlayerEvent Map(EventEntity entity, long userId)
     {
         return new PlayerEvent(
-            entity.Id.ToString(),
+            idService.Event.Encode(entity.Id),
             entity.Date,
             entity.RegistrationDeadline,
-            entity.Timeslots.Select(timeslot => timeslot.ToPlayerModel(userId)),
-            entity.IsStarted
+            entity.Timeslots.Select(timeslot => Map(timeslot, userId)),
+            entity.StartedAt != null
         );
     }
 
-    public static PlayerEventTimeslot ToPlayerModel(this EventTimeslotEntity entity, Guid userId)
+    public PlayerEventTimeslot Map(EventTimeslotEntity entity, long userId)
     {
         return new PlayerEventTimeslot(
-            entity.Id.ToString(),
+            idService.EventTimeslot.Encode(entity.Id),
             entity.Time,
             entity.IsFallbackAllowed,
-            entity.Registrations.Any(reg => reg.PlayerId == userId),
+            entity.Registrations.Any(reg => reg.Player.Id == userId),
             entity
                 .Registrations
-                .Where(reg => reg.PlayerId == userId)
-                .Select(reg => reg.FallbackEventTimeslotId?.ToString())
+                .Where(reg => reg.Player.Id == userId)
+                .Select(
+                    reg =>
+                        reg.FallbackEventTimeslot != null
+                            ? idService.EventTimeslot.Encode(reg.FallbackEventTimeslot.Id)
+                            : null
+                )
                 .FirstOrDefault(),
-            entity.Event.IsStarted
+            entity.Event.StartedAt != null
                 ? entity
                     .Instances
                     .Where(i => i.Players.Any(p => p.Id == userId))
-                    .Select(x => x.ToPlayerModel())
+                    .Select(Map)
                     .FirstOrDefault()
                 : null
         );
     }
 
-    public static PlayerEventInstance ToPlayerModel(this EventInstanceEntity entity)
+    public PlayerEventInstance Map(EventInstanceEntity entity)
     {
-        return new PlayerEventInstance(
-            entity.Id.ToString(),
+        return new(
+            idService.EventInstance.Encode(entity.Id),
             entity.GroupCode,
-            entity.EventTimeSlot.Map.ToModel()
+            Map(entity.EventTimeslot.Map)
         );
     }
 
-    public static Player ToPlayerModel(this UserEntity entity)
+    public MinigolfMap Map(MinigolfMapEntity entity)
     {
-        return new Player(entity.Id.ToString(), entity.Name);
+        return new(idService.Map.Encode(entity.Id), entity.Name);
     }
 
-    public static IQueryable<EventEntity> WithPlayerIncludes(this IQueryable<EventEntity> events)
+    public IQueryable<EventEntity> AddIncludes(IQueryable<EventEntity> events)
     {
         return events
             .Include(x => x.Timeslots)

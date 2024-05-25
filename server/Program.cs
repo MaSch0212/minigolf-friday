@@ -1,72 +1,49 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using FluentValidation;
+using FastEndpoints;
+using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using MinigolfFriday;
+using Microsoft.Extensions.Options;
+using MinigolfFriday.Common;
 using MinigolfFriday.Data;
+using MinigolfFriday.Mappers;
 using MinigolfFriday.Middlewares;
-using MinigolfFriday.Serialization;
+using MinigolfFriday.Options;
 using MinigolfFriday.Services;
-using MinigolfFriday.Validators;
+using NSwag;
+using NSwag.Generation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAndBindOptions<JwtOptions>();
+builder.Services.AddAndBindOptions<AdminOptions>();
+builder.Services.AddAndBindOptions<IdOptions>();
+
+var configureJsonSerializerOptions = new ConfigureJsonSerializerOptions();
+builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
+builder.Services.ConfigureOptions(configureJsonSerializerOptions);
+
+builder
+    .Services
+    .AddFastEndpoints(o =>
+    {
+        o.SourceGeneratorDiscoveredTypes.AddRange(MinigolfFriday.DiscoveredTypes.All);
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder
     .Services
-    .AddSwaggerGen(options =>
+    .SwaggerDocument(c =>
     {
-        options.AddSecurityDefinition(
-            "Bearer",
-            new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme.",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = "Bearer",
-            }
-        );
-        options.AddSecurityRequirement(
-            new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer",
-                        },
-                    },
-                    Array.Empty<string>()
-                }
-            }
-        );
+        c.DocumentSettings = d =>
+        {
+            d.OperationProcessors.Add(new OperationIdProcessor());
+        };
+        c.ShortSchemaNames = true;
+        c.AutoTagPathSegmentIndex = 0;
+        c.SerializerSettings = configureJsonSerializerOptions.Configure;
     });
 
-builder.Services.AddOptions<FacebookOptions>().BindConfiguration(FacebookOptions.SectionName);
-builder.Services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName);
-builder.Services.AddOptions<AdminOptions>().BindConfiguration(AdminOptions.SectionName);
-
-builder
-    .Services
-    .AddControllers()
-    .AddJsonOptions(options =>
-    {
-        var converters = options.JsonSerializerOptions.Converters;
-        converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, false));
-        converters.Add(new DateOnlyJsonConverter());
-        converters.Add(new TimeOnlyJsonConverter());
-    });
-builder.Services.AddDbContext<MinigolfFridayContext>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddAuthorization();
-builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.AddHttpClient();
 builder
     .Services
@@ -74,19 +51,6 @@ builder
     {
         options.EnableForHttps = true;
     });
-
-builder.Services.AddSingleton<IFacebookAccessTokenProvider, FacebookAccessTokenProvider>();
-
-builder.Services.AddScoped<IHashingService, HashingService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IFacebookService, FacebookService>();
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IEventInstanceService, EVentInstanceService>();
-
-builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
-builder.Services.AddScoped<IValidator<ChangePasswordRequest>, ChangePasswordRequestValidator>();
-builder.Services.AddScoped<IValidator<UpdateEmailRequest>, UpdateEmailRequestValidator>();
-
 builder
     .Services
     .AddSpaStaticFiles(options =>
@@ -94,14 +58,14 @@ builder
         options.RootPath = "wwwroot/browser";
     });
 
-var app = builder.Build();
+builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddScoped<IEventMapper, EventMapper>();
+builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
+builder.Services.AddSingleton<IIdService, IdService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseResponseCompression();
@@ -122,13 +86,32 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-#pragma warning disable ASP0014 // Suggest using top level route registrations
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
-#pragma warning restore ASP0014 // Suggest using top level route registrations
+app.UseFastEndpoints(c =>
+    {
+        configureJsonSerializerOptions.Configure(c.Serializer.Options);
 
+        c.Errors.UseProblemDetails();
+        c.Endpoints.ShortNames = true;
+        c.Endpoints.RoutePrefix = "api";
+        c.Endpoints.Configurator = c =>
+        {
+            if (c.Routes != null)
+            {
+                for (int i = 0; i < c.Routes.Length; i++)
+                {
+                    c.Routes[i] = c.Routes[i].Replace("/:", ":").TrimEnd('/');
+                }
+            }
+            c.Description(
+                x =>
+                    x.ProducesValidationProblem()
+                        .Produces(200, c.ResDtoType == typeof(object) ? null : c.ResDtoType)
+            );
+        };
+    })
+    .UseSwaggerGen();
+
+app.UseEndpoints(x => { });
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "../";
@@ -138,7 +121,26 @@ app.UseSpa(spa =>
     }
 });
 
-using (var context = new MinigolfFridayContext(null))
+var openApiOutput = app.Configuration.GetValue<string>("OpenApiOutput");
+if (openApiOutput != null)
+{
+    using var scope = app.Services.CreateScope();
+    Console.WriteLine("Generating OpenAPI...");
+    var options = scope
+        .ServiceProvider
+        .GetRequiredService<IOptions<AspNetCoreOpenApiDocumentGeneratorSettings>>();
+    var documentProvider = scope
+        .ServiceProvider
+        .GetRequiredService<NSwag.Generation.IOpenApiDocumentGenerator>();
+    var apidoc = await documentProvider.GenerateAsync(options.Value.DocumentName);
+    var targetPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), openApiOutput));
+    Console.WriteLine($"Writing OpenAPI to \"{targetPath}\"...");
+    File.WriteAllText(openApiOutput, apidoc.ToYaml());
+    Console.WriteLine("Done");
+    return;
+}
+
+using (var context = new DatabaseContext(null))
 {
     context.Database.Migrate();
 }

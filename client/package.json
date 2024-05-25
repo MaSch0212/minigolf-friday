@@ -5,6 +5,7 @@
     "ng": "ng",
     "lint": "eslint ./src --ext .ts --ext .html",
     "prestart": "node tools/aspnetcore-https",
+    "prepare": "dotnet run --project ../server/MinigolfFriday.csproj --OpenApiOutput ../client/openapi.yml && node scripts/openapi-gen.js",
     "start": "run-script-os",
     "start:windows": "ng serve --port 4200 --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
     "start:default": "ng serve --port 4200 --ssl --ssl-cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --ssl-key \"$HOME/.aspnet/https/${npm_package_name}.key\"",
@@ -16,7 +17,7 @@
     "test": "ng test"
   },
   "private": true,
-  "packageManager": "pnpm@8.15.3",
+  "packageManager": "pnpm@9.1.2",
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.2.0",
     "@angular/animations": "^17.1.2",
@@ -48,6 +49,8 @@
     "@angular-eslint/template-parser": "^17.2.1",
     "@angular/cli": "^17.1.2",
     "@angular/compiler-cli": "^17.1.2",
+    "@goast/core": "^0.2.1",
+    "@goast/typescript": "^0.2.12",
     "@iconify-json/flag": "^1.1.48",
     "@iconify-json/mdi": "^1.1.64",
     "@iconify/tailwind": "^0.1.4",
@@ -58,6 +61,7 @@
     "@ngneers/ng-httpclient-easy-network-stub": "^1.1.4",
     "@ngneers/prettier-config": "^1.0.0",
     "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
     "autoprefixer": "^10.4.17",

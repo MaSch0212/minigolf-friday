@@ -1,0 +1,77 @@
+using FastEndpoints;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using MinigolfFriday.Common;
+using MinigolfFriday.Data;
+using MinigolfFriday.Services;
+
+namespace MinigolfFriday.Endpoints.Administration.Events.Preconfigurations;
+
+/// <param name="PreconfigurationId">The id of the event instance preconfiguration to delete.</param>
+public record DeletePreconfigurationRequest(string PreconfigurationId);
+
+public class DeletePreconfigurationRequestValidator : Validator<DeletePreconfigurationRequest>
+{
+    public DeletePreconfigurationRequestValidator(IIdService idService)
+    {
+        RuleFor(x => x.PreconfigurationId).NotEmpty().ValidSqid(idService.Preconfiguration);
+    }
+}
+
+/// <summary>Delete an event instance preconfiguration.</summary>
+public class DeletePreconfigurationEndpoint(DatabaseContext databaseContext, IIdService idService)
+    : Endpoint<DeletePreconfigurationRequest>
+{
+    public override void Configure()
+    {
+        Delete(":preconfigs/{preconfigurationId}");
+        Group<EventAdministrationGroup>();
+        this.ProducesErrors(
+            EndpointErrors.PreconfigurationNotFound,
+            EndpointErrors.EventAlreadyStarted
+        );
+    }
+
+    public override async Task HandleAsync(DeletePreconfigurationRequest req, CancellationToken ct)
+    {
+        var preconfigId = idService.Preconfiguration.DecodeSingle(req.PreconfigurationId);
+        var preconfigQuery = databaseContext
+            .EventInstancePreconfigurations
+            .Where(x => x.Id == preconfigId);
+        var preconfigInfo = await preconfigQuery
+            .Select(
+                x =>
+                    new
+                    {
+                        Started = x.EventTimeSlot.Event.StartedAt != null,
+                        x.EventTimeSlot.EventId
+                    }
+            )
+            .FirstOrDefaultAsync(ct);
+
+        if (preconfigInfo == null)
+        {
+            Logger.LogWarning(EndpointErrors.PreconfigurationNotFound, preconfigId);
+            await this.SendErrorAsync(
+                EndpointErrors.PreconfigurationNotFound,
+                req.PreconfigurationId,
+                ct
+            );
+            return;
+        }
+
+        if (preconfigInfo.Started)
+        {
+            Logger.LogWarning(EndpointErrors.EventAlreadyStarted, preconfigInfo.EventId);
+            await this.SendErrorAsync(
+                EndpointErrors.EventAlreadyStarted,
+                idService.Event.Encode(preconfigInfo.EventId),
+                ct
+            );
+            return;
+        }
+
+        await preconfigQuery.ExecuteDeleteAsync(ct);
+        await SendAsync(null, cancellation: ct);
+    }
+}

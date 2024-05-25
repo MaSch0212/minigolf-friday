@@ -1,7 +1,8 @@
 namespace MinigolfFriday.Models;
 
-public class MinigolfMap
-{
-    public string? Id { get; set; }
-    public required string Name { get; set; }
-}
+/// <summary>
+/// Represents a minigolf map.
+/// </summary>
+/// <param name="Id">The id of the minigolf map.</param>
+/// <param name="Name">The name of the minigolf map.</param>
+public record MinigolfMap(string Id, string Name);
