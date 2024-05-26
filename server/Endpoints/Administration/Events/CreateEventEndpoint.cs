@@ -1,4 +1,5 @@
 using FastEndpoints;
+using FluentValidation;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Mappers;
@@ -12,6 +13,15 @@ public record CreateEventRequest(DateOnly Date, DateTimeOffset RegistrationDeadl
 
 /// <param name="Event">The created event.</param>
 public record CreateEventResponse(Event Event);
+
+public class CreateEventRequestValidator : Validator<CreateEventRequest>
+{
+    public CreateEventRequestValidator()
+    {
+        RuleFor(x => x.Date).NotEmpty();
+        RuleFor(x => x.RegistrationDeadline).NotEmpty();
+    }
+}
 
 /// <summary>Create a new event.</summary>
 public class CreateEventEndpoint(DatabaseContext databaseContext, IEventMapper eventMapper)

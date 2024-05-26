@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MinigolfFriday.Models;
 
 /// <summary>
@@ -9,11 +11,11 @@ namespace MinigolfFriday.Models;
 /// <param name="Timeslots">The timeslots of the event that players can register to.</param>
 /// <param name="IsStarted">Determines whether the event has already been started.</param>
 public record PlayerEvent(
-    string Id,
-    DateOnly Date,
-    DateTimeOffset RegistrationDeadline,
-    IEnumerable<PlayerEventTimeslot> Timeslots,
-    bool IsStarted
+    [property: Required] string Id,
+    [property: Required] DateOnly Date,
+    [property: Required] DateTimeOffset RegistrationDeadline,
+    [property: Required] PlayerEventTimeslot[] Timeslots,
+    [property: Required] bool IsStarted
 );
 
 /// <summary>
@@ -26,10 +28,10 @@ public record PlayerEvent(
 /// <param name="ChosenFallbackTimeslotId">The fallback the player has defined for this timeslot.</param>
 /// <param name="Instance">The instance of the event timeslot if the event has been started.</param>
 public record PlayerEventTimeslot(
-    string Id,
-    TimeOnly Time,
-    bool IsFallbackAllowed,
-    bool IsRegistered,
+    [property: Required] string Id,
+    [property: Required] TimeOnly Time,
+    [property: Required] bool IsFallbackAllowed,
+    [property: Required] bool IsRegistered,
     string? ChosenFallbackTimeslotId,
     PlayerEventInstance? Instance
 );
@@ -40,4 +42,8 @@ public record PlayerEventTimeslot(
 /// <param name="Id">The id of the event instance.</param>
 /// <param name="GroupCode">The group code the players should use when joining the game.</param>
 /// <param name="Map">The map the host player should select.</param>
-public record PlayerEventInstance(string Id, string GroupCode, MinigolfMap Map);
+public record PlayerEventInstance(
+    [property: Required] string Id,
+    [property: Required] string GroupCode,
+    [property: Required] MinigolfMap Map
+);

@@ -50,6 +50,7 @@ public class UpdatePlayerEventRegistrationsEndpoint(
         Post("{eventId}/registrations");
         Group<EventsGroup>();
         this.ProducesErrors(
+            EndpointErrors.UserIdNotInClaims,
             EndpointErrors.EventNotFound,
             EndpointErrors.EventRegistrationElapsed,
             EndpointErrors.EventAlreadyStarted
@@ -63,8 +64,8 @@ public class UpdatePlayerEventRegistrationsEndpoint(
     {
         if (!jwtService.TryGetUserId(User, out var userId))
         {
-            Logger.LogWarning("Could not extract user id from claims. ({User})", User);
-            await SendForbiddenAsync(ct);
+            Logger.LogWarning(EndpointErrors.UserIdNotInClaims);
+            await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
             return;
         }
 

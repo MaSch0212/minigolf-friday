@@ -24,13 +24,17 @@ public class CreateUserRequestValidator : Validator<CreateUserRequest>
         RuleFor(x => x.Alias).NotEmpty();
         RuleFor(x => x.Roles).NotEmpty();
         RuleForEach(x => x.Roles).IsInEnum();
-        RuleFor(x => x.PlayerPreferences).NotNull();
-        RuleFor(x => x.PlayerPreferences.Avoid)
+        RuleFor(x => x.PlayerPreferences)
             .NotNull()
-            .ForEach(x => x.NotEmpty().ValidSqid(idService.User));
-        RuleFor(x => x.PlayerPreferences.Prefer)
-            .NotNull()
-            .ForEach(x => x.NotEmpty().ValidSqid(idService.User));
+            .ChildRules(x =>
+            {
+                x.RuleFor(x => x.Avoid)
+                    .NotNull()
+                    .ForEach(x => x.NotEmpty().ValidSqid(idService.User));
+                x.RuleFor(x => x.Prefer)
+                    .NotNull()
+                    .ForEach(x => x.NotEmpty().ValidSqid(idService.User));
+            });
     }
 }
 

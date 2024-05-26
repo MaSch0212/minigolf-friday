@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <Using Include="FluentAssertions" />
+    <Using Include="MinigolfFriday.IntegrationTests.Api" />
   </ItemGroup>
 
   <Target Name="NSwag" BeforeTargets="Build">

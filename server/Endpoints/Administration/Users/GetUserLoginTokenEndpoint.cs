@@ -38,10 +38,10 @@ public class GetUserLoginTokenEndpoint(DatabaseContext databaseContext, IIdServi
         var user = await databaseContext
             .Users
             .Where(x => x.Id == userId)
-            .Select(x => new { x.LoginToken, x.IsActive })
+            .Select(x => new { x.LoginToken })
             .FirstOrDefaultAsync(ct);
 
-        if (user == null || !user.IsActive)
+        if (user == null || user.LoginToken == null)
         {
             Logger.LogWarning(EndpointErrors.UserNotFound, userId);
             await this.SendErrorAsync(EndpointErrors.UserNotFound, req.UserId, ct);

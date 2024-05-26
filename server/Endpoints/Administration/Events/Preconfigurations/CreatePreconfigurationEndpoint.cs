@@ -69,7 +69,10 @@ public class CreatePreconfigurationEndpoint(
             return;
         }
 
-        var preconfig = new EventInstancePreconfigurationEntity();
+        var preconfig = new EventInstancePreconfigurationEntity()
+        {
+            EventTimeSlot = databaseContext.EventTimeslotById(timeslotId)
+        };
         databaseContext.EventInstancePreconfigurations.Add(preconfig);
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(new(eventMapper.Map(preconfig)), 201, ct);

@@ -1,8 +1,8 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Mappers;
 using MinigolfFriday.Models;
-using MinigolfFriday.Services;
 
 namespace MinigolfFriday.Endpoints.Administration.Maps;
 
@@ -10,7 +10,7 @@ namespace MinigolfFriday.Endpoints.Administration.Maps;
 public record GetMapsResponse(MinigolfMap[] Maps);
 
 /// <summary>Get all maps.</summary>
-public class GetMapsEndpoint(DatabaseContext databaseContext, IIdService idService)
+public class GetMapsEndpoint(DatabaseContext databaseContext, IMinigolfMapMapper minigolfMapMapper)
     : EndpointWithoutRequest<GetMapsResponse>
 {
     public override void Configure()
@@ -23,7 +23,7 @@ public class GetMapsEndpoint(DatabaseContext databaseContext, IIdService idServi
     {
         var maps = await databaseContext
             .Maps
-            .Select(m => new MinigolfMap(idService.Map.Encode(m.Id), m.Name))
+            .Select(minigolfMapMapper.MapMinigolfMapExpression)
             .ToArrayAsync(ct);
 
         await SendAsync(new(maps), cancellation: ct);

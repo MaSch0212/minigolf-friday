@@ -35,15 +35,15 @@ public class GetPlayerEventEndpoint(
     {
         Get("{eventId}");
         Group<EventsGroup>();
-        this.ProducesError(EndpointErrors.EventNotFound);
+        this.ProducesErrors(EndpointErrors.EventNotFound, EndpointErrors.UserIdNotInClaims);
     }
 
     public override async Task HandleAsync(GetPlayerEventRequest req, CancellationToken ct)
     {
         if (!jwtService.TryGetUserId(User, out var userId))
         {
-            Logger.LogWarning("Could not extract user id from claims. ({User})", User);
-            await SendForbiddenAsync(ct);
+            Logger.LogWarning(EndpointErrors.UserIdNotInClaims);
+            await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
             return;
         }
 

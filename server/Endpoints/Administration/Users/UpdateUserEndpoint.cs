@@ -41,7 +41,9 @@ public class UpdateUserRequestValidator : Validator<UpdateUserRequest>
     public UpdateUserRequestValidator(IIdService idService)
     {
         RuleFor(x => x.UserId).NotEmpty().ValidSqid(idService.User);
-        When(x => x.Alias != null, () => RuleFor(x => x.Alias).NotEmpty());
+        RuleFor(x => x.Alias)
+            .Must(x => x == null || !string.IsNullOrWhiteSpace(x))
+            .WithMessage("'Alias' must not be empty.");
         RuleForEach(x => x.AddRoles).IsInEnum();
         RuleForEach(x => x.RemoveRoles).IsInEnum();
         RuleFor(x => x.PlayerPreferences)
@@ -79,7 +81,7 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
             .Include(x => x.Prefer)
             .FirstOrDefaultAsync(x => x.Id == userId, ct);
 
-        if (user == null || !user.IsActive)
+        if (user == null || user.LoginToken == null)
         {
             Logger.LogWarning(EndpointErrors.UserNotFound, userId);
             await this.SendErrorAsync(EndpointErrors.UserNotFound, req.UserId, ct);
@@ -105,7 +107,7 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
             ?.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
             .ForEach(x =>
             {
-                if (user.Prefer.Any(x => x.Id == x.Id))
+                if (user.Prefer.Any(y => y.Id == x.Id))
                     AddError(
                         $"User \"{idService.User.Encode(x.Id)}\" cannot be avoided as it is already preferred."
                     );
@@ -117,7 +119,7 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
             ?.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
             .ForEach(x =>
             {
-                if (user.Prefer.Any(x => x.Id == x.Id))
+                if (user.Avoid.Any(y => y.Id == x.Id))
                     AddError(
                         $"User \"{idService.User.Encode(x.Id)}\" cannot be preferred as it is already avoided."
                     );

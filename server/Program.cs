@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,8 @@ using MinigolfFriday.Options;
 using MinigolfFriday.Services;
 using NSwag;
 using NSwag.Generation.AspNetCore;
+
+ValidatorOptions.Global.LanguageManager = new ValidationLanguageManager();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +28,9 @@ builder.Services.ConfigureOptions(configureJsonSerializerOptions);
 
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped<IEventMapper, EventMapper>();
+builder.Services.AddScoped<IMinigolfMapMapper, MinigolfMapMapper>();
 builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
+builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddSingleton<IIdService, IdService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
@@ -52,6 +57,7 @@ builder
         c.ShortSchemaNames = true;
         c.AutoTagPathSegmentIndex = 0;
         c.SerializerSettings = configureJsonSerializerOptions.Configure;
+        c.RemoveEmptyRequestSchema = true;
     });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
@@ -92,29 +98,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHealthChecks("/healthz");
-app.UseFastEndpoints(c =>
-    {
-        configureJsonSerializerOptions.Configure(c.Serializer.Options);
-
-        c.Errors.UseProblemDetails();
-        c.Endpoints.ShortNames = true;
-        c.Endpoints.RoutePrefix = "api";
-        c.Endpoints.Configurator = c =>
-        {
-            if (c.Routes != null)
-            {
-                for (int i = 0; i < c.Routes.Length; i++)
-                {
-                    c.Routes[i] = c.Routes[i].Replace("/:", ":").TrimEnd('/');
-                }
-            }
-            c.Description(
-                x =>
-                    x.ProducesValidationProblem()
-                        .Produces(200, c.ResDtoType == typeof(object) ? null : c.ResDtoType)
-            );
-        };
-    })
+app.UseFastEndpoints(new ConfigureFastEndpointsConfig(configureJsonSerializerOptions).Configure)
     .UseSwaggerGen();
 
 app.UseEndpoints(x => { });

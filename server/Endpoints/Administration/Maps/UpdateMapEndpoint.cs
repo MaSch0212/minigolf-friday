@@ -16,7 +16,9 @@ public class UpdateMapRequestValidator : Validator<UpdateMapRequest>
     public UpdateMapRequestValidator(IIdService idService)
     {
         RuleFor(x => x.MapId).NotEmpty().ValidSqid(idService.Map);
-        When(x => x.Name != null, () => RuleFor(x => x.Name).NotEmpty());
+        RuleFor(x => x.Name)
+            .Must(x => x == null || !string.IsNullOrWhiteSpace(x))
+            .WithMessage("'Name' must not be empty.");
     }
 }
 

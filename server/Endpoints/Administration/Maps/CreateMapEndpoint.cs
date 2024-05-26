@@ -8,14 +8,14 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Maps;
 
 /// <param name="Name">The name of the minigolf map.</param>
-public record AddMapRequest(string Name);
+public record CreateMapRequest(string Name);
 
 /// <param name="Map">The map that has been created.</param>
-public record AddMapResponse(MinigolfMap Map);
+public record CreateMapResponse(MinigolfMap Map);
 
-public class AddMapRequestValidator : Validator<AddMapRequest>
+public class CreateMapRequestValidator : Validator<CreateMapRequest>
 {
-    public AddMapRequestValidator()
+    public CreateMapRequestValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
     }
@@ -23,16 +23,16 @@ public class AddMapRequestValidator : Validator<AddMapRequest>
 
 /// <summary>Create a new map.</summary>
 public class CreateMapEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<AddMapRequest, AddMapResponse>
+    : Endpoint<CreateMapRequest, CreateMapResponse>
 {
     public override void Configure()
     {
         Post("");
         Group<MapAdministrationGroup>();
-        Description(x => x.ClearDefaultProduces(200).Produces<AddMapResponse>(201));
+        Description(x => x.ClearDefaultProduces(200).Produces<CreateMapResponse>(201));
     }
 
-    public override async Task HandleAsync(AddMapRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CreateMapRequest req, CancellationToken ct)
     {
         var map = new MinigolfMapEntity { Name = req.Name };
         databaseContext.Maps.Add(map);

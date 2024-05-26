@@ -1,6 +1,7 @@
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Mappers;
@@ -44,14 +45,15 @@ public class GetPlayerEventsEndpoint(
     {
         Get("");
         Group<EventsGroup>();
+        this.ProducesError(EndpointErrors.UserIdNotInClaims);
     }
 
     public override async Task HandleAsync(GetPlayerEventsRequest req, CancellationToken ct)
     {
         if (!jwtService.TryGetUserId(User, out var userId))
         {
-            Logger.LogWarning("Could not extract user id from claims. ({User})", User);
-            await SendForbiddenAsync(ct);
+            Logger.LogWarning(EndpointErrors.UserIdNotInClaims);
+            await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
             return;
         }
 

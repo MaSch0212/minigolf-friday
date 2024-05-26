@@ -6,6 +6,9 @@ public class EndpointErrors
 {
     public static readonly EndpointError.Params1 UserNotFound =
         new(404, "A user with the id {0} does not exist.", "UserId");
+    public static readonly EndpointError UserIdNotInClaims =
+        new(403, "Could not extract user id from claims.");
+    public static readonly EndpointError CannotDeleteSelf = new(409, "You cannot delete yourself.");
 
     public static readonly EndpointError.Params1 MapNotFound =
         new(404, "A map with the id {0} does not exist.", "MapId");

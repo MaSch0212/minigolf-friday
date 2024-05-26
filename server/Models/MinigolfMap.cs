@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MinigolfFriday.Models;
 
 /// <summary>
@@ -5,4 +7,4 @@ namespace MinigolfFriday.Models;
 /// </summary>
 /// <param name="Id">The id of the minigolf map.</param>
 /// <param name="Name">The name of the minigolf map.</param>
-public record MinigolfMap(string Id, string Name);
+public record MinigolfMap([property: Required] string Id, [property: Required] string Name);

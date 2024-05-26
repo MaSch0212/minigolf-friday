@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@9.1.2",
   "scripts": {
-    "preinstall": "pnpm install -C client && dotnet restore server",
+    "preinstall": "pnpm install -C client && dotnet restore",
     "build": "pnpm server:build && pnpm client:build && pnpm docker:build",
     "push": "pnpm docker:push",
     "server:build": "dotnet publish server -c Release",

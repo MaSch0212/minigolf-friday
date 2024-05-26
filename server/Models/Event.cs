@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MinigolfFriday.Models;
 
 /// <summary>
@@ -9,10 +11,10 @@ namespace MinigolfFriday.Models;
 /// <param name="Timeslots">The timeslots of the event that players can register to.</param>
 /// <param name="StartedAt">The date at which the event has been started. Is null if it has not been started.</param>
 public record Event(
-    string Id,
-    DateOnly Date,
-    DateTimeOffset RegistrationDeadline,
-    EventTimeslot[] Timeslots,
+    [property: Required] string Id,
+    [property: Required] DateOnly Date,
+    [property: Required] DateTimeOffset RegistrationDeadline,
+    [property: Required] EventTimeslot[] Timeslots,
     DateTimeOffset? StartedAt
 );
 
@@ -27,13 +29,13 @@ public record Event(
 /// <param name="PlayerIds">The ids of all players that have registered for this timeslot.</param>
 /// <param name="Instances">The event instances for this timeslot. Might be empty, if instances have not been built yet.</param>
 public record EventTimeslot(
-    string Id,
-    TimeOnly Time,
-    string MapId,
-    bool IsFallbackAllowed,
-    EventInstancePreconfiguration[] Preconfigurations,
-    string[] PlayerIds,
-    EventInstance[] Instances
+    [property: Required] string Id,
+    [property: Required] TimeOnly Time,
+    [property: Required] string MapId,
+    [property: Required] bool IsFallbackAllowed,
+    [property: Required] EventInstancePreconfiguration[] Preconfigurations,
+    [property: Required] string[] PlayerIds,
+    [property: Required] EventInstance[] Instances
 );
 
 /// <summary>
@@ -41,14 +43,20 @@ public record EventTimeslot(
 /// </summary>
 /// <param name="Id">The id of the group.</param>
 /// <param name="PlayerIds">The ids of player that should play together.</param>
-public record EventInstancePreconfiguration(string Id, string[] PlayerIds);
+public record EventInstancePreconfiguration(
+    [property: Required] string Id,
+    [property: Required] string[] PlayerIds
+);
 
 /// <summary>
 /// Represents instances of an event for a specific timeslot.
 /// </summary>
 /// <param name="TimeslotId">The id of the timeslot the instances are for.</param>
 /// <param name="Instances">The event instances.</param>
-public record EventTimeslotInstances(string TimeslotId, EventInstance[] Instances);
+public record EventTimeslotInstances(
+    [property: Required] string TimeslotId,
+    [property: Required] EventInstance[] Instances
+);
 
 /// <summary>
 /// Represents an instance of an event timeslot.
@@ -56,8 +64,13 @@ public record EventTimeslotInstances(string TimeslotId, EventInstance[] Instance
 /// <param name="Id">The id of the event instance.</param>
 /// <param name="GroupCode">The group code the players should use when joining the game.</param>
 /// <param name="PlayerIds">The ids of players that participant in this instance.</param>
-public record EventInstance(string Id, string GroupCode, string[] PlayerIds)
+public record EventInstance(
+    string Id,
+    [property: Required] string GroupCode,
+    [property: Required] string[] PlayerIds
+)
 {
+    [Required]
     public string Id { get; set; } = Id;
 }
 
@@ -68,9 +81,9 @@ public record EventInstance(string Id, string GroupCode, string[] PlayerIds)
 /// <param name="UserId">The id of the player that has registered.</param>
 /// <param name="Timeslots">The timeslots the player has registered to.</param>
 public record EventRegistration(
-    string EventId,
-    string UserId,
-    EventTimeslotRegistration[] Timeslots
+    [property: Required] string EventId,
+    [property: Required] string UserId,
+    [property: Required] EventTimeslotRegistration[] Timeslots
 );
 
 /// <summary>
@@ -78,4 +91,7 @@ public record EventRegistration(
 /// </summary>
 /// <param name="TimeslotId">The id of the event timeslot.</param>
 /// <param name="FallbackTimeslotId">The id of the fallback timeslot.</param>
-public record EventTimeslotRegistration(string TimeslotId, string? FallbackTimeslotId);
+public record EventTimeslotRegistration(
+    [property: Required] string TimeslotId,
+    string? FallbackTimeslotId
+);

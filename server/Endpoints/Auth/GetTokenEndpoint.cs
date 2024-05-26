@@ -47,7 +47,7 @@ public class GetTokenEndpoint(
     {
         var user = await databaseContext
             .Users
-            .Where(x => x.IsActive && x.LoginToken == req.LoginToken)
+            .Where(x => x.LoginToken == req.LoginToken)
             .Select(x => new UserInfo(x.Id, x.Roles.Select(x => x.Id)))
             .FirstOrDefaultAsync(ct);
 

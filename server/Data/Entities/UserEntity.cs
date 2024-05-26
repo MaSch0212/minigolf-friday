@@ -6,9 +6,8 @@ namespace MinigolfFriday.Data.Entities;
 public class UserEntity
 {
     public long Id { get; set; }
-    public required string LoginToken { get; set; }
-    public required string Alias { get; set; }
-    public bool IsActive { get; set; } = true;
+    public required string? LoginToken { get; set; }
+    public required string? Alias { get; set; }
 
     public List<RoleEntity> Roles { get; set; } = [];
     public List<UserEntity> Avoid { get; set; } = [];
@@ -21,17 +20,8 @@ public class UserEntity
         builder.ToTable("users");
 
         builder.Property(x => x.Id).HasColumnName("id").IsRequired().ValueGeneratedOnAdd();
-        builder
-            .Property(x => x.LoginToken)
-            .HasColumnName("login_token")
-            .HasMaxLength(32)
-            .IsRequired();
-        builder.Property(x => x.Alias).HasColumnName("alias").HasMaxLength(150).IsRequired();
-        builder
-            .Property(x => x.IsActive)
-            .HasColumnName("active")
-            .IsRequired()
-            .HasDefaultValue(true);
+        builder.Property(x => x.LoginToken).HasColumnName("login_token").HasMaxLength(32);
+        builder.Property(x => x.Alias).HasColumnName("alias").HasMaxLength(150);
 
         builder
             .HasMany(x => x.Roles)

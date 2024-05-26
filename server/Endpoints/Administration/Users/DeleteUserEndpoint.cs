@@ -19,14 +19,21 @@ public class DeleteUserEndpointRequestValidator : Validator<DeleteUserEndpointRe
 }
 
 /// <summary>Delete a user.</summary>
-public class DeleteUserEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<DeleteUserEndpointRequest>
+public class DeleteUserEndpoint(
+    DatabaseContext databaseContext,
+    IIdService idService,
+    IJwtService jwtService
+) : Endpoint<DeleteUserEndpointRequest>
 {
     public override void Configure()
     {
         Delete("{userId}");
         Group<UserAdministrationGroup>();
-        this.ProducesError(EndpointErrors.UserNotFound);
+        this.ProducesErrors(
+            EndpointErrors.UserNotFound,
+            EndpointErrors.UserIdNotInClaims,
+            EndpointErrors.CannotDeleteSelf
+        );
     }
 
     public override async Task HandleAsync(DeleteUserEndpointRequest req, CancellationToken ct)
@@ -37,6 +44,7 @@ public class DeleteUserEndpoint(DatabaseContext databaseContext, IIdService idSe
             .Where(x => x.Id == userId)
             .Select(user => new { User = user, HasParticipated = user.EventInstances.Count > 0 })
             .FirstOrDefaultAsync(ct);
+
         if (info == null)
         {
             Logger.LogWarning(EndpointErrors.UserNotFound, userId);
@@ -44,11 +52,24 @@ public class DeleteUserEndpoint(DatabaseContext databaseContext, IIdService idSe
             return;
         }
 
+        if (!jwtService.TryGetUserId(User, out var currentUserId))
+        {
+            Logger.LogWarning(EndpointErrors.UserIdNotInClaims);
+            await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
+            return;
+        }
+
+        if (currentUserId == userId)
+        {
+            Logger.LogWarning(EndpointErrors.CannotDeleteSelf);
+            await this.SendErrorAsync(EndpointErrors.CannotDeleteSelf, ct);
+            return;
+        }
+
         if (info.HasParticipated)
         {
-            info.User.IsActive = false;
-            info.User.Alias = "";
-            info.User.LoginToken = "";
+            info.User.Alias = null;
+            info.User.LoginToken = null;
         }
         else
         {
