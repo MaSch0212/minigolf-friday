@@ -44,8 +44,36 @@ internal sealed class EventBuilder
     {
         var response = await _sut.AppClient.CreateEventAsync(_request);
         response.Event.Timeslots = await Task.WhenAll(
-          _timeslots.Select(x => x.BuildAsync(response.Event.Id))
+            _timeslots.Select(x => x.BuildAsync(response.Event.Id))
         );
         return response.Event;
+    }
+
+    public async Task<Event[]> BuildAsync(int amount)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(amount);
+        return amount switch
+        {
+            0 => [],
+            1 => [await BuildAsync()],
+            _
+                => await Task.WhenAll(
+                    Enumerable
+                        .Range(0, amount)
+                        .Select(async i =>
+                        {
+                            var request = new CreateEventRequest
+                            {
+                                Date = _request.Date.AddDays(i),
+                                RegistrationDeadline = _request.RegistrationDeadline.AddDays(i)
+                            };
+                            var response = await _sut.AppClient.CreateEventAsync(request);
+                            response.Event.Timeslots = await Task.WhenAll(
+                                _timeslots.Select(x => x.BuildAsync(response.Event.Id))
+                            );
+                            return response.Event;
+                        })
+                )
+        };
     }
 }

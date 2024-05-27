@@ -24,7 +24,7 @@ public class EventMapper(IIdService idService) : IEventMapper
         return new EventTimeslot(
             idService.EventTimeslot.Encode(entity.Id),
             entity.Time,
-            idService.Map.Encode(entity.Map.Id),
+            idService.Map.Encode(entity.MapId),
             entity.IsFallbackAllowed,
             entity.Preconfigurations.Select(Map).ToArray(),
             entity

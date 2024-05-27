@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\server\MinigolfFriday.csproj" />
+    <ProjectReference Include="../../server/MinigolfFriday.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,9 +31,5 @@
     <Using Include="FluentAssertions" />
     <Using Include="MinigolfFriday.IntegrationTests.Api" />
   </ItemGroup>
-
-  <Target Name="NSwag" BeforeTargets="Build">
-    <Exec Command="pnpm run docker:build:inttest -c $(Configuration)" WorkingDirectory="$(ProjectDir)../.." />
-  </Target>
 
 </Project>

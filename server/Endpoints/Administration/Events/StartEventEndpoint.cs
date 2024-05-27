@@ -88,10 +88,11 @@ public class StartEventEndpoint(DatabaseContext databaseContext, IIdService idSe
             return;
         }
 
+        var now = DateTimeOffset.Now;
         await databaseContext
             .Events
             .Where(x => x.Id == eventId)
-            .ExecuteUpdateAsync(x => x.SetProperty(x => x.StartedAt, DateTimeOffset.Now), ct);
+            .ExecuteUpdateAsync(x => x.SetProperty(x => x.StartedAt, now), ct);
         await SendAsync(null, cancellation: ct);
     }
 }

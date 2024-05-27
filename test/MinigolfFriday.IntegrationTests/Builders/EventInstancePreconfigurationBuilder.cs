@@ -1,5 +1,3 @@
-using MaSch.Core.Extensions;
-
 namespace MinigolfFriday.IntegrationTests.Builders;
 
 internal sealed class EventInstancePreconfigurationBuilder(Sut sut)
@@ -16,10 +14,11 @@ internal sealed class EventInstancePreconfigurationBuilder(Sut sut)
     {
         var createResponse = await sut.AppClient.CreatePreconfigurationAsync(timeslotId);
         await sut.AppClient.AddPlayersToPreconfigurationAsync(
-          createResponse.Preconfiguration.Id,
-          new() { PlayerIds = _playerIds }
+            createResponse.Preconfiguration.Id,
+            new() { PlayerIds = _playerIds }
         );
-        createResponse.Preconfiguration.PlayerIds.Add(_playerIds);
+        foreach (var playerId in _playerIds)
+            createResponse.Preconfiguration.PlayerIds.Add(playerId);
         return createResponse.Preconfiguration;
     }
 }

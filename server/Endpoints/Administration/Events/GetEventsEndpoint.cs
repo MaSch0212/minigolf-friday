@@ -56,14 +56,17 @@ public class GetEventsEndpoint(DatabaseContext databaseContext, IEventMapper eve
 
         var events = await query
             .OrderByDescending(x => x.Date)
-            .Take(req.Amount)
+            .Take(req.Amount + 1)
             .Select(x => eventMapper.Map(x))
             .ToArrayAsync(ct);
 
-        DateOnly? nextContinuation = events.Length == req.Amount ? events[^1].Date : null;
+        DateOnly? nextContinuation = events.Length == req.Amount + 1 ? events[^2].Date : null;
 
         await SendAsync(
-            new(events, nextContinuation?.ToString(CONTINUATION_FORMAT)),
+            new(
+                nextContinuation == null ? events : events[0..^1],
+                nextContinuation?.ToString(CONTINUATION_FORMAT)
+            ),
             cancellation: ct
         );
     }

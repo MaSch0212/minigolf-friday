@@ -1,9 +1,9 @@
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using MinigolfFriday.IntegrationTests.Builders;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using MinigolfFriday.IntegrationTests.Builders;
 
 namespace MinigolfFriday.IntegrationTests;
 
@@ -17,6 +17,7 @@ internal sealed class Sut : IAsyncDisposable
 
     public IContainer App { get; }
     public MinigolfFridayClient AppClient { get; }
+    public string AdminToken { get; private set; } = null!;
 
     private Sut(DateTime start, IContainer app)
     {
@@ -25,16 +26,16 @@ internal sealed class Sut : IAsyncDisposable
         _appHttpClient = new HttpClient();
         App = app;
         AppClient = new MinigolfFridayClient(
-          $"http://{App.Hostname}:{App.GetMappedPublicPort(80)}",
-          _appHttpClient
+            $"http://{App.Hostname}:{App.GetMappedPublicPort(80)}",
+            _appHttpClient
         );
     }
 
     public async Task<string> Token(UserBuilder.Result userResult) =>
-      await Token(userResult.LoginToken);
+        await Token(userResult.LoginToken);
 
     public async Task<string> Token(string loginToken) =>
-      (await AppClient.GetTokenAsync(new() { LoginToken = loginToken })).Token;
+        (await AppClient.GetTokenAsync(new() { LoginToken = loginToken })).Token;
 
     public UserBuilder User(string? alias = null) => new(this, alias);
 
@@ -42,7 +43,8 @@ internal sealed class Sut : IAsyncDisposable
 
     public EventBuilder Event() => new(this);
 
-    public EventTimeslotBuilder EventTimeslot(TimeSpan time, string mapId) => new(this, time, mapId);
+    public EventTimeslotBuilder EventTimeslot(TimeSpan time, string mapId) =>
+        new(this, time, mapId);
 
     public EventInstancePreconfigurationBuilder EventInstancePreconfiguration() => new(this);
 
@@ -50,12 +52,8 @@ internal sealed class Sut : IAsyncDisposable
     {
         try
         {
-            (
-              await _appHttpClient.PostAsync($"{AppClient.BaseUrl}api/dev/resetdb", null)
-            ).EnsureSuccessStatusCode();
-
+            await AppClient.ResetDatabase();
             await TraceContainerLog(App);
-
             _freeAppContainers.Enqueue(App);
         }
         catch
@@ -67,8 +65,8 @@ internal sealed class Sut : IAsyncDisposable
     }
 
     private async Task TraceContainerLog(
-      IContainer container,
-      [CallerArgumentExpression(nameof(container))] string containerName = ""
+        IContainer container,
+        [CallerArgumentExpression(nameof(container))] string containerName = ""
     )
     {
         var (stdout, stderr) = await container.GetLogsAsync(_start);
@@ -84,8 +82,8 @@ internal sealed class Sut : IAsyncDisposable
         try
         {
             var scope = new Sut(start, container);
-            scope.AppClient.Token = (
-              await scope.AppClient.GetTokenAsync(new() { LoginToken = "admin" })
+            scope.AdminToken = scope.AppClient.Token = (
+                await scope.AppClient.GetTokenAsync(new() { LoginToken = "admin" })
             ).Token;
             return scope;
         }
@@ -99,19 +97,22 @@ internal sealed class Sut : IAsyncDisposable
     [AssemblyCleanup]
     public static async Task CleanupAssembly()
     {
-        await Task.WhenAll(_freeAppContainers.Select(x => x.DisposeAsync()).Select(x => x.AsTask()));
+        await Task.WhenAll(
+            _freeAppContainers.Select(x => x.DisposeAsync()).Select(x => x.AsTask())
+        );
     }
 
     private static async Task<IContainer> CreateContainerAsync()
     {
         var container = new ContainerBuilder()
-          .WithImage("masch0212/minigolf-friday:intttest")
-          .WithPortBinding(80, true)
-          .WithEnvironment("LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE", "Information")
-          .WithWaitStrategy(
-            Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(x => x.ForPath("healthz"))
-          )
-          .Build();
+            .WithImage("masch0212/minigolf-friday:intttest")
+            .WithPortBinding(80, true)
+            .WithEnvironment("LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE", "Information")
+            .WithEnvironment("LOGGING__ENABLEDBLOGGING", "true")
+            .WithWaitStrategy(
+                Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(x => x.ForPath("healthz"))
+            )
+            .Build();
 
         await container.StartAsync();
 

@@ -69,14 +69,15 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         );
     }
 
-    public async Task<Result> PersistEventInstancesAsync(
+    public async Task PersistEventInstancesAsync(
         EventTimeslotInstances[] eventInstances,
         CancellationToken cancellation
     )
     {
+        var instanceEntities = new Queue<EventInstanceEntity>();
         foreach (var (strTimeslotId, instances) in eventInstances)
         {
-            var timeslotId = long.Parse(strTimeslotId);
+            var timeslotId = idService.EventTimeslot.DecodeSingle(strTimeslotId);
             databaseContext
                 .EventInstances
                 .RemoveRange(
@@ -89,22 +90,28 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
                     GroupCode = instance.GroupCode,
                     EventTimeslot = databaseContext.EventTimeslotById(timeslotId),
                 };
+                instanceEntities.Enqueue(entity);
                 databaseContext.EventInstances.Add(entity);
-                foreach (var playerId in instance.PlayerIds)
+                foreach (
+                    var playerId in instance.PlayerIds.Select(x => idService.User.DecodeSingle(x))
+                )
                 {
                     var user =
                         databaseContext
                             .ChangeTracker
                             .Entries<UserEntity>()
-                            .FirstOrDefault(x => x.Entity.Id == long.Parse(playerId))
-                            ?.Entity ?? databaseContext.UserById(long.Parse(playerId));
+                            .FirstOrDefault(x => x.Entity.Id == playerId)
+                            ?.Entity ?? databaseContext.UserById(playerId);
                     entity.Players.Add(user);
                 }
             }
         }
 
         await databaseContext.SaveChangesAsync(cancellation);
-        return Result.Ok();
+        foreach (var instance in eventInstances.SelectMany(x => x.Instances))
+        {
+            instance.Id = idService.EventInstance.Encode(instanceEntities.Dequeue().Id);
+        }
     }
 
     private static Dictionary<long, Player> GetAllEventPlayersAsync(EventEntity @event)

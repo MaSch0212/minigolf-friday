@@ -51,9 +51,16 @@
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
-  <Target Name="NSwag" AfterTargets="Build">
+  <Target Name="ExportOpenApi" AfterTargets="Build">
     <Exec EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="dotnet run --no-build --OpenApiOutput openapi.yml" />
+  </Target>
+  
+  <Target Name="BuildInttestApiClient" AfterTargets="Build" DependsOnTargets="ExportOpenApi">
     <Exec Command="$(NSwagExe) openapi2csclient /input:openapi.yml /classname:MinigolfFridayClient /namespace:MinigolfFriday.IntegrationTests.Api /output:$(ProjectDir)../test/MinigolfFriday.IntegrationTests/Api/MinigolfFridayClient.cs" />
+  </Target>
+
+  <Target Name="BuildInttestDockerContainer" AfterTargets="Build">
+    <Exec Command="pnpm run docker:build:inttest -c $(Configuration)" WorkingDirectory="$(MSBuildProjectDirectory)/.." />
   </Target>
 
 </Project>
