@@ -34,6 +34,11 @@ public class RemovePlayersFromPreconfigurationEndpoint(
     {
         Delete(":preconfigs/{preconfigurationId}/players");
         Group<EventAdministrationGroup>();
+        Description(
+            x =>
+                x.ClearDefaultAccepts()
+                    .Accepts<RemovePlayersFromPreconfigurationRequest>("application/json")
+        );
         this.ProducesErrors(
             EndpointErrors.PreconfigurationNotFound,
             EndpointErrors.EventAlreadyStarted

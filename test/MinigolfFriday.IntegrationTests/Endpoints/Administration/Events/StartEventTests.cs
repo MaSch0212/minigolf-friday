@@ -14,16 +14,20 @@ public class StartEventTests
             .BuildAsync();
 
         var user = await sut.User().BuildAsync();
-        sut.AppClient.Token = await sut.Token(user);
-        await sut.AppClient.UpdatePlayerEventRegistrationsAsync(
-            @event.Id,
-            new()
-            {
-                TimeslotRegistrations =  [new() { TimeslotId = @event.Timeslots.ElementAt(0).Id }]
-            }
+        await user.CallApi(
+            x =>
+                x.UpdatePlayerEventRegistrationsAsync(
+                    @event.Id,
+                    new()
+                    {
+                        TimeslotRegistrations =
+                        [
+                            new() { TimeslotId = @event.Timeslots.ElementAt(0).Id }
+                        ]
+                    }
+                )
         );
 
-        sut.AppClient.Token = sut.AdminToken;
         var newDeadline = DateTime.Now;
         await sut.AppClient.SetRegistrationDeadline(@event.Id, newDeadline);
         var instances = (await sut.AppClient.BuildEventInstancesAsync(@event.Id)).Instances;

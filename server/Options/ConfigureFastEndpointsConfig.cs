@@ -1,8 +1,8 @@
+using System.Reflection;
+using System.Text.Json;
 using FastEndpoints;
 using Microsoft.Extensions.Options;
 using MinigolfFriday.Common;
-using System.Reflection;
-using System.Text.Json;
 
 namespace MinigolfFriday.Options;
 

@@ -23,7 +23,7 @@ public class DbUpdateBuilder<T>(IQueryable<T> query)
         var call = (MethodCallExpression)setter.Body;
         _expression = Expression.Lambda<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>>(
             Expression.Call(_expression.Body, call.Method, call.Arguments),
-            setter.Parameters
+            _expression.Parameters
         );
         return this;
     }

@@ -6,7 +6,7 @@ internal sealed class EventTimeslotBuilder(Sut sut, TimeSpan time, string mapId)
     private readonly CreateEventTimeslotRequest _request = new() { Time = time, MapId = mapId };
 
     public EventTimeslotBuilder WithPreconfiguration(
-      Action<EventInstancePreconfigurationBuilder>? configure = null
+        Action<EventInstancePreconfigurationBuilder>? configure = null
     )
     {
         var builder = new EventInstancePreconfigurationBuilder(sut);
@@ -37,7 +37,7 @@ internal sealed class EventTimeslotBuilder(Sut sut, TimeSpan time, string mapId)
     {
         var timeslotResponse = await sut.AppClient.CreateEventTimeslotAsync(eventId, _request);
         timeslotResponse.Timeslot.Preconfigurations = await Task.WhenAll(
-          _preconfigurations.Select(x => x.BuildAsync(timeslotResponse.Timeslot.Id))
+            _preconfigurations.Select(x => x.BuildAsync(timeslotResponse.Timeslot.Id))
         );
         return timeslotResponse.Timeslot;
     }

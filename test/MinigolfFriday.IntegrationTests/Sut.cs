@@ -7,32 +7,34 @@ using MinigolfFriday.IntegrationTests.Builders;
 
 namespace MinigolfFriday.IntegrationTests;
 
+internal interface IHttpClientAccessor
+{
+    HttpClient HttpClient { get; }
+}
+
 [TestClass]
-internal sealed class Sut : IAsyncDisposable
+internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
 {
     private static readonly ConcurrentQueue<IContainer> _freeAppContainers = new();
 
-    private readonly HttpClient _appHttpClient;
+    private readonly HttpClient _httpClient;
     private readonly DateTime _start;
 
     public IContainer App { get; }
     public MinigolfFridayClient AppClient { get; }
     public string AdminToken { get; private set; } = null!;
+    public string AppBaseUrl => $"http://{App.Hostname}:{App.GetMappedPublicPort(80)}";
+
+    HttpClient IHttpClientAccessor.HttpClient => _httpClient;
 
     private Sut(DateTime start, IContainer app)
     {
         _start = start;
 
-        _appHttpClient = new HttpClient();
+        _httpClient = new HttpClient();
         App = app;
-        AppClient = new MinigolfFridayClient(
-            $"http://{App.Hostname}:{App.GetMappedPublicPort(80)}",
-            _appHttpClient
-        );
+        AppClient = new MinigolfFridayClient(AppBaseUrl, _httpClient);
     }
-
-    public async Task<string> Token(UserBuilder.Result userResult) =>
-        await Token(userResult.LoginToken);
 
     public async Task<string> Token(string loginToken) =>
         (await AppClient.GetTokenAsync(new() { LoginToken = loginToken })).Token;
@@ -61,6 +63,10 @@ internal sealed class Sut : IAsyncDisposable
             await TraceContainerLog(App);
             await App.DisposeAsync();
             throw;
+        }
+        finally
+        {
+            _httpClient.Dispose();
         }
     }
 

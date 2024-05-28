@@ -13,12 +13,17 @@ internal sealed class EventInstancePreconfigurationBuilder(Sut sut)
     public async Task<EventInstancePreconfiguration> BuildAsync(string timeslotId)
     {
         var createResponse = await sut.AppClient.CreatePreconfigurationAsync(timeslotId);
-        await sut.AppClient.AddPlayersToPreconfigurationAsync(
-            createResponse.Preconfiguration.Id,
-            new() { PlayerIds = _playerIds }
-        );
-        foreach (var playerId in _playerIds)
-            createResponse.Preconfiguration.PlayerIds.Add(playerId);
+
+        if (_playerIds.Length > 0)
+        {
+            await sut.AppClient.AddPlayersToPreconfigurationAsync(
+                createResponse.Preconfiguration.Id,
+                new() { PlayerIds = _playerIds }
+            );
+            foreach (var playerId in _playerIds)
+                createResponse.Preconfiguration.PlayerIds.Add(playerId);
+        }
+
         return createResponse.Preconfiguration;
     }
 }
