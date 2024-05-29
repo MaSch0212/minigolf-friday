@@ -15,24 +15,26 @@ internal interface IHttpClientAccessor
 [TestClass]
 internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
 {
-    private static readonly ConcurrentQueue<IContainer> _freeAppContainers = new();
+    private static readonly ConcurrentQueue<AppContainer> _freeAppContainers = new();
 
+    private readonly AppContainer _app;
     private readonly HttpClient _httpClient;
     private readonly DateTime _start;
 
-    public IContainer App { get; }
+    public IContainer App => _app.Container;
     public MinigolfFridayClient AppClient { get; }
+    public TimeSpan TokenExpiration => _app.TokenExpiration;
     public string AdminToken { get; private set; } = null!;
     public string AppBaseUrl => $"http://{App.Hostname}:{App.GetMappedPublicPort(80)}";
 
     HttpClient IHttpClientAccessor.HttpClient => _httpClient;
 
-    private Sut(DateTime start, IContainer app)
+    private Sut(DateTime start, AppContainer app)
     {
         _start = start;
 
         _httpClient = new HttpClient();
-        App = app;
+        _app = app;
         AppClient = new MinigolfFridayClient(AppBaseUrl, _httpClient);
     }
 
@@ -56,7 +58,7 @@ internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
         {
             await AppClient.ResetDatabase();
             await TraceContainerLog(App);
-            _freeAppContainers.Enqueue(App);
+            _freeAppContainers.Enqueue(_app);
         }
         catch
         {
@@ -80,7 +82,7 @@ internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
         Trace.WriteLine($"{containerName} (stderr):\n{stderr}");
     }
 
-    public static async Task<Sut> CreateAsync()
+    public static async Task<Sut> CreateAsync(bool getAdminToken = true)
     {
         var start = DateTime.Now;
         if (!_freeAppContainers.TryDequeue(out var container))
@@ -88,9 +90,12 @@ internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
         try
         {
             var scope = new Sut(start, container);
-            scope.AdminToken = scope.AppClient.Token = (
-                await scope.AppClient.GetTokenAsync(new() { LoginToken = "admin" })
-            ).Token;
+            if (getAdminToken)
+            {
+                scope.AdminToken = scope.AppClient.Token = (
+                    await scope.AppClient.GetTokenAsync(new() { LoginToken = "admin" })
+                ).Token;
+            }
             return scope;
         }
         catch
@@ -104,17 +109,19 @@ internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
     public static async Task CleanupAssembly()
     {
         await Task.WhenAll(
-            _freeAppContainers.Select(x => x.DisposeAsync()).Select(x => x.AsTask())
+            _freeAppContainers.Select(x => x.Container.DisposeAsync()).Select(x => x.AsTask())
         );
     }
 
-    private static async Task<IContainer> CreateContainerAsync()
+    private static async Task<AppContainer> CreateContainerAsync()
     {
+        var tokenExpiration = TimeSpan.FromSeconds(Random.Shared.Next(300, 180000));
         var container = new ContainerBuilder()
             .WithImage("masch0212/minigolf-friday:intttest")
             .WithPortBinding(80, true)
             .WithEnvironment("LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE", "Information")
             .WithEnvironment("LOGGING__ENABLEDBLOGGING", "true")
+            .WithEnvironment("AUTHENTICATION__JWT__EXPIRATION", tokenExpiration.ToString())
             .WithWaitStrategy(
                 Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(x => x.ForPath("healthz"))
             )
@@ -122,6 +129,8 @@ internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
 
         await container.StartAsync();
 
-        return container;
+        return new(container, tokenExpiration);
     }
+
+    private record AppContainer(IContainer Container, TimeSpan TokenExpiration);
 }
