@@ -46,8 +46,7 @@ public class GetTokenEndpoint(
     public override async Task HandleAsync(GetTokenRequest req, CancellationToken ct)
     {
         var user = await databaseContext
-            .Users
-            .Where(x => x.LoginToken == req.LoginToken)
+            .Users.Where(x => x.LoginToken == req.LoginToken)
             .Select(x => new UserInfo(x.Id, x.Roles.Select(x => x.Id)))
             .FirstOrDefaultAsync(ct);
 

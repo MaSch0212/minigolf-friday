@@ -8,7 +8,7 @@ internal sealed class UserBuilder(Sut sut, string? alias = null)
         new()
         {
             Alias = alias ?? $"User {Interlocked.Increment(ref _last)}",
-            Roles =  [Role.Player]
+            Roles = [Role.Player]
         };
 
     public UserBuilder WithAlias(string alias)
@@ -19,19 +19,19 @@ internal sealed class UserBuilder(Sut sut, string? alias = null)
 
     public UserBuilder WithRoles(params Role[] roles)
     {
-        _request.Roles =  [.. roles];
+        _request.Roles = [.. roles];
         return this;
     }
 
     public UserBuilder WithAvoidedPlayers(params string[] playerIds)
     {
-        _request.PlayerPreferences.Avoid =  [.. playerIds];
+        _request.PlayerPreferences.Avoid = [.. playerIds];
         return this;
     }
 
     public UserBuilder WithPreferredPlayers(params string[] playerIds)
     {
-        _request.PlayerPreferences.Prefer =  [.. playerIds];
+        _request.PlayerPreferences.Prefer = [.. playerIds];
         return this;
     }
 
@@ -57,11 +57,11 @@ internal sealed class UserBuilder(Sut sut, string? alias = null)
                             var request = new CreateUserRequest()
                             {
                                 Alias = $"{_request.Alias} ({i})",
-                                Roles =  [.. _request.Roles],
+                                Roles = [.. _request.Roles],
                                 PlayerPreferences = new()
                                 {
-                                    Avoid =  [.. _request.PlayerPreferences.Avoid],
-                                    Prefer =  [.. _request.PlayerPreferences.Prefer]
+                                    Avoid = [.. _request.PlayerPreferences.Avoid],
+                                    Prefer = [.. _request.PlayerPreferences.Prefer]
                                 }
                             };
                             var response = await sut.AppClient.CreateUserAsync(request);

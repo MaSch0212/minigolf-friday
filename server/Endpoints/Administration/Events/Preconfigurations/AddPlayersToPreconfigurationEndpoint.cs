@@ -43,18 +43,15 @@ public class AddPlayersToPreconfigurationEndpoint(
     )
     {
         var preconfigId = idService.Preconfiguration.DecodeSingle(req.PreconfigurationId);
-        var preconfigQuery = databaseContext
-            .EventInstancePreconfigurations
-            .Where(x => x.Id == preconfigId);
+        var preconfigQuery = databaseContext.EventInstancePreconfigurations.Where(x =>
+            x.Id == preconfigId
+        );
         var preconfigInfo = await preconfigQuery
-            .Select(
-                x =>
-                    new
-                    {
-                        Started = x.EventTimeSlot.Event.StartedAt != null,
-                        x.EventTimeSlot.EventId
-                    }
-            )
+            .Select(x => new
+            {
+                Started = x.EventTimeSlot.Event.StartedAt != null,
+                x.EventTimeSlot.EventId
+            })
             .FirstOrDefaultAsync(ct);
 
         if (preconfigInfo == null)
@@ -80,11 +77,9 @@ public class AddPlayersToPreconfigurationEndpoint(
         }
 
         var entity = databaseContext.PreconfigurationById(preconfigId);
-        entity
-            .Players
-            .AddRange(
-                req.PlayerIds.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
-            );
+        entity.Players.AddRange(
+            req.PlayerIds.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+        );
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(null, cancellation: ct);
     }

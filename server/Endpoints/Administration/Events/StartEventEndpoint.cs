@@ -38,17 +38,13 @@ public class StartEventEndpoint(DatabaseContext databaseContext, IIdService idSe
     {
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var info = await databaseContext
-            .Events
-            .Where(x => x.Id == eventId)
-            .Select(
-                x =>
-                    new
-                    {
-                        x.RegistrationDeadline,
-                        HasInstances = x.Timeslots.Any(t => t.Instances.Any()),
-                        IsStarted = x.StartedAt != null
-                    }
-            )
+            .Events.Where(x => x.Id == eventId)
+            .Select(x => new
+            {
+                x.RegistrationDeadline,
+                HasInstances = x.Timeslots.Any(t => t.Instances.Any()),
+                IsStarted = x.StartedAt != null
+            })
             .FirstOrDefaultAsync(ct);
 
         if (info == null)
@@ -90,8 +86,7 @@ public class StartEventEndpoint(DatabaseContext databaseContext, IIdService idSe
 
         var now = DateTimeOffset.Now;
         await databaseContext
-            .Events
-            .Where(x => x.Id == eventId)
+            .Events.Where(x => x.Id == eventId)
             .ExecuteUpdateAsync(x => x.SetProperty(x => x.StartedAt, now), ct);
         await SendAsync(null, cancellation: ct);
     }

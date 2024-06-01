@@ -7,7 +7,10 @@ public class GetEventsTests
     public async Task GetEvents_Single_Success()
     {
         await using var sut = await Sut.CreateAsync();
-        var @event = await sut.Event().BuildAsync();
+        var map = await sut.MinigolfMap().BuildAsync();
+        var @event = await sut.Event()
+            .WithTimeslot(map.Id, x => x.WithPreconfiguration())
+            .BuildAsync();
 
         var response = await sut.AppClient.GetEventsAsync(null, null);
 
@@ -19,12 +22,15 @@ public class GetEventsTests
     public async Task GetEvents_Multiple_Success()
     {
         await using var sut = await Sut.CreateAsync();
-        var events = await sut.Event().BuildAsync(3);
+        var map = await sut.MinigolfMap().BuildAsync();
+        var events = await sut.Event()
+            .WithTimeslot(map.Id, x => x.WithPreconfiguration())
+            .BuildAsync(3);
 
         var response = await sut.AppClient.GetEventsAsync(null, null);
 
         response.Continuation.Should().BeNull();
-        response.Events.Should().BeEquivalentTo(events.Reverse());
+        response.Events.Should().BeEquivalentTo(events.Reverse(), o => o.WithStrictOrdering());
     }
 
     [TestMethod]
@@ -59,7 +65,9 @@ public class GetEventsTests
 
         var response1 = await sut.AppClient.GetEventsAsync(2, null);
         response1.Continuation.Should().NotBeNull();
-        response1.Events.Should().BeEquivalentTo([events[2], events[1]]);
+        response1
+            .Events.Should()
+            .BeEquivalentTo([events[2], events[1]], o => o.WithStrictOrdering());
 
         var response2 = await sut.AppClient.GetEventsAsync(2, response1.Continuation);
         response2.Continuation.Should().BeNull();

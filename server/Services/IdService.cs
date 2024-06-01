@@ -1,8 +1,8 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Extensions.Options;
 using MinigolfFriday.Options;
 using Sqids;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace MinigolfFriday.Services;
 

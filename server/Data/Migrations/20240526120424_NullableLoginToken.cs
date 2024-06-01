@@ -10,9 +10,7 @@ namespace MinigolfFriday.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "active",
-                table: "users");
+            migrationBuilder.DropColumn(name: "active", table: "users");
 
             migrationBuilder.AlterColumn<string>(
                 name: "login_token",
@@ -22,7 +20,8 @@ namespace MinigolfFriday.Data.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "TEXT",
-                oldMaxLength: 32);
+                oldMaxLength: 32
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "alias",
@@ -32,7 +31,8 @@ namespace MinigolfFriday.Data.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "TEXT",
-                oldMaxLength: 150);
+                oldMaxLength: 150
+            );
         }
 
         /// <inheritdoc />
@@ -48,7 +48,8 @@ namespace MinigolfFriday.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "TEXT",
                 oldMaxLength: 32,
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AlterColumn<string>(
                 name: "alias",
@@ -60,14 +61,16 @@ namespace MinigolfFriday.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "TEXT",
                 oldMaxLength: 150,
-                oldNullable: true);
+                oldNullable: true
+            );
 
             migrationBuilder.AddColumn<bool>(
                 name: "active",
                 table: "users",
                 type: "INTEGER",
                 nullable: false,
-                defaultValue: true);
+                defaultValue: true
+            );
         }
     }
 }

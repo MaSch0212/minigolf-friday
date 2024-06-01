@@ -41,8 +41,7 @@ public class GetMapEndpoint(
     {
         var mapId = idService.Map.DecodeSingle(req.MapId);
         var map = await databaseContext
-            .Maps
-            .Where(x => x.Id == mapId)
+            .Maps.Where(x => x.Id == mapId)
             .Select(minigolfMapMapper.MapMinigolfMapExpression)
             .FirstOrDefaultAsync(ct);
 

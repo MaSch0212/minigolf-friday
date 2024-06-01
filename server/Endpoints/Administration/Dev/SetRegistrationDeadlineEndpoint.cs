@@ -20,9 +20,10 @@ public class SetRegistrationDeadlineEndpoint(DatabaseContext databaseContext, II
     {
         var eventId = idService.Event.DecodeSingle(req.EventId);
 
-        await databaseContext
-            .Events
-            .ExecuteUpdateAsync(x => x.SetProperty(x => x.RegistrationDeadline, req.Deadline), ct);
+        await databaseContext.Events.ExecuteUpdateAsync(
+            x => x.SetProperty(x => x.RegistrationDeadline, req.Deadline),
+            ct
+        );
         await SendAsync(null, cancellation: ct);
     }
 }

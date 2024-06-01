@@ -40,30 +40,26 @@ public static class ResultExtensions
         else
         {
             var statusCodeError = result
-                .Errors
-                .Where(
-                    error =>
-                        error.HasMetadataKey(StatusCodeMetadataKey)
-                        && error.Metadata[StatusCodeMetadataKey] is int or HttpStatusCode
+                .Errors.Where(error =>
+                    error.HasMetadataKey(StatusCodeMetadataKey)
+                    && error.Metadata[StatusCodeMetadataKey] is int or HttpStatusCode
                 )
                 .FirstOrDefault();
             if (statusCodeError is not null)
             {
-                await endpoint
-                    .HttpContext
-                    .Response
-                    .SendStringAsync(
-                        statusCodeError.Message,
-                        (int)statusCodeError.Metadata[StatusCodeMetadataKey],
-                        cancellation: cancellation
-                    );
+                await endpoint.HttpContext.Response.SendStringAsync(
+                    statusCodeError.Message,
+                    (int)statusCodeError.Metadata[StatusCodeMetadataKey],
+                    cancellation: cancellation
+                );
             }
             else
             {
-                await endpoint
-                    .HttpContext
-                    .Response
-                    .SendStringAsync("Internal Server Error", 500, cancellation: cancellation);
+                await endpoint.HttpContext.Response.SendStringAsync(
+                    "Internal Server Error",
+                    500,
+                    cancellation: cancellation
+                );
             }
         }
     }
@@ -71,10 +67,9 @@ public static class ResultExtensions
     private static IActionResult GetErrorActionResult(IEnumerable<IError> errors)
     {
         var statusCodeError = errors
-            .Where(
-                error =>
-                    error.HasMetadataKey(StatusCodeMetadataKey)
-                    && error.Metadata[StatusCodeMetadataKey] is int or HttpStatusCode
+            .Where(error =>
+                error.HasMetadataKey(StatusCodeMetadataKey)
+                && error.Metadata[StatusCodeMetadataKey] is int or HttpStatusCode
             )
             .FirstOrDefault();
         if (statusCodeError is not null)

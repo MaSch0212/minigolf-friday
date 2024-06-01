@@ -40,8 +40,7 @@ public class DeleteUserEndpoint(
     {
         var userId = idService.User.DecodeSingle(req.UserId);
         var info = await databaseContext
-            .Users
-            .Where(x => x.Id == userId)
+            .Users.Where(x => x.Id == userId)
             .Select(user => new { User = user, HasParticipated = user.EventInstances.Count > 0 })
             .FirstOrDefaultAsync(ct);
 

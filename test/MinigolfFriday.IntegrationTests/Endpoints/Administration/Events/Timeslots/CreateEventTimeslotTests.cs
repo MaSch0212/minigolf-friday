@@ -23,9 +23,7 @@ public class CreateEventTimeslotTests
         timeslot.PlayerIds.Should().BeEmpty();
         timeslot.Preconfigurations.Should().BeEmpty();
         (await sut.AppClient.GetEventAsync(@event.Id))
-            .Event
-            .Timeslots
-            .Should()
+            .Event.Timeslots.Should()
             .BeEquivalentTo([timeslot]);
     }
 
@@ -46,9 +44,7 @@ public class CreateEventTimeslotTests
 
         timeslot.Should().BeEquivalentTo(request);
         (await sut.AppClient.GetEventAsync(@event.Id))
-            .Event
-            .Timeslots
-            .Should()
+            .Event.Timeslots.Should()
             .BeEquivalentTo([timeslot]);
     }
 }

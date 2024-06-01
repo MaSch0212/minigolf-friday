@@ -36,45 +36,37 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
 
 builder.Services.AddHealthChecks().AddDbContextCheck<DatabaseContext>();
-builder
-    .Services
-    .AddFastEndpoints(o =>
-    {
-        IEnumerable<Type> endpointTypes = MinigolfFriday.DiscoveredTypes.All;
-        if (Environment.GetEnvironmentVariable("ENABLE_DEV_ENDPOINTS") != "true")
-            endpointTypes = endpointTypes.Where(x => !x.FullName!.Contains(".Dev."));
-        o.SourceGeneratorDiscoveredTypes.AddRange(endpointTypes);
-    });
+builder.Services.AddFastEndpoints(o =>
+{
+    IEnumerable<Type> endpointTypes = MinigolfFriday.DiscoveredTypes.All;
+    if (Environment.GetEnvironmentVariable("ENABLE_DEV_ENDPOINTS") != "true")
+        endpointTypes = endpointTypes.Where(x => !x.FullName!.Contains(".Dev."));
+    o.SourceGeneratorDiscoveredTypes.AddRange(endpointTypes);
+});
 builder.Services.AddEndpointsApiExplorer();
-builder
-    .Services
-    .SwaggerDocument(c =>
+builder.Services.SwaggerDocument(c =>
+{
+    c.DocumentSettings = d =>
     {
-        c.DocumentSettings = d =>
-        {
-            d.OperationProcessors.Add(new OperationIdProcessor());
-        };
-        c.ShortSchemaNames = true;
-        c.AutoTagPathSegmentIndex = 0;
-        c.SerializerSettings = configureJsonSerializerOptions.Configure;
-        c.RemoveEmptyRequestSchema = true;
-    });
+        d.OperationProcessors.Add(new OperationIdProcessor());
+    };
+    c.ShortSchemaNames = true;
+    c.AutoTagPathSegmentIndex = 0;
+    c.SerializerSettings = configureJsonSerializerOptions.Configure;
+    c.RemoveEmptyRequestSchema = true;
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddAuthorization();
 builder.Services.AddHttpClient();
-builder
-    .Services
-    .AddResponseCompression(options =>
-    {
-        options.EnableForHttps = true;
-    });
-builder
-    .Services
-    .AddSpaStaticFiles(options =>
-    {
-        options.RootPath = "wwwroot/browser";
-    });
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
+builder.Services.AddSpaStaticFiles(options =>
+{
+    options.RootPath = "wwwroot/browser";
+});
 
 var app = builder.Build();
 
@@ -116,12 +108,11 @@ if (openApiOutput != null)
 {
     using var scope = app.Services.CreateScope();
     Console.WriteLine("Generating OpenAPI...");
-    var options = scope
-        .ServiceProvider
-        .GetRequiredService<IOptions<AspNetCoreOpenApiDocumentGeneratorSettings>>();
-    var documentProvider = scope
-        .ServiceProvider
-        .GetRequiredService<NSwag.Generation.IOpenApiDocumentGenerator>();
+    var options = scope.ServiceProvider.GetRequiredService<
+        IOptions<AspNetCoreOpenApiDocumentGeneratorSettings>
+    >();
+    var documentProvider =
+        scope.ServiceProvider.GetRequiredService<NSwag.Generation.IOpenApiDocumentGenerator>();
     var apidoc = await documentProvider.GenerateAsync(options.Value.DocumentName);
     var targetPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), openApiOutput));
     Console.WriteLine($"Writing OpenAPI to \"{targetPath}\"...");

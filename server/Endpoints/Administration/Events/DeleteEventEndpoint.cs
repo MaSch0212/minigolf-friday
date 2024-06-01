@@ -33,8 +33,7 @@ public class DeleteEventEndpoint(DatabaseContext databaseContext, IIdService idS
     {
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var info = await databaseContext
-            .Events
-            .Where(x => x.Id == eventId)
+            .Events.Where(x => x.Id == eventId)
             .Select(x => new { Started = x.StartedAt != null })
             .FirstOrDefaultAsync(ct);
 

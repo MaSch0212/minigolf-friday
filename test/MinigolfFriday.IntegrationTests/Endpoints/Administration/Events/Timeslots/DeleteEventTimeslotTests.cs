@@ -25,18 +25,17 @@ public class DeleteEventTimeslotTests
             .WithRegistrationDeadline(DateTime.Now.AddHours(1))
             .WithTimeslot(map.Id, x => x.WithPreconfiguration())
             .BuildAsync();
-        await user.CallApi(
-            x =>
-                x.UpdatePlayerEventRegistrationsAsync(
-                    @event.Id,
-                    new()
-                    {
-                        TimeslotRegistrations =
-                        [
-                            new() { TimeslotId = @event.Timeslots.ElementAt(0).Id }
-                        ]
-                    }
-                )
+        await user.CallApi(x =>
+            x.UpdatePlayerEventRegistrationsAsync(
+                @event.Id,
+                new()
+                {
+                    TimeslotRegistrations =
+                    [
+                        new() { TimeslotId = @event.Timeslots.ElementAt(0).Id }
+                    ]
+                }
+            )
         );
 
         await sut.AppClient.DeleteEventTimeslotAsync(@event.Timeslots.ElementAt(0).Id);

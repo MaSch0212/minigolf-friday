@@ -35,18 +35,15 @@ public class DeletePreconfigurationEndpoint(DatabaseContext databaseContext, IId
     public override async Task HandleAsync(DeletePreconfigurationRequest req, CancellationToken ct)
     {
         var preconfigId = idService.Preconfiguration.DecodeSingle(req.PreconfigurationId);
-        var preconfigQuery = databaseContext
-            .EventInstancePreconfigurations
-            .Where(x => x.Id == preconfigId);
+        var preconfigQuery = databaseContext.EventInstancePreconfigurations.Where(x =>
+            x.Id == preconfigId
+        );
         var preconfigInfo = await preconfigQuery
-            .Select(
-                x =>
-                    new
-                    {
-                        Started = x.EventTimeSlot.Event.StartedAt != null,
-                        x.EventTimeSlot.EventId
-                    }
-            )
+            .Select(x => new
+            {
+                Started = x.EventTimeSlot.Event.StartedAt != null,
+                x.EventTimeSlot.EventId
+            })
             .FirstOrDefaultAsync(ct);
 
         if (preconfigInfo == null)

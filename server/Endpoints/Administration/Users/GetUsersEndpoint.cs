@@ -22,8 +22,7 @@ public class GetUsersEndpoint(DatabaseContext databaseContext, IUserMapper userM
     public override async Task HandleAsync(CancellationToken ct)
     {
         var users = await databaseContext
-            .Users
-            .Where(x => x.LoginToken != null)
+            .Users.Where(x => x.LoginToken != null)
             .Select(userMapper.MapUserExpression)
             .ToArrayAsync(ct);
 

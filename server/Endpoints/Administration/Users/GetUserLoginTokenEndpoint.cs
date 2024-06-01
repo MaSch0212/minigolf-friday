@@ -36,8 +36,7 @@ public class GetUserLoginTokenEndpoint(DatabaseContext databaseContext, IIdServi
     {
         var userId = idService.User.DecodeSingle(req.UserId);
         var user = await databaseContext
-            .Users
-            .Where(x => x.Id == userId)
+            .Users.Where(x => x.Id == userId)
             .Select(x => new { x.LoginToken })
             .FirstOrDefaultAsync(ct);
 

@@ -14,18 +14,17 @@ public class StartEventTests
             .BuildAsync();
 
         var user = await sut.User().BuildAsync();
-        await user.CallApi(
-            x =>
-                x.UpdatePlayerEventRegistrationsAsync(
-                    @event.Id,
-                    new()
-                    {
-                        TimeslotRegistrations =
-                        [
-                            new() { TimeslotId = @event.Timeslots.ElementAt(0).Id }
-                        ]
-                    }
-                )
+        await user.CallApi(x =>
+            x.UpdatePlayerEventRegistrationsAsync(
+                @event.Id,
+                new()
+                {
+                    TimeslotRegistrations =
+                    [
+                        new() { TimeslotId = @event.Timeslots.ElementAt(0).Id }
+                    ]
+                }
+            )
         );
 
         var newDeadline = DateTime.Now;

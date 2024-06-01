@@ -16,10 +16,10 @@ public class RemovePlayersFromPreconfigurationTests
 
         await sut.AppClient.RemovePlayersFromPreconfigurationAsync(
             preconfig.Id,
-            new() { PlayerIds =  [userIds[0]] }
+            new() { PlayerIds = [userIds[0]] }
         );
 
-        preconfig.PlayerIds =  [userIds[1]];
+        preconfig.PlayerIds = [userIds[1]];
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
     }
 
@@ -36,10 +36,10 @@ public class RemovePlayersFromPreconfigurationTests
 
         await sut.AppClient.RemovePlayersFromPreconfigurationAsync(
             preconfig.Id,
-            new() { PlayerIds =  [userIds[0], userIds[1], userIds[3]] }
+            new() { PlayerIds = [userIds[0], userIds[1], userIds[3]] }
         );
 
-        preconfig.PlayerIds =  [userIds[2]];
+        preconfig.PlayerIds = [userIds[2]];
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
     }
 
@@ -56,10 +56,10 @@ public class RemovePlayersFromPreconfigurationTests
 
         await sut.AppClient.RemovePlayersFromPreconfigurationAsync(
             preconfig.Id,
-            new() { PlayerIds =  [userIds[0], userIds[1]] }
+            new() { PlayerIds = [userIds[0], userIds[1]] }
         );
 
-        preconfig.PlayerIds =  [];
+        preconfig.PlayerIds = [];
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
     }
 }

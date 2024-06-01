@@ -5,7 +5,7 @@ internal sealed class MinigolfMapBuilder(Sut sut, string? name = null)
     private static int _last = 0;
 
     private readonly CreateMapRequest _request =
-      new() { Name = name ?? $"Map {Interlocked.Increment(ref _last)}" };
+        new() { Name = name ?? $"Map {Interlocked.Increment(ref _last)}" };
 
     public MinigolfMapBuilder WithName(string name)
     {
@@ -27,16 +27,19 @@ internal sealed class MinigolfMapBuilder(Sut sut, string? name = null)
             0 => [],
             1 => [await BuildAsync()],
             _
-              => await Task.WhenAll(
-                Enumerable
-                  .Range(1, amount)
-                  .Select(async i =>
-                  {
-                      var request = new CreateMapRequest() { Name = $"{_request.Name} ({i})" };
-                      var response = await sut.AppClient.CreateMapAsync(request);
-                      return response.Map;
-                  })
-              )
+                => await Task.WhenAll(
+                    Enumerable
+                        .Range(1, amount)
+                        .Select(async i =>
+                        {
+                            var request = new CreateMapRequest()
+                            {
+                                Name = $"{_request.Name} ({i})"
+                            };
+                            var response = await sut.AppClient.CreateMapAsync(request);
+                            return response.Map;
+                        })
+                )
         };
     }
 }

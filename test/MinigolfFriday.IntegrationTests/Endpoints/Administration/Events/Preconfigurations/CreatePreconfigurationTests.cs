@@ -15,7 +15,7 @@ public class CreatePreconfigurationTests
             await sut.AppClient.CreatePreconfigurationAsync(timeslot.Id)
         ).Preconfiguration;
 
-        timeslot.Preconfigurations =  [preconfig];
+        timeslot.Preconfigurations = [preconfig];
         preconfig.Id.Should().NotBeNullOrEmpty();
         preconfig.PlayerIds.Should().BeEmpty();
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);

@@ -46,8 +46,7 @@ public class CreatePreconfigurationEndpoint(
     {
         var timeslotId = idService.EventTimeslot.DecodeSingle(req.TimeslotId);
         var timeslotInfo = await databaseContext
-            .EventTimeslots
-            .Where(x => x.Id == timeslotId)
+            .EventTimeslots.Where(x => x.Id == timeslotId)
             .Select(x => new { EventStarted = x.Event.StartedAt != null, x.EventId })
             .FirstOrDefaultAsync(ct);
 

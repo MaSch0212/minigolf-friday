@@ -83,10 +83,11 @@ public static class EndpointErrorExtensions
     )
     {
         var text = error.Message.Format;
-        await endpoint
-            .HttpContext
-            .Response
-            .SendStringAsync(text, error.StatusCode, cancellation: cancellation);
+        await endpoint.HttpContext.Response.SendStringAsync(
+            text,
+            error.StatusCode,
+            cancellation: cancellation
+        );
     }
 
     public static async Task SendErrorAsync<T>(
@@ -97,10 +98,11 @@ public static class EndpointErrorExtensions
     )
     {
         var text = string.Format(null, error.Message, param);
-        await endpoint
-            .HttpContext
-            .Response
-            .SendStringAsync(text, error.StatusCode, cancellation: cancellation);
+        await endpoint.HttpContext.Response.SendStringAsync(
+            text,
+            error.StatusCode,
+            cancellation: cancellation
+        );
     }
 
     public static async Task SendErrorAsync<T1, T2>(
@@ -112,10 +114,11 @@ public static class EndpointErrorExtensions
     )
     {
         var text = string.Format(null, error.Message, param1, param2);
-        await endpoint
-            .HttpContext
-            .Response
-            .SendStringAsync(text, error.StatusCode, cancellation: cancellation);
+        await endpoint.HttpContext.Response.SendStringAsync(
+            text,
+            error.StatusCode,
+            cancellation: cancellation
+        );
     }
 
     public static async Task SendErrorAsync<T1, T2, T3>(
@@ -128,10 +131,11 @@ public static class EndpointErrorExtensions
     )
     {
         var text = string.Format(null, error.Message, param1, param2, param3);
-        await endpoint
-            .HttpContext
-            .Response
-            .SendStringAsync(text, error.StatusCode, cancellation: cancellation);
+        await endpoint.HttpContext.Response.SendStringAsync(
+            text,
+            error.StatusCode,
+            cancellation: cancellation
+        );
     }
 
     public static async Task SendErrorAsync<T1, T2, T3, T4>(
@@ -145,10 +149,11 @@ public static class EndpointErrorExtensions
     )
     {
         var text = string.Format(null, error.Message, param1, param2, param3, param4);
-        await endpoint
-            .HttpContext
-            .Response
-            .SendStringAsync(text, error.StatusCode, cancellation: cancellation);
+        await endpoint.HttpContext.Response.SendStringAsync(
+            text,
+            error.StatusCode,
+            cancellation: cancellation
+        );
     }
 
     public static void LogWarning(this ILogger logger, EndpointError error)
@@ -197,26 +202,22 @@ public static class EndpointErrorExtensions
     public static void ProducesError(this BaseEndpoint endpoint, BaseEndpointError error)
     {
         endpoint.Definition.Description(x => x.Produces(error.StatusCode));
-        endpoint
-            .Definition
-            .Summary(x => x.AppendResponseDescription(error.StatusCode, error.LogTemplate));
+        endpoint.Definition.Summary(x =>
+            x.AppendResponseDescription(error.StatusCode, error.LogTemplate)
+        );
     }
 
     public static void ProducesErrors(this BaseEndpoint endpoint, params BaseEndpointError[] errors)
     {
-        endpoint
-            .Definition
-            .Description(x =>
-            {
-                foreach (var error in errors)
-                    x.Produces(error.StatusCode);
-            });
-        endpoint
-            .Definition
-            .Summary(x =>
-            {
-                foreach (var error in errors)
-                    x.AppendResponseDescription(error.StatusCode, error.LogTemplate);
-            });
+        endpoint.Definition.Description(x =>
+        {
+            foreach (var error in errors)
+                x.Produces(error.StatusCode);
+        });
+        endpoint.Definition.Summary(x =>
+        {
+            foreach (var error in errors)
+                x.AppendResponseDescription(error.StatusCode, error.LogTemplate);
+        });
     }
 }

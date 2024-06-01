@@ -35,6 +35,6 @@ public class EventTimeslotEntity
         builder.HasOne(x => x.Map).WithMany(x => x.EventTimeslots).HasForeignKey(x => x.MapId);
 
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => new { x.Time }).IsUnique();
+        builder.HasIndex(x => new { x.EventId, x.Time }).IsUnique();
     }
 }

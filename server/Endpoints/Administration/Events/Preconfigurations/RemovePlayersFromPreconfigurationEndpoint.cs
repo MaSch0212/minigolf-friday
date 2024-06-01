@@ -34,10 +34,9 @@ public class RemovePlayersFromPreconfigurationEndpoint(
     {
         Delete(":preconfigs/{preconfigurationId}/players");
         Group<EventAdministrationGroup>();
-        Description(
-            x =>
-                x.ClearDefaultAccepts()
-                    .Accepts<RemovePlayersFromPreconfigurationRequest>("application/json")
+        Description(x =>
+            x.ClearDefaultAccepts()
+                .Accepts<RemovePlayersFromPreconfigurationRequest>("application/json")
         );
         this.ProducesErrors(
             EndpointErrors.PreconfigurationNotFound,
@@ -51,18 +50,15 @@ public class RemovePlayersFromPreconfigurationEndpoint(
     )
     {
         var preconfigId = idService.Preconfiguration.DecodeSingle(req.PreconfigurationId);
-        var preconfigQuery = databaseContext
-            .EventInstancePreconfigurations
-            .Where(x => x.Id == preconfigId);
+        var preconfigQuery = databaseContext.EventInstancePreconfigurations.Where(x =>
+            x.Id == preconfigId
+        );
         var preconfigInfo = await preconfigQuery
-            .Select(
-                x =>
-                    new
-                    {
-                        Started = x.EventTimeSlot.Event.StartedAt != null,
-                        x.EventTimeSlot.EventId
-                    }
-            )
+            .Select(x => new
+            {
+                Started = x.EventTimeSlot.Event.StartedAt != null,
+                x.EventTimeSlot.EventId
+            })
             .FirstOrDefaultAsync(ct);
 
         if (preconfigInfo == null)

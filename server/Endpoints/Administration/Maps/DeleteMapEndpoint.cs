@@ -33,8 +33,7 @@ public class DeleteMapEndpoint(DatabaseContext databaseContext, IIdService idSer
     {
         var mapId = idService.Map.DecodeSingle(req.MapId);
         var info = await databaseContext
-            .Maps
-            .Where(x => x.Id == mapId)
+            .Maps.Where(x => x.Id == mapId)
             .Select(map => new { Map = map, HasBeenPlayed = map.EventTimeslots.Count > 0 })
             .FirstOrDefaultAsync(ct);
         if (info == null)

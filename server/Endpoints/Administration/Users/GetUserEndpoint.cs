@@ -41,8 +41,7 @@ public class GetUserEndpoint(
     {
         var userId = idService.User.DecodeSingle(req.UserId);
         var user = await databaseContext
-            .Users
-            .Where(x => x.Id == userId && x.LoginToken != null)
+            .Users.Where(x => x.Id == userId && x.LoginToken != null)
             .Select(userMapper.MapUserExpression)
             .FirstOrDefaultAsync(ct);
 

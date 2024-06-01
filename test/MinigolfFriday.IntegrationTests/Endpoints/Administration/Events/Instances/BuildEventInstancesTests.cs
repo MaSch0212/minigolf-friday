@@ -15,32 +15,31 @@ public partial class BuildEventInstancesTests
             .WithRegistrationDeadline(DateTime.Now.AddHours(1))
             .WithTimeslot(map.Id)
             .BuildAsync();
-        await user.CallApi(
-            x =>
-                x.UpdatePlayerEventRegistrationsAsync(
-                    @event.Id,
-                    new()
-                    {
-                        TimeslotRegistrations =
-                        [
-                            new() { TimeslotId = @event.Timeslots.First().Id }
-                        ]
-                    }
-                )
+        await user.CallApi(x =>
+            x.UpdatePlayerEventRegistrationsAsync(
+                @event.Id,
+                new()
+                {
+                    TimeslotRegistrations = [new() { TimeslotId = @event.Timeslots.First().Id }]
+                }
+            )
         );
         @event.RegistrationDeadline = DateTime.Now;
         await sut.AppClient.SetRegistrationDeadline(@event.Id, @event.RegistrationDeadline);
 
         var instances = (await sut.AppClient.BuildEventInstancesAsync(@event.Id)).Instances;
 
-        @event.Timeslots.First().PlayerIds =  [user.User.Id];
+        @event.Timeslots.First().PlayerIds = [user.User.Id];
         @event.Timeslots.First().Instances = instances.First().Instances;
         instances
             .Should()
             .BeEquivalentTo(
-
                 [
-                    new EventTimeslotInstances() { TimeslotId = @event.Timeslots.First().Id, Instances = [new() { PlayerIds = [user.User.Id] }] }
+                    new EventTimeslotInstances()
+                    {
+                        TimeslotId = @event.Timeslots.First().Id,
+                        Instances = [new() { PlayerIds = [user.User.Id] }]
+                    }
                 ],
                 o => o.Excluding(su => InstancesIgnoreRegex().IsMatch(su.Path))
             );
@@ -59,18 +58,14 @@ public partial class BuildEventInstancesTests
             .BuildAsync();
         foreach (var user in users)
         {
-            await user.CallApi(
-                x =>
-                    x.UpdatePlayerEventRegistrationsAsync(
-                        @event.Id,
-                        new()
-                        {
-                            TimeslotRegistrations =
-                            [
-                                new() { TimeslotId = @event.Timeslots.First().Id }
-                            ]
-                        }
-                    )
+            await user.CallApi(x =>
+                x.UpdatePlayerEventRegistrationsAsync(
+                    @event.Id,
+                    new()
+                    {
+                        TimeslotRegistrations = [new() { TimeslotId = @event.Timeslots.First().Id }]
+                    }
+                )
             );
         }
         @event.RegistrationDeadline = DateTime.Now;

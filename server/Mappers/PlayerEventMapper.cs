@@ -25,21 +25,18 @@ public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
             idService.EventTimeslot.Encode(entity.Id),
             entity.Time,
             entity.IsFallbackAllowed,
-            entity.Registrations.Any(reg => reg.Player.Id == userId),
+            entity.Registrations.Any(reg => reg.PlayerId == userId),
             entity
-                .Registrations
-                .Where(reg => reg.Player.Id == userId)
-                .Select(
-                    reg =>
-                        reg.FallbackEventTimeslot != null
-                            ? idService.EventTimeslot.Encode(reg.FallbackEventTimeslot.Id)
-                            : null
+                .Registrations.Where(reg => reg.PlayerId == userId)
+                .Select(reg =>
+                    reg.FallbackEventTimeslot != null
+                        ? idService.EventTimeslot.Encode(reg.FallbackEventTimeslot.Id)
+                        : null
                 )
                 .FirstOrDefault(),
             entity.Event.StartedAt != null
                 ? entity
-                    .Instances
-                    .Where(i => i.Players.Any(p => p.Id == userId))
+                    .Instances.Where(i => i.Players.Any(p => p.Id == userId))
                     .Select(Map)
                     .FirstOrDefault()
                 : null

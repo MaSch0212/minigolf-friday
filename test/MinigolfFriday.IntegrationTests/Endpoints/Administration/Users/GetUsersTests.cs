@@ -20,18 +20,17 @@ public class GetUsersTests
         await using var sut = await Sut.CreateAsync();
         var users = await sut.User().BuildAsync(3);
         var userWithPrefs = await sut.User()
-          .WithAvoidedPlayers(users[0].User.Id)
-          .WithPreferredPlayers(users[2].User.Id)
-          .BuildAsync();
+            .WithAvoidedPlayers(users[0].User.Id)
+            .WithPreferredPlayers(users[2].User.Id)
+            .BuildAsync();
 
         var response = await sut.AppClient.GetUsersAsync();
 
         response
-          .Users
-          .Should()
-          .BeEquivalentTo(
-            [.. users.Select(x => x.User), userWithPrefs.User],
-            o => o.WithoutStrictOrdering()
-          );
+            .Users.Should()
+            .BeEquivalentTo(
+                [.. users.Select(x => x.User), userWithPrefs.User],
+                o => o.WithoutStrictOrdering()
+            );
     }
 }

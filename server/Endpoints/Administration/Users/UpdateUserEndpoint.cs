@@ -75,8 +75,7 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
     {
         var userId = idService.User.DecodeSingle(req.UserId);
         var user = await databaseContext
-            .Users
-            .Include(x => x.Roles)
+            .Users.Include(x => x.Roles)
             .Include(x => x.Avoid)
             .Include(x => x.Prefer)
             .FirstOrDefaultAsync(x => x.Id == userId, ct);
@@ -93,18 +92,18 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
         req.AddRoles?.Select(databaseContext.RoleById).ForEach(user.Roles.Add);
         req.RemoveRoles?.Select(databaseContext.RoleById).ForEach(x => user.Roles.Remove(x));
 
-        req.PlayerPreferences
-            ?.RemoveAvoid
-            ?.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+        req.PlayerPreferences?.RemoveAvoid?.Select(x =>
+                databaseContext.UserById(idService.User.DecodeSingle(x))
+            )
             .ForEach(x => user.Avoid.Remove(x));
-        req.PlayerPreferences
-            ?.RemovePrefer
-            ?.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+        req.PlayerPreferences?.RemovePrefer?.Select(x =>
+                databaseContext.UserById(idService.User.DecodeSingle(x))
+            )
             .ForEach(x => user.Prefer.Remove(x));
 
-        req.PlayerPreferences
-            ?.AddAvoid
-            ?.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+        req.PlayerPreferences?.AddAvoid?.Select(x =>
+                databaseContext.UserById(idService.User.DecodeSingle(x))
+            )
             .ForEach(x =>
             {
                 if (user.Prefer.Any(y => y.Id == x.Id))
@@ -114,9 +113,9 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
                 else
                     user.Avoid.Add(x);
             });
-        req.PlayerPreferences
-            ?.AddPrefer
-            ?.Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+        req.PlayerPreferences?.AddPrefer?.Select(x =>
+                databaseContext.UserById(idService.User.DecodeSingle(x))
+            )
             .ForEach(x =>
             {
                 if (user.Avoid.Any(y => y.Id == x.Id))

@@ -54,8 +54,7 @@ public class CreateEventTimeslotEndpoint(
     {
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var eventInfo = await databaseContext
-            .Events
-            .Where(x => x.Id == eventId)
+            .Events.Where(x => x.Id == eventId)
             .Select(x => new { Started = x.StartedAt != null })
             .FirstOrDefaultAsync(ct);
 

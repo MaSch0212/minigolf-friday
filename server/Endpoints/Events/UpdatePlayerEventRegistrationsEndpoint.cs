@@ -23,18 +23,16 @@ public class UpdatePlayerEventRegistrationsRequestValidator
     {
         RuleFor(x => x.EventId).NotEmpty().ValidSqid(idService.Event);
         RuleFor(x => x.TimeslotRegistrations)
-            .ForEach(
-                x =>
-                    x.ChildRules(x =>
-                    {
-                        x.RuleFor(x => x.TimeslotId).NotEmpty().ValidSqid(idService.EventTimeslot);
-                        x.When(
-                            x => x.FallbackTimeslotId != null,
-                            () =>
-                                x.RuleFor(x => x.FallbackTimeslotId!)
-                                    .ValidSqid(idService.EventTimeslot)
-                        );
-                    })
+            .ForEach(x =>
+                x.ChildRules(x =>
+                {
+                    x.RuleFor(x => x.TimeslotId).NotEmpty().ValidSqid(idService.EventTimeslot);
+                    x.When(
+                        x => x.FallbackTimeslotId != null,
+                        () =>
+                            x.RuleFor(x => x.FallbackTimeslotId!).ValidSqid(idService.EventTimeslot)
+                    );
+                })
             );
     }
 }
@@ -71,8 +69,7 @@ public class UpdatePlayerEventRegistrationsEndpoint(
 
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var eventInfo = await databaseContext
-            .Events
-            .Where(x => x.Id == eventId)
+            .Events.Where(x => x.Id == eventId)
             .Select(x => new { Started = x.StartedAt != null, x.RegistrationDeadline })
             .FirstOrDefaultAsync(ct);
 
@@ -107,26 +104,22 @@ public class UpdatePlayerEventRegistrationsEndpoint(
         }
 
         var registrations = await databaseContext
-            .EventTimeslotRegistrations
-            .Where(x => x.Player.Id == userId && x.EventTimeslot.EventId == eventId)
+            .EventTimeslotRegistrations.Where(x =>
+                x.Player.Id == userId && x.EventTimeslot.EventId == eventId
+            )
             .ToArrayAsync(ct);
-        var targetRegistrations = req.TimeslotRegistrations.Select(
-            x =>
-                new
-                {
-                    TimeslotId = idService.EventTimeslot.DecodeSingle(x.TimeslotId),
-                    FallbackTimeslotId = x.FallbackTimeslotId == null
-                        ? null
-                        : (long?)idService.EventTimeslot.DecodeSingle(x.FallbackTimeslotId)
-                }
+        var targetRegistrations = req.TimeslotRegistrations.Select(x => new
+        {
+            TimeslotId = idService.EventTimeslot.DecodeSingle(x.TimeslotId),
+            FallbackTimeslotId = x.FallbackTimeslotId == null
+                ? null
+                : (long?)idService.EventTimeslot.DecodeSingle(x.FallbackTimeslotId)
+        });
+        databaseContext.EventTimeslotRegistrations.RemoveRange(
+            registrations.Where(x =>
+                !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslot.Id)
+            )
         );
-        databaseContext
-            .EventTimeslotRegistrations
-            .RemoveRange(
-                registrations.Where(
-                    x => !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslot.Id)
-                )
-            );
         foreach (var reg in targetRegistrations)
         {
             var existing = registrations.FirstOrDefault(x => x.EventTimeslot.Id == reg.TimeslotId);
@@ -136,16 +129,14 @@ public class UpdatePlayerEventRegistrationsEndpoint(
                     : databaseContext.EventTimeslotById(reg.FallbackTimeslotId.Value);
             if (existing is null)
             {
-                databaseContext
-                    .EventTimeslotRegistrations
-                    .Add(
-                        new EventTimeslotRegistrationEntity
-                        {
-                            EventTimeslot = databaseContext.EventTimeslotById(reg.TimeslotId),
-                            Player = databaseContext.UserById(userId),
-                            FallbackEventTimeslot = fallbackTimeslot
-                        }
-                    );
+                databaseContext.EventTimeslotRegistrations.Add(
+                    new EventTimeslotRegistrationEntity
+                    {
+                        EventTimeslot = databaseContext.EventTimeslotById(reg.TimeslotId),
+                        Player = databaseContext.UserById(userId),
+                        FallbackEventTimeslot = fallbackTimeslot
+                    }
+                );
             }
             else
             {

@@ -15,18 +15,14 @@ public class GetEventInstancesTests
             .BuildAsync();
         foreach (var user in users)
         {
-            await user.CallApi(
-                x =>
-                    x.UpdatePlayerEventRegistrationsAsync(
-                        @event.Id,
-                        new()
-                        {
-                            TimeslotRegistrations =
-                            [
-                                new() { TimeslotId = @event.Timeslots.First().Id }
-                            ]
-                        }
-                    )
+            await user.CallApi(x =>
+                x.UpdatePlayerEventRegistrationsAsync(
+                    @event.Id,
+                    new()
+                    {
+                        TimeslotRegistrations = [new() { TimeslotId = @event.Timeslots.First().Id }]
+                    }
+                )
             );
         }
         @event.RegistrationDeadline = DateTime.Now;
@@ -35,8 +31,7 @@ public class GetEventInstancesTests
         var instances = (await sut.AppClient.BuildEventInstancesAsync(@event.Id)).Instances;
 
         (await sut.AppClient.GetEventInstancesAsync(@event.Id))
-            .Instances
-            .Should()
+            .Instances.Should()
             .BeEquivalentTo(instances);
     }
 }

@@ -22,8 +22,7 @@ public class GetMapsEndpoint(DatabaseContext databaseContext, IMinigolfMapMapper
     public override async Task HandleAsync(CancellationToken ct)
     {
         var maps = await databaseContext
-            .Maps
-            .Select(minigolfMapMapper.MapMinigolfMapExpression)
+            .Maps.Select(minigolfMapMapper.MapMinigolfMapExpression)
             .ToArrayAsync(ct);
 
         await SendAsync(new(maps), cancellation: ct);

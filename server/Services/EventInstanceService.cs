@@ -19,8 +19,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
     > BuildEventInstancesAsync(long eventId, CancellationToken cancellation)
     {
         var @event = await databaseContext
-            .Events
-            .Include(x => x.Timeslots)
+            .Events.Include(x => x.Timeslots)
             .ThenInclude(x => x.Registrations)
             .ThenInclude(x => x.Player.Avoid)
             .Include(x => x.Timeslots)
@@ -36,14 +35,15 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             );
 
         var allPlayers = GetAllEventPlayersAsync(@event);
-        var timeslotPlayers = @event
-            .Timeslots
-            .ToDictionary(x => x, x => x.Registrations.Select(x => x.Player.Id).ToList());
+        var timeslotPlayers = @event.Timeslots.ToDictionary(
+            x => x,
+            x => x.Registrations.Select(x => x.Player.Id).ToList()
+        );
 
         foreach (
-            var timeslot in @event
-                .Timeslots
-                .Where(x => x.IsFallbackAllowed && x.Registrations.Count < MAX_GROUP_SIZE)
+            var timeslot in @event.Timeslots.Where(x =>
+                x.IsFallbackAllowed && x.Registrations.Count < MAX_GROUP_SIZE
+            )
         )
         {
             timeslotPlayers[timeslot].Clear();
@@ -57,14 +57,10 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         return (
             @event,
             timeslotPlayers
-                .Select(
-                    x =>
-                        new EventTimeslotInstances(
-                            idService.EventTimeslot.Encode(x.Key.Id),
-                            GenerateEventInstances(x.Value, x.Key.Preconfigurations, allPlayers)
-                                .ToArray()
-                        )
-                )
+                .Select(x => new EventTimeslotInstances(
+                    idService.EventTimeslot.Encode(x.Key.Id),
+                    GenerateEventInstances(x.Value, x.Key.Preconfigurations, allPlayers).ToArray()
+                ))
                 .ToArray()
         );
     }
@@ -78,11 +74,9 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         foreach (var (strTimeslotId, instances) in eventInstances)
         {
             var timeslotId = idService.EventTimeslot.DecodeSingle(strTimeslotId);
-            databaseContext
-                .EventInstances
-                .RemoveRange(
-                    databaseContext.EventInstances.Where(x => x.EventTimeslot.Id == timeslotId)
-                );
+            databaseContext.EventInstances.RemoveRange(
+                databaseContext.EventInstances.Where(x => x.EventTimeslot.Id == timeslotId)
+            );
             foreach (var instance in instances)
             {
                 var entity = new EventInstanceEntity
@@ -98,8 +92,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
                 {
                     var user =
                         databaseContext
-                            .ChangeTracker
-                            .Entries<UserEntity>()
+                            .ChangeTracker.Entries<UserEntity>()
                             .FirstOrDefault(x => x.Entity.Id == playerId)
                             ?.Entity ?? databaseContext.UserById(playerId);
                     entity.Players.Add(user);
@@ -163,7 +156,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         // Create groups with preinitialized Lists
         var groups = new List<Player>[groupCount];
         for (int i = 0; i < groups.Length; i++)
-            groups[i] =  [];
+            groups[i] = [];
 
         // Apply preconfigured group combinations
         var remainingPc = new Queue<Player[]>(preconfig);
@@ -186,21 +179,18 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
 
             // Calculate scores for all remaining players for the group and take the one with the highest score
             group.Add(
-                remaining.PopMaxScore(
-                    x => group.Aggregate(0, (acc, y) => acc + getPlayerScore(x, y))
+                remaining.PopMaxScore(x =>
+                    group.Aggregate(0, (acc, y) => acc + getPlayerScore(x, y))
                 )
             );
         }
 
         return groups
-            .Select(
-                x =>
-                    new EventInstance(
-                        "",
-                        GroupCodeGenerator.Generate(),
-                        x.Select(y => idService.User.Encode(y.Id)).ToArray()
-                    )
-            )
+            .Select(x => new EventInstance(
+                "",
+                GroupCodeGenerator.Generate(),
+                x.Select(y => idService.User.Encode(y.Id)).ToArray()
+            ))
             .ToList();
     }
 

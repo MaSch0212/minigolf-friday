@@ -1,8 +1,8 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Models;
 using MinigolfFriday.Services;
-using System.Linq.Expressions;
 
 namespace MinigolfFriday.Mappers;
 

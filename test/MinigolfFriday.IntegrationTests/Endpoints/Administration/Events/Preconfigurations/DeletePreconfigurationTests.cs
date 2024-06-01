@@ -16,7 +16,7 @@ public class DeletePreconfigurationTests
             @event.Timeslots.First().Preconfigurations.First().Id
         );
 
-        @event.Timeslots.First().Preconfigurations =  [];
+        @event.Timeslots.First().Preconfigurations = [];
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
     }
 
@@ -30,8 +30,8 @@ public class DeletePreconfigurationTests
             .WithTimeslot(
                 map.Id,
                 x =>
-                    x.WithPreconfiguration(
-                        x => x.WithPlayers(users.Select(x => x.User.Id).ToArray())
+                    x.WithPreconfiguration(x =>
+                        x.WithPlayers(users.Select(x => x.User.Id).ToArray())
                     )
             )
             .BuildAsync();
@@ -40,7 +40,7 @@ public class DeletePreconfigurationTests
             @event.Timeslots.First().Preconfigurations.First().Id
         );
 
-        @event.Timeslots.First().Preconfigurations =  [];
+        @event.Timeslots.First().Preconfigurations = [];
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
     }
 }

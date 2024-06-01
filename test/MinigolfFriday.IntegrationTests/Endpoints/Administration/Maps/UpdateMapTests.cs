@@ -23,8 +23,7 @@ public class UpdateMapTests
         await sut.AppClient.UpdateMapAsync(map.Id, new() { Name = "Renamed Map" });
 
         (await sut.AppClient.GetMapAsync(map.Id))
-          .Map
-          .Should()
-          .BeEquivalentTo(new MinigolfMap { Id = map.Id, Name = "Renamed Map" });
+            .Map.Should()
+            .BeEquivalentTo(new MinigolfMap { Id = map.Id, Name = "Renamed Map" });
     }
 }

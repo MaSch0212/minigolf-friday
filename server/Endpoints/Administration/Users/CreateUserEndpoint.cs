@@ -56,13 +56,15 @@ public class CreateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
             Alias = req.Alias,
             LoginToken = LoginTokenGenerator.GetLoginToken(),
             Roles = req.Roles.Select(databaseContext.RoleById).ToList(),
-            Avoid = req.PlayerPreferences
-                .Avoid
-                .Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+            Avoid = req
+                .PlayerPreferences.Avoid.Select(x =>
+                    databaseContext.UserById(idService.User.DecodeSingle(x))
+                )
                 .ToList(),
-            Prefer = req.PlayerPreferences
-                .Prefer
-                .Select(x => databaseContext.UserById(idService.User.DecodeSingle(x)))
+            Prefer = req
+                .PlayerPreferences.Prefer.Select(x =>
+                    databaseContext.UserById(idService.User.DecodeSingle(x))
+                )
                 .ToList()
         };
         databaseContext.Users.Add(user);

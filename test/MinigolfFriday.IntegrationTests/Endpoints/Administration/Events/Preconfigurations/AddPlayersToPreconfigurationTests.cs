@@ -16,10 +16,10 @@ public class AddPlayersToPreconfigurationTests
 
         await sut.AppClient.AddPlayersToPreconfigurationAsync(
             preconfig.Id,
-            new() { PlayerIds =  [user.Id] }
+            new() { PlayerIds = [user.Id] }
         );
 
-        preconfig.PlayerIds =  [user.Id];
+        preconfig.PlayerIds = [user.Id];
         (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
     }
 

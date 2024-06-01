@@ -1,6 +1,6 @@
+using System.Numerics;
 using FluentValidation;
 using Sqids;
-using System.Numerics;
 
 namespace MinigolfFriday.Extensions;
 

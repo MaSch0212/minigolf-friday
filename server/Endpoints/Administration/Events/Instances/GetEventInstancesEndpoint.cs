@@ -49,8 +49,7 @@ public class GetEventInstancesEndpoint(
         }
 
         var rawInstances = await databaseContext
-            .EventInstances
-            .Include(x => x.Players)
+            .EventInstances.Include(x => x.Players)
             .Where(x => x.EventTimeslot.Event.Id == eventId)
             .Include(x => x.Players)
             .Select(x => new { TimeslotId = x.EventTimeslot.Id, Model = eventMapper.Map(x) })
@@ -58,13 +57,10 @@ public class GetEventInstancesEndpoint(
 
         var instances = rawInstances
             .GroupBy(x => x.TimeslotId)
-            .Select(
-                x =>
-                    new EventTimeslotInstances(
-                        idService.EventTimeslot.Encode(x.Key),
-                        x.Select(x => x.Model).ToArray()
-                    )
-            )
+            .Select(x => new EventTimeslotInstances(
+                idService.EventTimeslot.Encode(x.Key),
+                x.Select(x => x.Model).ToArray()
+            ))
             .ToArray();
         await SendAsync(new(instances), cancellation: ct);
     }
