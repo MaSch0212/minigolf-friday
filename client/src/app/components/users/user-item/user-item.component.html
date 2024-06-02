@@ -1,17 +1,7 @@
 <div class="flex flex-row items-center gap-2">
   <span
-    [className]="user().isAdmin ? 'i-[mdi--crown]' : 'i-[mdi--account]'"
+    [className]="user().roles.includes('admin') ? 'i-[mdi--crown]' : 'i-[mdi--account]'"
     class="opacity-70"
   ></span>
-  @if (showLoginType()) {
-    @switch (user().loginType) {
-      @case ('facebook') {
-        <span class="i-[mdi--facebook] text-blue-400"></span>
-      }
-      @case ('email') {
-        <span class="i-[mdi--email] text-teal-400"></span>
-      }
-    }
-  }
-  <span class="min-w-0 grow truncate">{{ user.name }}</span>
+  <span class="min-w-0 grow truncate">{{ user().alias }}</span>
 </div>

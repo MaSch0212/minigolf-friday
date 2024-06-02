@@ -15,7 +15,7 @@ import { parseTime, Time } from '../utils/date.utils';
 import { ChangePropertyTypes } from '../utils/type.utils';
 
 export type Role = ApiRole;
-export type User = ApiUser;
+export type User = ApiUser & { loginToken?: string; };
 export type PlayerPreferences = ApiPlayerPreferences;
 
 export type MinigolfMap = ApiMinigolfMap;

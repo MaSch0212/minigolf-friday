@@ -108,7 +108,6 @@
     }
   },
   "maps": {
-    "loadError": "Fehler beim Laden der Bahnen.",
     "deleteDialog": {
       "title": "Bahn löschen",
       "text": "Möchtest du die Bahn \"{{name}}\" wirklich löschen?"
@@ -122,10 +121,33 @@
       }
     },
     "error": {
+      "load": "Fehler beim Laden der Bahnen.",
       "delete": "Fehler beim Löschen der Bahn."
     }
   },
   "users": {
+    "deleteDialog": {
+      "title": "Benutzer löschen",
+      "text": "Möchtest du den Benutzer \"{{alias}}\" wirklich löschen?"
+    },
+    "dialog": {
+      "addHeader": "Benutzer hinzufügen",
+      "editHeader": "Benutzer \"{{alias}}\" bearbeiten",
+      "alias": "Alias",
+      "loginToken": "Passwort",
+      "loginTokenCopied": "Passwort kopiert",
+      "preferences": "Präferenzen",
+      "avoid": "Gemiedene Spieler",
+      "prefer": "Bevorzugte Spieler",
+      "roles": {
+        "title": "Rollen",
+        "player": "Spieler",
+        "admin": "Administrator"
+      },
+      "error": {
+        "save": "Fehler beim Speichern des Benutzers."
+      }
+    },
     "error": {
       "load": "Fehler beim Laden der Benutzer."
     }

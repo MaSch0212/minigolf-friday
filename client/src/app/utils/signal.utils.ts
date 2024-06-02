@@ -1,4 +1,4 @@
-import { Signal, isSignal } from '@angular/core';
+import { Injector, Signal, effect, isSignal } from '@angular/core';
 
 export function chainSignals<S1, S2>(
   s1: Signal<S1>,
@@ -32,4 +32,24 @@ export function chainSignals(
   }
   Object.defineProperty(last, Symbol(), { value: processedSignals });
   return last;
+}
+
+export async function ensureSignalValue<T>(
+  signal: Signal<T | null | undefined>,
+  options?: { injector?: Injector }
+): Promise<T> {
+  const value = signal();
+  if (value !== null && value !== undefined) return value;
+  return new Promise<T>(resolve => {
+    const e = effect(
+      () => {
+        const value = signal();
+        if (value !== null && value !== undefined) {
+          e.destroy();
+          resolve(value);
+        }
+      },
+      { injector: options?.injector }
+    );
+  });
 }

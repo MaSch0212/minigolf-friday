@@ -109,21 +109,23 @@ public class UpdatePlayerEventRegistrationsEndpoint(
                 x.Player.Id == userId && x.EventTimeslot.EventId == eventId
             )
             .ToArrayAsync(ct);
-        var targetRegistrations = req.TimeslotRegistrations.Select(x => new
-        {
-            TimeslotId = idService.EventTimeslot.DecodeSingle(x.TimeslotId),
-            FallbackTimeslotId = x.FallbackTimeslotId == null
-                ? null
-                : (long?)idService.EventTimeslot.DecodeSingle(x.FallbackTimeslotId)
-        });
+        var targetRegistrations = req
+            .TimeslotRegistrations.Select(x => new
+            {
+                TimeslotId = idService.EventTimeslot.DecodeSingle(x.TimeslotId),
+                FallbackTimeslotId = x.FallbackTimeslotId == null
+                    ? null
+                    : (long?)idService.EventTimeslot.DecodeSingle(x.FallbackTimeslotId)
+            })
+            .ToArray();
         databaseContext.EventTimeslotRegistrations.RemoveRange(
             registrations.Where(x =>
-                !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslot.Id)
+                !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslotId)
             )
         );
         foreach (var reg in targetRegistrations)
         {
-            var existing = registrations.FirstOrDefault(x => x.EventTimeslot.Id == reg.TimeslotId);
+            var existing = registrations.FirstOrDefault(x => x.EventTimeslotId == reg.TimeslotId);
             var fallbackTimeslot =
                 reg.FallbackTimeslotId == null
                     ? null
