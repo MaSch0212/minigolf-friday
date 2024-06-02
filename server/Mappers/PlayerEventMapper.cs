@@ -14,7 +14,10 @@ public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
             idService.Event.Encode(entity.Id),
             entity.Date,
             entity.RegistrationDeadline,
-            entity.Timeslots.Select(timeslot => Map(timeslot, userId)).ToArray(),
+            entity
+                .Timeslots.OrderBy(x => x.Time)
+                .Select(timeslot => Map(timeslot, userId))
+                .ToArray(),
             entity.StartedAt != null
         );
     }

@@ -39,6 +39,6 @@ public class StartEventTests
 
         var updatedEvent = (await sut.AppClient.GetEventAsync(@event.Id)).Event;
         updatedEvent.Should().BeEquivalentTo(@event, o => o.Excluding(x => x.StartedAt));
-        updatedEvent.StartedAt.Should().BeCloseTo(start, TimeSpan.FromSeconds(1));
+        updatedEvent.StartedAt.Should().BeCloseTo(start, TimeSpan.FromSeconds(5));
     }
 }

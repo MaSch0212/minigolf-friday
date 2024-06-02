@@ -24,15 +24,18 @@ jobs:
           dotnet-version: "8.x"
       - run: pnpm i
 
+      - name: Build server
+        run: pnpm server:build
+
+      - name: Run Integration Tests
+        run: pnpm test:integration
+
       - name: Lint client
         run: pnpm lint
         working-directory: ./client
 
       - name: Build client
         run: pnpm client:build
-
-      - name: Build server
-        run: pnpm server:build
 
       - name: Build docker
         run: pnpm docker:build

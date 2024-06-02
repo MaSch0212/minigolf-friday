@@ -11,6 +11,7 @@
     "client:build": "pnpm run -C client build",
     "docker:build": "node scripts/docker-build.js",
     "docker:build:inttest": "node scripts/docker-build-inttest.js",
-    "docker:push": "node scripts/docker-push.js"
+    "docker:push": "node scripts/docker-push.js",
+    "test:integration": "dotnet test test/MinigolfFriday.IntegrationTests/MinigolfFriday.IntegrationTests.csproj"
   }
 }

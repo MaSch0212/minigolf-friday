@@ -118,7 +118,7 @@ internal sealed class Sut : IAsyncDisposable, IHttpClientAccessor
         var tokenExpiration = TimeSpan.FromSeconds(Random.Shared.Next(300, 180000));
         var container = new ContainerBuilder()
             .WithImage("masch0212/minigolf-friday:intttest")
-            .WithPortBinding(80, true)
+            .WithPortBinding(80)
             .WithEnvironment("LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE", "Information")
             .WithEnvironment("LOGGING__ENABLEDBLOGGING", "true")
             .WithEnvironment("AUTHENTICATION__JWT__EXPIRATION", tokenExpiration.ToString())

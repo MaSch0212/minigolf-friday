@@ -54,9 +54,9 @@
   <Target Name="ExportOpenApi" AfterTargets="Build">
     <Exec EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="dotnet run --no-build --OpenApiOutput openapi.yml" />
   </Target>
-  
+
   <Target Name="BuildInttestApiClient" AfterTargets="Build" DependsOnTargets="ExportOpenApi">
-    <Exec Command="$(NSwagExe) openapi2csclient /input:openapi.yml /classname:MinigolfFridayClient /namespace:MinigolfFriday.IntegrationTests.Api /output:$(ProjectDir)../test/MinigolfFriday.IntegrationTests/Api/MinigolfFridayClient.cs" />
+    <Exec Command="$(NSwagExe_Net80) openapi2csclient /input:openapi.yml /classname:MinigolfFridayClient /namespace:MinigolfFriday.IntegrationTests.Api /output:$(ProjectDir)../test/MinigolfFriday.IntegrationTests/Api/MinigolfFridayClient.cs" />
   </Target>
 
   <Target Name="BuildInttestDockerContainer" AfterTargets="Build">

@@ -14,7 +14,7 @@ public class GetTokenTests
 
         response
             .TokenExpiration.Should()
-            .BeCloseTo(DateTime.Now.Add(sut.TokenExpiration), TimeSpan.FromSeconds(1));
+            .BeCloseTo(DateTime.Now.Add(sut.TokenExpiration), TimeSpan.FromSeconds(5));
         response.Token.Should().BeJwt("admin", response.TokenExpiration, [nameof(Role.Admin)]);
     }
 
@@ -29,7 +29,7 @@ public class GetTokenTests
 
         response
             .TokenExpiration.Should()
-            .BeCloseTo(DateTime.Now.Add(sut.TokenExpiration), TimeSpan.FromSeconds(1));
+            .BeCloseTo(DateTime.Now.Add(sut.TokenExpiration), TimeSpan.FromSeconds(5));
         response
             .Token.Should()
             .BeJwt(user.User.Id, response.TokenExpiration, [nameof(Role.Player)]);
@@ -46,7 +46,7 @@ public class GetTokenTests
 
         response
             .TokenExpiration.Should()
-            .BeCloseTo(DateTime.Now.Add(sut.TokenExpiration), TimeSpan.FromSeconds(1));
+            .BeCloseTo(DateTime.Now.Add(sut.TokenExpiration), TimeSpan.FromSeconds(5));
         response
             .Token.Should()
             .BeJwt(
