@@ -11,6 +11,7 @@ import { provideEventsState } from './+state/events';
 import { provideMapsState } from './+state/maps';
 import { providePlayerEventsState } from './+state/player-events';
 import { provideUsersState } from './+state/users';
+import { provideApi } from './api/services';
 import { routes } from './app.routes';
 import { environment } from './environments/environment';
 import { provideAuth } from './services/auth.service';
@@ -20,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
+    provideApi({ rootUrl: '' }),
     provideStore({
       router: routerReducer,
     }),

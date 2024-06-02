@@ -3,13 +3,8 @@ import { on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -37,11 +32,22 @@ export const removeEventTimeslotReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const removeEventTimeslotEffects: Effects = {
-  removeEventTimeslot$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(removeEventTimeslotAction, selectEventsActionState('removeTimeslot')).pipe(
-      switchMap(({ props }) =>
-        api.removeTimeslot(props.timeslotId).pipe(mapToHttpAction(removeEventTimeslotAction, props))
+  removeEventTimeslot$: createFunctionalEffect.dispatching(
+    (api = inject(EventAdministrationService)) =>
+      onHttpAction(removeEventTimeslotAction, selectEventsActionState('removeTimeslot')).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(deleteEventTimeslot(api, props), removeEventTimeslotAction, props)
+        )
       )
-    )
   ),
 };
+
+async function deleteEventTimeslot(
+  api: EventAdministrationService,
+  props: ReturnType<typeof removeEventTimeslotAction>['props']
+) {
+  const response = await api.deleteEventTimeslot({ timeslotId: props.timeslotId });
+  return response.ok
+    ? removeEventTimeslotAction.success(props, undefined)
+    : removeEventTimeslotAction.error(props, response);
+}

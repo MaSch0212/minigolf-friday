@@ -16,6 +16,7 @@
         type="text"
         formControlName="name"
         autofocus
+        autocomplete="off"
         (keyup.enter)="submit()"
       />
       <label [htmlFor]="id('name')">{{ translations.maps_dialog_name() }}</label>
@@ -24,13 +25,13 @@
 
   <ng-template pTemplate="footer">
     <p-button
-      [disabled]="actionState().loading"
+      [disabled]="isLoading()"
       [text]="true"
       label="{{ translations.shared_cancel() }}"
       (onClick)="close()"
     />
     <p-button
-      [disabled]="actionState().loading"
+      [disabled]="isLoading()"
       label="{{ translations.shared_save() }}"
       (onClick)="submit()"
     />

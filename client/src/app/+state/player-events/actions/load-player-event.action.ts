@@ -2,14 +2,10 @@ import { inject } from '@angular/core';
 import { on } from '@ngrx/store';
 import { switchMap } from 'rxjs';
 
-import { GetPlayerEventResponse } from '../../../models/api/player-event';
-import { PlayerEventsService } from '../../../services/player-events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventsService } from '../../../api/services';
+import { parsePlayerEvent, PlayerEvent } from '../../../models/parsed-models';
+import { assertBody } from '../../../utils/http.utils';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { PLAYER_EVENTS_ACTION_SCOPE } from '../consts';
@@ -18,12 +14,12 @@ import { PlayerEventsFeatureState, playerEventEntityAdapter } from '../player-ev
 
 export const loadPlayerEventAction = createHttpAction<
   { eventId: string; reload?: boolean },
-  GetPlayerEventResponse
+  PlayerEvent
 >()(PLAYER_EVENTS_ACTION_SCOPE, 'Load Player Event');
 
 export const loadPlayerEventReducers: Reducers<PlayerEventsFeatureState> = [
   on(loadPlayerEventAction.success, (state, { response }) =>
-    playerEventEntityAdapter.upsertOne(response.event, state)
+    playerEventEntityAdapter.upsertOne(response, state)
   ),
   handleHttpAction(
     'loadOne',
@@ -33,11 +29,21 @@ export const loadPlayerEventReducers: Reducers<PlayerEventsFeatureState> = [
 ];
 
 export const loadPlayerEventEffects: Effects = {
-  loadPlayerEvent$: createFunctionalEffect.dispatching((api = inject(PlayerEventsService)) =>
+  loadPlayerEvent$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
     onHttpAction(loadPlayerEventAction, selectPlayerEventsActionState('loadOne')).pipe(
       switchMap(({ props }) =>
-        api.getEvent(props.eventId).pipe(mapToHttpAction(loadPlayerEventAction, props))
+        toHttpAction(getPlayerEvent(api, props), loadPlayerEventAction, props)
       )
     )
   ),
 };
+
+async function getPlayerEvent(
+  api: EventsService,
+  props: ReturnType<typeof loadPlayerEventAction>['props']
+) {
+  const response = await api.getPlayerEvent({ eventId: props.eventId });
+  return response.ok
+    ? loadPlayerEventAction.success(props, parsePlayerEvent(assertBody(response).event))
+    : loadPlayerEventAction.error(props, response);
+}

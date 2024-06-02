@@ -22,8 +22,8 @@ import {
   selectPlayerEvent,
   selectPlayerEventsActionState,
 } from '../../../+state/player-events';
-import { EventTimeslotRegistration } from '../../../models/api/player-event';
-import { MinigolfPlayerEventTimeslot } from '../../../models/player-event';
+import { ApiEventTimeslotRegistration } from '../../../api/models';
+import { PlayerEventTimeslot } from '../../../models/parsed-models';
 import { AuthService } from '../../../services/auth.service';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy } from '../../../utils/common.utils';
@@ -103,7 +103,7 @@ export class PlayerEventDetailsComponent {
       event =>
         event.timeslots
           .filter(x => x.isRegistered)
-          .map<EventTimeslotRegistration>(x => ({
+          .map<ApiEventTimeslotRegistration>(x => ({
             timeslotId: x.id,
             fallbackTimeslotId: x.chosenFallbackTimeslotId,
           })),
@@ -122,7 +122,7 @@ export class PlayerEventDetailsComponent {
     );
   }
 
-  protected setTimeslotRegistration(timeslot: MinigolfPlayerEventTimeslot, isRegistered: boolean) {
+  protected setTimeslotRegistration(timeslot: PlayerEventTimeslot, isRegistered: boolean) {
     this._store.dispatch(
       registerForEventAction({
         eventId: this.eventId(),
@@ -138,7 +138,7 @@ export class PlayerEventDetailsComponent {
     );
   }
 
-  protected setFallbackTimeslot(timeslot: MinigolfPlayerEventTimeslot, fallbackTimeslotId: string) {
+  protected setFallbackTimeslot(timeslot: PlayerEventTimeslot, fallbackTimeslotId: string) {
     this._store.dispatch(
       registerForEventAction({
         eventId: this.eventId(),
@@ -152,7 +152,7 @@ export class PlayerEventDetailsComponent {
     );
   }
 
-  protected canRegisterForTimeslot(timeslot: MinigolfPlayerEventTimeslot) {
+  protected canRegisterForTimeslot(timeslot: PlayerEventTimeslot) {
     const currentRegistrations = this.currentRegistrations();
     if (currentRegistrations.some(x => x.timeslotId === timeslot.id)) {
       return true;

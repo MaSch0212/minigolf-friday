@@ -1,27 +1,34 @@
 # MinigolfFriday
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.3.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Prerequisites
 
-## Running unit tests
+- [Node.js](https://nodejs.org/en/) (minimum version: 18.17.1)
+  - Enable corepack: `corepack enable`
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) or [Docker Engine](https://docs.docker.com/engine/install/)
+- [Visual Studio Code](https://code.visualstudio.com/) (optional)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [C# Dev Kit for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit) (optional)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Preparation
 
-## Running end-to-end tests
+1. Run `pnpm install` in the root directory to install all dependencies.
+2. Run `dotnet dev-certs https --trust` to trust the development certificate.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Run
 
-## Further help
+1. Run `dotnet watch run` in the `server` directory to start the server.
+2. Run `pnpm run start` in the `client` directory to start the client.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+or
+
+1. Run the `🚀 Start` task in Visual Studio Code.
+
+Now you can visit [`https://localhost:5001`](https://localhost:5001) in your browser.
+The swagger UI is available at [`https://localhost:5001/swagger/index.html`](https://localhost:5001/swagger/index.html).
+
+### Build
+
+1. Run `pnpm build` in the root directory to build the server, client and docker container.
+2. The image `masch0212/minigolf-friday:latest` is now available in your local docker registry.

@@ -1,72 +1,41 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FastEnumUtility;
+using MaSch.Core.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MinigolfFriday.Models;
+using MinigolfFriday.Options;
 
 namespace MinigolfFriday.Services;
 
-public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
+[GenerateAutoInterface]
+public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions, IIdService idService) : IJwtService
 {
-    private readonly JwtSecurityTokenHandler _tokenHandler = new();
     private readonly IOptionsMonitor<JwtOptions> _jwtOptions = jwtOptions;
 
-    public JwtSecurityToken GenerateToken(UserEntity user)
-    {
-        return GenerateToken(
-            user.Id.ToString(),
-            user.Name,
-            user.GetLoginType(),
-            user.IsAdmin ? Roles.Admin : Roles.Player,
-            user.Email,
-            user.FacebookId
-        );
-    }
-
-    public JwtSecurityToken GenerateAdminToken()
-    {
-        return GenerateToken(
-            Globals.AdminUser.Id,
-            Globals.AdminUser.Name,
-            Globals.AdminUser.LoginType,
-            Roles.Admin,
-            null,
-            null
-        );
-    }
-
-    public string WriteToken(JwtSecurityToken token)
-    {
-        return _tokenHandler.WriteToken(token);
-    }
-
-    private JwtSecurityToken GenerateToken(
-        string userid,
-        string name,
-        UserLoginType loginType,
-        string role,
-        string? email,
-        string? facebookId
-    )
+    public JwtSecurityToken GenerateToken(long userid, Role[] roles)
     {
         var jwtOptions = _jwtOptions.CurrentValue;
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
+        var keyBytes = Encoding.UTF8.GetBytes(jwtOptions.Secret);
+        if (keyBytes.Length < 32)
+        {
+            var tmp = keyBytes;
+            keyBytes = new byte[32];
+            Array.Copy(tmp, keyBytes, tmp.Length);
+        }
+        var key = new SymmetricSecurityKey(keyBytes);
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, userid),
-            new(JwtRegisteredClaimNames.Name, name),
-            new(CustomClaimNames.LoginType, loginType.ToString()),
-            new("role", role),
+            new(JwtRegisteredClaimNames.Sub, userid < 0 ? "admin" : idService.User.Encode(userid)),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-
-        if (facebookId is not null)
-            claims.Add(new(CustomClaimNames.FacebookId, facebookId));
-        if (email is not null)
-            claims.Add(new(JwtRegisteredClaimNames.Email, email));
+        foreach (var role in roles.Select(FastEnum.GetName).WhereNotNull())
+            claims.Add(new(ClaimTypes.Role, role));
 
         var token = new JwtSecurityToken(
             jwtOptions.Issuer,
@@ -77,5 +46,28 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions) : IJwtService
         );
 
         return token;
+    }
+
+    public bool TryGetUserId(ClaimsPrincipal user, out long userId)
+    {
+        var sub = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (sub != null)
+        {
+            if (sub == "admin")
+            {
+                userId = -1;
+                return true;
+            }
+
+            var decoded = idService.User.Decode(sub);
+            if (decoded.Count == 1)
+            {
+                userId = decoded[0];
+                return true;
+            }
+        }
+
+        userId = -1;
+        return false;
     }
 }

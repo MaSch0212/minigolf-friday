@@ -13,6 +13,9 @@ trim_trailing_whitespace = true
 max_line_length = off
 trim_trailing_whitespace = false
 
-[*.{cs,*proj,sln}]
+[*.{cs,sln}]
 indent_style = space
 indent_size = 4
+
+# CA2016: Forward the 'CancellationToken' parameter to methods
+dotnet_diagnostic.CA2016.severity = warning

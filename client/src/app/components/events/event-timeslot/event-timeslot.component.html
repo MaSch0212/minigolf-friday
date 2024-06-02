@@ -86,7 +86,7 @@
             <h2 class="m-0 grow">
               {{ translations.events_timeslot_preconfiguredGroups() }}
             </h2>
-            @if (!event.isStarted) {
+            @if (!event.startedAt) {
               <p-button
                 [label]="translations.shared_add()"
                 icon="i-[mdi--plus]"
@@ -131,7 +131,7 @@
                     >
                       <span class="truncate">
                         @if (allUsers()[playerId]; as user) {
-                          {{ user.name }}
+                          {{ user.alias }}
                         } @else {
                           &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
                           <span class="opacity-50">({{ playerId }})</span>
@@ -193,8 +193,8 @@
                 class="min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 hover:bg-surface-c"
                 [class.border-t-[1px]]="index > 0"
               >
-                @if (player.name) {
-                  {{ player.name }}
+                @if (player.alias) {
+                  {{ player.alias }}
                 } @else {
                   &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
                   <span class="opacity-50">({{ player.id }})</span>
@@ -209,7 +209,7 @@
           </div>
         }
 
-        @if (!event.isStarted) {
+        @if (!event.startedAt) {
           <p-button
             class="mt-8 self-center"
             severity="danger"

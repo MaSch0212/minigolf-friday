@@ -3,14 +3,8 @@ import { on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { UpdateTimeslotRequest } from '../../../models/api/event';
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -20,7 +14,10 @@ import { EventsFeatureState, eventEntityAdapter } from '../events.state';
 export const updateEventTimeslotAction = createHttpAction<{
   eventId: string;
   timeslotId: string;
-  changes: UpdateTimeslotRequest;
+  changes: {
+    mapId?: string;
+    isFallbackAllowed?: boolean;
+  };
 }>()(EVENTS_ACTION_SCOPE, 'Update Event Timeslot');
 
 export const updateEventTimeslotReducers: Reducers<EventsFeatureState> = [
@@ -47,13 +44,25 @@ export const updateEventTimeslotReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const updateEventTimeslotEffects: Effects = {
-  updateEventTimeslot$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(updateEventTimeslotAction, selectEventsActionState('updateTimeslot')).pipe(
-      switchMap(({ props }) =>
-        api
-          .updateTimeslot(props.timeslotId, props.changes)
-          .pipe(mapToHttpAction(updateEventTimeslotAction, props))
+  updateEventTimeslot$: createFunctionalEffect.dispatching(
+    (api = inject(EventAdministrationService)) =>
+      onHttpAction(updateEventTimeslotAction, selectEventsActionState('updateTimeslot')).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(updateEventTimeslot(api, props), updateEventTimeslotAction, props)
+        )
       )
-    )
   ),
 };
+
+async function updateEventTimeslot(
+  api: EventAdministrationService,
+  props: ReturnType<typeof updateEventTimeslotAction>['props']
+) {
+  const response = await api.updateEventTimeslot({
+    timeslotId: props.timeslotId,
+    body: props.changes,
+  });
+  return response.ok
+    ? updateEventTimeslotAction.success(props, undefined)
+    : updateEventTimeslotAction.error(props, response);
+}

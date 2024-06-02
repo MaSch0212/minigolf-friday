@@ -1,10 +1,10 @@
 import { EntityState, createEntityAdapter } from '@ngrx/entity';
 
-import { MinigolfEvent } from '../../models/event';
+import { Event } from '../../models/parsed-models';
 import { ActionState, initialActionState } from '../action-state';
 
-export type EventsFeatureState = EntityState<MinigolfEvent> & {
-  loadedPages: number;
+export type EventsFeatureState = EntityState<Event> & {
+  continuationToken: string | null;
   actionStates: {
     load: ActionState;
     loadOne: ActionState;
@@ -22,13 +22,13 @@ export type EventsFeatureState = EntityState<MinigolfEvent> & {
   };
 };
 
-export const eventEntityAdapter = createEntityAdapter<MinigolfEvent>({
+export const eventEntityAdapter = createEntityAdapter<Event>({
   selectId: event => event.id,
   sortComparer: (a, b) => b.date.getTime() - a.date.getTime(),
 });
 
 export const initialEventsFeatureState: EventsFeatureState = eventEntityAdapter.getInitialState({
-  loadedPages: 0,
+  continuationToken: null,
   actionStates: {
     load: initialActionState,
     loadOne: initialActionState,

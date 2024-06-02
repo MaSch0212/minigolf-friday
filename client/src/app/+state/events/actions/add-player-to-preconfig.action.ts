@@ -3,23 +3,20 @@ import { on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { AddPlayerToPreconfigRequest } from '../../../models/api/event';
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
 import { selectEventsActionState } from '../events.selectors';
 import { EventsFeatureState, eventEntityAdapter } from '../events.state';
 
-export const addPlayerToEventPreconfigurationAction = createHttpAction<
-  { eventId: string; timeslotId: string; preconfigId: string } & AddPlayerToPreconfigRequest
->()(EVENTS_ACTION_SCOPE, 'Add Player To Preconfiguration');
+export const addPlayerToEventPreconfigurationAction = createHttpAction<{
+  eventId: string;
+  timeslotId: string;
+  preconfigId: string;
+  playerId: string;
+}>()(EVENTS_ACTION_SCOPE, 'Add Player To Preconfiguration');
 
 export const addPlayerToEventPreconfigurationReducers: Reducers<EventsFeatureState> = [
   on(addPlayerToEventPreconfigurationAction.success, (state, { props }) => {
@@ -49,16 +46,31 @@ export const addPlayerToEventPreconfigurationReducers: Reducers<EventsFeatureSta
 
 export const addPlayerToEventPreconfigurationEffects: Effects = {
   addPlayerToEventPreconfiguration$: createFunctionalEffect.dispatching(
-    (api = inject(EventsService)) =>
+    (api = inject(EventAdministrationService)) =>
       onHttpAction(
         addPlayerToEventPreconfigurationAction,
         selectEventsActionState('addPlayerToPreconfig')
       ).pipe(
         switchMap(({ props }) =>
-          api
-            .addPlayerToPreconfig(props.preconfigId, { playerId: props.playerId })
-            .pipe(mapToHttpAction(addPlayerToEventPreconfigurationAction, props))
+          toHttpAction(
+            addPlayerToEventPreconfiguration(api, props),
+            addPlayerToEventPreconfigurationAction,
+            props
+          )
         )
       )
   ),
 };
+
+async function addPlayerToEventPreconfiguration(
+  api: EventAdministrationService,
+  props: ReturnType<typeof addPlayerToEventPreconfigurationAction>['props']
+) {
+  const response = await api.addPlayersToPreconfiguration({
+    preconfigurationId: props.preconfigId,
+    body: { playerIds: [props.playerId] },
+  });
+  return response.ok
+    ? addPlayerToEventPreconfigurationAction.success(props, undefined)
+    : addPlayerToEventPreconfigurationAction.error(props, response);
+}

@@ -11,9 +11,9 @@ export const selectPlayerEventsFeature = createFeatureSelector<PlayerEventsFeatu
 export const playerEventSelectors =
   playerEventEntityAdapter.getSelectors(selectPlayerEventsFeature);
 
-export const selectPlayerEventsLoadedPages = createDistinctSelector(
+export const selectPlayerEventsContinuationToken = createDistinctSelector(
   selectPlayerEventsFeature,
-  state => state.loadedPages
+  state => state.continuationToken
 );
 
 export const selectPlayerEventsActionStates = createDistinctSelector(

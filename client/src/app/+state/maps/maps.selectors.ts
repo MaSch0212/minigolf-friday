@@ -1,19 +1,17 @@
 import { createDistinctSelector } from '@ngneers/easy-ngrx-distinct-selector';
 import { createFeatureSelector } from '@ngrx/store';
 
-import { mapsFeatureName } from './maps.feature';
-import { MapsFeatureState, mapsEntityAdapter } from './maps.reducer';
+import { MAPS_FEATURE_NAME } from './consts';
+import { mapsEntityAdapter, MapsFeatureState } from './maps.state';
 
-export const mapsFeatureSelector = createFeatureSelector<MapsFeatureState>(mapsFeatureName);
+export const selectMapsFeature = createFeatureSelector<MapsFeatureState>(MAPS_FEATURE_NAME);
 
-export const mapSelectors = mapsEntityAdapter.getSelectors(mapsFeatureSelector);
+export const mapSelectors = mapsEntityAdapter.getSelectors(selectMapsFeature);
 
-export const selectMapsLoadState = createDistinctSelector(
-  mapsFeatureSelector,
-  state => state.loadState
+export const selectMapsActionStates = createDistinctSelector(
+  selectMapsFeature,
+  state => state.actionStates
 );
-
-export const selectMapActionState = createDistinctSelector(
-  mapsFeatureSelector,
-  state => state.actionState
-);
+export function selectMapsActionState(action: keyof MapsFeatureState['actionStates']) {
+  return createDistinctSelector(selectMapsActionStates, state => state[action]);
+}

@@ -4,7 +4,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { ReducerTypes, Store, createAction, on } from '@ngrx/store';
 import { Action, Selector, TypedAction } from '@ngrx/store/src/models';
 import { produce } from 'immer';
-import { catchError, filter, map, of, pipe, startWith, withLatestFrom } from 'rxjs';
+import { catchError, filter, from, map, of, pipe, startWith, withLatestFrom } from 'rxjs';
 
 export type ActionState = {
   state: 'none' | 'starting' | 'running' | 'success' | 'error';
@@ -151,6 +151,21 @@ export function mapToHttpAction<
 >(action: TAction, props: TProps) {
   return pipe(
     map<TSuccess, Action>(response => action.success(props, response)),
+    catchError(error => of(action.error(props, error))),
+    startWith(action.starting(props))
+  );
+}
+
+export function toHttpAction<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TAction extends HttpActionCreator<string, string, any, any>,
+  TProps = Parameters<TAction>[0],
+>(
+  value: Promise<ReturnType<TAction['success'] | TAction['error']>>,
+  action: TAction,
+  props: TProps
+) {
+  return from(value).pipe(
     catchError(error => of(action.error(props, error))),
     startWith(action.starting(props))
   );

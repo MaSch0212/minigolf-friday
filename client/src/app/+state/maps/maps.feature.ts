@@ -1,16 +1,15 @@
 import { provideEffects } from '@ngrx/effects';
 import { createFeature, provideState } from '@ngrx/store';
 
-import { MapsFeatureEffects } from './maps.effects';
+import { MAPS_FEATURE_NAME } from './consts';
+import { mapsFeatureEffects } from './maps.effects';
 import { mapsReducer } from './maps.reducer';
 
-export const mapsFeatureName = 'maps';
-
 export const mapsFeature = createFeature({
-  name: mapsFeatureName,
+  name: MAPS_FEATURE_NAME,
   reducer: mapsReducer,
 });
 
 export function provideMapsState() {
-  return [provideState(mapsFeature), provideEffects(MapsFeatureEffects)];
+  return [provideState(mapsFeature), provideEffects(mapsFeatureEffects)];
 }

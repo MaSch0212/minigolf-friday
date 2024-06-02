@@ -6,6 +6,8 @@
 !.vscode/extensions.json
 !.vscode/tailwind.json
 .history/*
+.vs/*
+*.csproj.user
 
 node_modules/*
 

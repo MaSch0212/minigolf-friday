@@ -2,23 +2,24 @@ using System.Net;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Models;
+using MinigolfFriday.Utilities;
 
 namespace MinigolfFriday.Services;
 
-public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInstanceService
+[GenerateAutoInterface]
+public class EventInstanceService(DatabaseContext databaseContext, IIdService idService)
+    : IEventInstanceService
 {
     const int MAX_GROUP_SIZE = 5;
 
-    private readonly MinigolfFridayContext _dbContext = dbContext;
-
-    public async Task<Result<Dictionary<string, EventInstance[]>>> BuildEventInstancesAsync(
-        Guid eventId
-    )
+    public async Task<
+        Result<(EventEntity Event, EventTimeslotInstances[] Instances)>
+    > BuildEventInstancesAsync(long eventId, CancellationToken cancellation)
     {
-        var @event = await _dbContext
-            .Events
-            .Include(x => x.Timeslots)
+        var @event = await databaseContext
+            .Events.Include(x => x.Timeslots)
             .ThenInclude(x => x.Registrations)
             .ThenInclude(x => x.Player.Avoid)
             .Include(x => x.Timeslots)
@@ -27,21 +28,22 @@ public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInsta
             .Include(x => x.Timeslots)
             .ThenInclude(x => x.Preconfigurations)
             .ThenInclude(x => x.Players)
-            .FirstOrDefaultAsync(x => x.Id == eventId);
+            .FirstOrDefaultAsync(x => x.Id == eventId, cancellation);
         if (@event is null)
             return Result.Fail(
                 new Error("Event not found.").WithStatusCode(HttpStatusCode.NotFound)
             );
 
         var allPlayers = GetAllEventPlayersAsync(@event);
-        var timeslotPlayers = @event
-            .Timeslots
-            .ToDictionary(x => x, x => x.Registrations.Select(x => x.Player.Id).ToList());
+        var timeslotPlayers = @event.Timeslots.ToDictionary(
+            x => x,
+            x => x.Registrations.Select(x => x.Player.Id).ToList()
+        );
 
         foreach (
-            var timeslot in @event
-                .Timeslots
-                .Where(x => x.IsFallbackAllowed && x.Registrations.Count < MAX_GROUP_SIZE)
+            var timeslot in @event.Timeslots.Where(x =>
+                x.IsFallbackAllowed && x.Registrations.Count < MAX_GROUP_SIZE
+            )
         )
         {
             timeslotPlayers[timeslot].Clear();
@@ -52,52 +54,62 @@ public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInsta
             }
         }
 
-        return timeslotPlayers.ToDictionary(
-            x => x.Key.Id.ToString(),
-            x => GenerateEventInstances(x.Value, x.Key.Preconfigurations, allPlayers).ToArray()
+        return (
+            @event,
+            timeslotPlayers
+                .Select(x => new EventTimeslotInstances(
+                    idService.EventTimeslot.Encode(x.Key.Id),
+                    GenerateEventInstances(x.Value, x.Key.Preconfigurations, allPlayers).ToArray()
+                ))
+                .ToArray()
         );
     }
 
-    public async Task<Result> PersistEventInstancesAsync(
-        Dictionary<string, EventInstance[]> eventInstances
+    public async Task PersistEventInstancesAsync(
+        EventTimeslotInstances[] eventInstances,
+        CancellationToken cancellation
     )
     {
+        var instanceEntities = new Queue<EventInstanceEntity>();
         foreach (var (strTimeslotId, instances) in eventInstances)
         {
-            var timeslotId = Guid.Parse(strTimeslotId);
-            _dbContext
-                .EventInstances
-                .RemoveRange(_dbContext.EventInstances.Where(x => x.EventTimeslotId == timeslotId));
+            var timeslotId = idService.EventTimeslot.DecodeSingle(strTimeslotId);
+            databaseContext.EventInstances.RemoveRange(
+                databaseContext.EventInstances.Where(x => x.EventTimeslot.Id == timeslotId)
+            );
             foreach (var instance in instances)
             {
                 var entity = new EventInstanceEntity
                 {
-                    Id = Guid.NewGuid(),
                     GroupCode = instance.GroupCode,
-                    EventTimeslotId = timeslotId
+                    EventTimeslot = databaseContext.EventTimeslotById(timeslotId),
                 };
-                instance.Id = entity.Id.ToString();
-                _dbContext.EventInstances.Add(entity);
-                foreach (var playerId in instance.PlayerIds)
+                instanceEntities.Enqueue(entity);
+                databaseContext.EventInstances.Add(entity);
+                foreach (
+                    var playerId in instance.PlayerIds.Select(x => idService.User.DecodeSingle(x))
+                )
                 {
                     var user =
-                        _dbContext
-                            .ChangeTracker
-                            .Entries<UserEntity>()
-                            .FirstOrDefault(x => x.Entity.Id == Guid.Parse(playerId))
-                            ?.Entity ?? UserEntity.ById(Guid.Parse(playerId));
+                        databaseContext
+                            .ChangeTracker.Entries<UserEntity>()
+                            .FirstOrDefault(x => x.Entity.Id == playerId)
+                            ?.Entity ?? databaseContext.UserById(playerId);
                     entity.Players.Add(user);
                 }
             }
         }
 
-        await _dbContext.SaveChangesAsync();
-        return Result.Ok();
+        await databaseContext.SaveChangesAsync(cancellation);
+        foreach (var instance in eventInstances.SelectMany(x => x.Instances))
+        {
+            instance.Id = idService.EventInstance.Encode(instanceEntities.Dequeue().Id);
+        }
     }
 
-    private static Dictionary<Guid, Player> GetAllEventPlayersAsync(EventEntity @event)
+    private static Dictionary<long, Player> GetAllEventPlayersAsync(EventEntity @event)
     {
-        var players = new Dictionary<Guid, Player>();
+        var players = new Dictionary<long, Player>();
         var allPlayers = @event.Timeslots.SelectMany(x => x.Registrations).Select(x => x.Player);
         foreach (var player in allPlayers)
         {
@@ -124,10 +136,10 @@ public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInsta
         return players;
     }
 
-    private static List<EventInstance> GenerateEventInstances(
-        IEnumerable<Guid> playerIds,
+    private List<EventInstance> GenerateEventInstances(
+        IEnumerable<long> playerIds,
         IEnumerable<EventInstancePreconfigurationEntity> preconfigs,
-        Dictionary<Guid, Player> allPlayers
+        Dictionary<long, Player> allPlayers
     )
     {
         var players = playerIds.Select(x => allPlayers[x]).ToList();
@@ -144,7 +156,7 @@ public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInsta
         // Create groups with preinitialized Lists
         var groups = new List<Player>[groupCount];
         for (int i = 0; i < groups.Length; i++)
-            groups[i] =  [];
+            groups[i] = [];
 
         // Apply preconfigured group combinations
         var remainingPc = new Queue<Player[]>(preconfig);
@@ -167,21 +179,18 @@ public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInsta
 
             // Calculate scores for all remaining players for the group and take the one with the highest score
             group.Add(
-                remaining.PopMaxScore(
-                    x => group.Aggregate(0, (acc, y) => acc + getPlayerScore(x, y))
+                remaining.PopMaxScore(x =>
+                    group.Aggregate(0, (acc, y) => acc + getPlayerScore(x, y))
                 )
             );
         }
 
         return groups
-            .Select(
-                x =>
-                    new EventInstance(
-                        null,
-                        GroupCodeGenerator.Generate(),
-                        x.Select(y => y.Id.ToString())
-                    )
-            )
+            .Select(x => new EventInstance(
+                "",
+                GroupCodeGenerator.Generate(),
+                x.Select(y => idService.User.Encode(y.Id)).ToArray()
+            ))
             .ToList();
     }
 
@@ -199,15 +208,10 @@ public class EVentInstanceService(MinigolfFridayContext dbContext) : IEventInsta
         return score;
     }
 
-    private class Player
+    private class Player(long id)
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; } = id;
         public List<Player> Avoid { get; } = [];
         public List<Player> Prefer { get; } = [];
-
-        public Player(Guid id)
-        {
-            Id = id;
-        }
     }
 }

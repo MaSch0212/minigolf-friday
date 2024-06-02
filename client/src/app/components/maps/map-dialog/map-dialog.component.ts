@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -9,17 +16,12 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 
-import {
-  addMapAction,
-  addMapSuccessAction,
-  selectMapActionState,
-  updateMapAction,
-  updateMapSuccessAction,
-} from '../../../+state/maps';
+import { isActionBusy } from '../../../+state/action-state';
+import { addMapAction, selectMapsActionState, updateMapAction } from '../../../+state/maps';
 import { InterpolatePipe } from '../../../directives/interpolate.pipe';
-import { MinigolfMap } from '../../../models/minigolf-map';
+import { MinigolfMap } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
-import { autoDestroy } from '../../../utils/rxjs.utils';
+import { selectSignal } from '../../../utils/ngrx.utils';
 
 @Component({
   selector: 'app-map-dialog',
@@ -39,31 +41,34 @@ import { autoDestroy } from '../../../utils/rxjs.utils';
 export class MapDialogComponent {
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _store = inject(Store);
-  private readonly _actions$ = inject(Actions);
   private readonly _randomId = Math.random().toString(36).substring(2, 9);
 
   protected readonly form = this._formBuilder.group({
     id: new FormControl<string | null>(null),
     name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
   });
-  protected readonly actionState = this._store.selectSignal(selectMapActionState);
   protected readonly translations = inject(TranslateService).translations;
   protected readonly mapToUpdate = signal<MinigolfMap | undefined>(undefined);
   protected readonly visible = signal(false);
+
+  private readonly _actionState = selectSignal(
+    computed(() => selectMapsActionState(this.mapToUpdate() ? 'update' : 'add'))
+  );
+  protected readonly isLoading = computed(() => isActionBusy(this._actionState()));
 
   protected readonly formValue = toSignal(this.form.valueChanges, {
     initialValue: this.form.value,
   });
 
   constructor() {
-    autoDestroy(
-      this._actions$
-        .pipe(ofType(addMapSuccessAction, updateMapSuccessAction))
-        .subscribe(() => this.close())
-    );
+    const actions$ = inject(Actions);
+    actions$
+      .pipe(ofType(addMapAction.success, updateMapAction.success), takeUntilDestroyed())
+      .subscribe(() => this.close());
+
     effect(
       () => {
-        if (this.actionState().loading) {
+        if (this.isLoading()) {
           this.form.disable();
         } else {
           this.form.enable();
@@ -84,8 +89,15 @@ export class MapDialogComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const action = this.mapToUpdate() ? updateMapAction : addMapAction;
-    this._store.dispatch(action({ map: this.form.value as MinigolfMap }));
+
+    const mapToUpdate = this.mapToUpdate();
+    if (mapToUpdate) {
+      this._store.dispatch(
+        updateMapAction({ mapId: mapToUpdate.id, name: this.form.value.name ?? '' })
+      );
+    } else {
+      this._store.dispatch(addMapAction({ name: this.form.value.name ?? '' }));
+    }
   }
 
   protected close() {

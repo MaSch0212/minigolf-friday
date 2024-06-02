@@ -7,28 +7,21 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { map, startWith } from 'rxjs';
+import { distinctUntilChanged, map, startWith } from 'rxjs';
 
 import { ErrorTextDirective } from '../../directives/error-text.directive';
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
 import { OnEnterDirective } from '../../directives/on-enter.directive';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, SignInResult } from '../../services/auth.service';
 import { TranslateService } from '../../services/translate.service';
 
 @Component({
@@ -38,13 +31,12 @@ import { TranslateService } from '../../services/translate.service';
     ButtonModule,
     CardModule,
     CommonModule,
-    DividerModule,
     ErrorTextDirective,
     OnEnterDirective,
     ReactiveFormsModule,
     ProgressSpinnerModule,
-    InterpolatePipe,
     InputTextModule,
+    InterpolatePipe,
     PasswordModule,
     TooltipModule,
   ],
@@ -65,65 +57,33 @@ export class LoginComponent {
   );
 
   protected readonly translations = inject(TranslateService).translations;
-  protected readonly isRegister = signal(false);
   protected readonly isAuthInitialized = computed(() => this._authService.token() !== undefined);
+  protected readonly isLoggingIn = signal(false);
+  protected readonly loginResult = signal<SignInResult | null>(null);
 
   protected readonly loginForm = this._formBuilder.group({
-    email: this._formBuilder.control<string>('', {
+    loginToken: this._formBuilder.control<string>('', {
       nonNullable: true,
       updateOn: 'change',
       validators: [Validators.required],
-    }),
-    password: this._formBuilder.control<string>('', {
-      nonNullable: true,
-      updateOn: 'change',
-      validators: [Validators.required],
-    }),
-  });
-
-  protected readonly registerForm = this._formBuilder.group({
-    email: this._formBuilder.control<string>('', {
-      nonNullable: true,
-      updateOn: 'change',
-      validators: [Validators.required, Validators.email],
-    }),
-    name: this._formBuilder.control<string>('', {
-      nonNullable: true,
-      updateOn: 'change',
-      validators: [Validators.required],
-    }),
-    password: this._formBuilder.control<string>('', {
-      nonNullable: true,
-      updateOn: 'change',
-      validators: [
-        Validators.required,
-        Validators.minLength(6),
-        passwordsEqualValidator('confirmPassword'),
-      ],
-    }),
-    confirmPassword: this._formBuilder.control<string>('', {
-      nonNullable: true,
-      updateOn: 'change',
-      validators: [Validators.required, passwordsEqualValidator('password')],
     }),
   });
 
   constructor() {
-    const regPw = toSignal(this.registerForm.controls.password.valueChanges);
-    const regCp = toSignal(this.registerForm.controls.confirmPassword.valueChanges);
+    this.loginForm.valueChanges
+      .pipe(
+        takeUntilDestroyed(),
+        distinctUntilChanged((a, b) => a.loginToken === b.loginToken)
+      )
+      .subscribe(() => this.loginResult.set(null));
 
     effect(
       () => {
-        regPw();
-        this.registerForm.controls.confirmPassword.updateValueAndValidity();
-      },
-      { allowSignalWrites: true }
-    );
-
-    effect(
-      () => {
-        regCp();
-        this.registerForm.controls.password.updateValueAndValidity();
+        if (this.isLoggingIn()) {
+          this.loginForm.disable();
+        } else {
+          this.loginForm.enable();
+        }
       },
       { allowSignalWrites: true }
     );
@@ -138,53 +98,24 @@ export class LoginComponent {
     );
   }
 
-  protected loginWithFacebook(): void {
-    // TODO: Error handling
-    this._authService.signIn('facebook');
-  }
-
-  protected loginByEmail(): void {
+  protected async login(): Promise<void> {
     this.loginForm.updateValueAndValidity();
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    const { email, password } = this.loginForm.value as { email: string; password: string };
-
-    // TODO: Error handling
-    this._authService.signIn('email', email, password);
+    this.isLoggingIn.set(true);
+    this.loginResult.set(null);
+    try {
+      const loginToken = this.loginForm.value.loginToken ?? '';
+      const result = await this._authService.signIn(loginToken);
+      this.loginResult.set(result);
+    } catch (error) {
+      console.error(error);
+      this.loginResult.set('error');
+    } finally {
+      this.isLoggingIn.set(false);
+    }
   }
-
-  protected register(): void {
-    this.registerForm.updateValueAndValidity();
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      return;
-    }
-
-    const { email, name, password } = this.registerForm.value as {
-      email: string;
-      name: string;
-      password: string;
-    };
-
-    // TODO: Error handling
-    this._authService.register(email, name, password);
-  }
-}
-
-function passwordsEqualValidator(otherControlName: string): ValidatorFn {
-  return control => {
-    const otherControl = control.parent?.get(otherControlName) as AbstractControl;
-    if (!otherControl) {
-      return null;
-    }
-
-    if (control.value && otherControl.value && control.value !== otherControl.value) {
-      return { passwordsEqual: true };
-    }
-
-    return null;
-  };
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import { MinigolfMap } from '../../../models/minigolf-map';
+import { MinigolfMap } from '../../../models/parsed-models';
 
 @Component({
   selector: 'app-map-item',

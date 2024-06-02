@@ -1,17 +1,12 @@
 import { inject } from '@angular/core';
 import { on } from '@ngrx/store';
-import { Draft, produce } from 'immer';
+import { castDraft, produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { AddPreconfigResponse } from '../../../models/api/event';
-import { MinigolfEventInstancePreconfiguration } from '../../../models/event';
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { EventInstancePreconfiguration } from '../../../models/parsed-models';
+import { assertBody } from '../../../utils/http.utils';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -20,7 +15,7 @@ import { EventsFeatureState, eventEntityAdapter } from '../events.state';
 
 export const addEventPreconfigAction = createHttpAction<
   { eventId: string; timeslotId: string },
-  AddPreconfigResponse
+  EventInstancePreconfiguration
 >()(EVENTS_ACTION_SCOPE, 'Add Preconfig');
 
 export const addEventPreconfigReducers: Reducers<EventsFeatureState> = [
@@ -31,9 +26,7 @@ export const addEventPreconfigReducers: Reducers<EventsFeatureState> = [
       produce(entity, draft => {
         const timeslot = draft.timeslots.find(t => t.id === props.timeslotId);
         if (!timeslot) return;
-        timeslot.preconfigurations.push(
-          response.preconfig as Draft<MinigolfEventInstancePreconfiguration>
-        );
+        timeslot.preconfigurations.push(castDraft(response));
       }),
       state
     );
@@ -42,11 +35,22 @@ export const addEventPreconfigReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const addEventPreconfigEffects: Effects = {
-  addEventPreconfig$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(addEventPreconfigAction, selectEventsActionState('addPreconfig')).pipe(
-      switchMap(({ props }) =>
-        api.addPreconfig(props.timeslotId).pipe(mapToHttpAction(addEventPreconfigAction, props))
+  addEventPreconfig$: createFunctionalEffect.dispatching(
+    (api = inject(EventAdministrationService)) =>
+      onHttpAction(addEventPreconfigAction, selectEventsActionState('addPreconfig')).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(createPreconfiguration(api, props), addEventPreconfigAction, props)
+        )
       )
-    )
   ),
 };
+
+async function createPreconfiguration(
+  api: EventAdministrationService,
+  props: ReturnType<typeof addEventPreconfigAction>['props']
+) {
+  const response = await api.createPreconfiguration({ timeslotId: props.timeslotId });
+  return response.ok
+    ? addEventPreconfigAction.success(props, assertBody(response).preconfiguration)
+    : addEventPreconfigAction.error(props, response);
+}

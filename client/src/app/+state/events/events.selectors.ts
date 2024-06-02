@@ -8,9 +8,9 @@ export const selectEventsFeature = createFeatureSelector<EventsFeatureState>(EVE
 
 export const eventSelectors = eventEntityAdapter.getSelectors(selectEventsFeature);
 
-export const selectEventsLoadedPages = createDistinctSelector(
+export const selectEventsContinuationToken = createDistinctSelector(
   selectEventsFeature,
-  state => state.loadedPages
+  state => state.continuationToken
 );
 
 export const selectEventsActionStates = createDistinctSelector(

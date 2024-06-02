@@ -7,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -18,18 +19,17 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { MapDialogComponent } from './map-dialog/map-dialog.component';
 import { MapItemComponent } from './map-item/map-item.component';
+import { hasActionFailed, isActionBusy } from '../../+state/action-state';
 import {
-  deleteMapAction,
-  deleteMapFailureAction,
   loadMapsAction,
   mapSelectors,
-  selectMapsLoadState,
+  removeMapAction,
+  selectMapsActionState,
 } from '../../+state/maps';
 import { interpolate } from '../../directives/interpolate.pipe';
-import { MinigolfMap } from '../../models/minigolf-map';
+import { MinigolfMap } from '../../models/parsed-models';
 import { TranslateService } from '../../services/translate.service';
 import { notNullish } from '../../utils/common.utils';
-import { autoDestroy } from '../../utils/rxjs.utils';
 
 function mapMatchesFilter(
   map: MinigolfMap | undefined,
@@ -61,18 +61,23 @@ export class MapsComponent implements OnInit {
   private readonly _confirmationService = inject(ConfirmationService);
   private readonly _messageService = inject(MessageService);
 
+  private readonly _actionState = this._store.selectSignal(selectMapsActionState('load'));
+
   protected readonly translations = inject(TranslateService).translations;
   protected readonly filter = signal('');
   protected readonly maps = computed(() => this.filterMaps(this._allMaps(), this.filter()));
-  protected readonly loadState = this._store.selectSignal(selectMapsLoadState);
+  protected readonly isLoading = computed(() => isActionBusy(this._actionState()));
+  protected readonly hasFailed = computed(() => hasActionFailed(this._actionState()));
 
   constructor() {
     const action$ = inject(Actions);
-    autoDestroy(
-      action$
-        .pipe(ofType(deleteMapFailureAction))
-        .subscribe(({ map }) => this.onMapDeletionFailed(map))
-    );
+    action$
+      .pipe(ofType(removeMapAction.error), takeUntilDestroyed())
+      .subscribe(({ props: { mapId } }) =>
+        this.onMapDeletionFailed(
+          this.maps().find(({ id }) => id === mapId) ?? { id: mapId, name: '' }
+        )
+      );
   }
 
   public ngOnInit(): void {
@@ -90,7 +95,7 @@ export class MapsComponent implements OnInit {
       acceptIcon: 'p-button-icon-left i-[mdi--delete]',
       rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
-      accept: () => this._store.dispatch(deleteMapAction({ map })),
+      accept: () => this._store.dispatch(removeMapAction({ mapId: map.id })),
     });
   }
 

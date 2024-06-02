@@ -1,6 +1,6 @@
-@if (loadState().loading) {
+@if (isLoading()) {
   <p-progressSpinner class="m-8"></p-progressSpinner>
-} @else if (loadState().error) {
+} @else if (hasFailed()) {
   <p-messages severity="error">
     <ng-template pTemplate>
       <span class="i-[mdi--close-circle-outline] mr-2"></span>
@@ -17,6 +17,7 @@
             class="w-full max-w-[350px]"
             type="text"
             pInputText
+            autocomplete="off"
             [ngModel]="filter()"
             (ngModelChange)="filter.set($event)"
           />

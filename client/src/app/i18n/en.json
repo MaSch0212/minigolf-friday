@@ -7,10 +7,10 @@
   "login": {
     "login": "Login",
     "loginTo": "Login to {{appName}}",
-    "loginWith": "Login with {{provider}}",
-    "registerTo": "Register to {{appName}}",
-    "register": "Register",
-    "confirmPassword": "Confirm password"
+    "error": {
+      "invalidCredentials": "Invalid login credentials.",
+      "unknown": "An unknown error occurred. Please try again later."
+    }
   },
   "nav": {
     "home": "Home",

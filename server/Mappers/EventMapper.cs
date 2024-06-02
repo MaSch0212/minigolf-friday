@@ -1,55 +1,58 @@
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Data;
+using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Models;
+using MinigolfFriday.Services;
 
 namespace MinigolfFriday.Mappers;
 
-public static class EventMapper
+[GenerateAutoInterface]
+public class EventMapper(IIdService idService) : IEventMapper
 {
-    public static Event ToModel(this EventEntity entity)
+    public Event Map(EventEntity entity)
     {
         return new Event(
-            entity.Id.ToString(),
+            idService.Event.Encode(entity.Id),
             entity.Date,
             entity.RegistrationDeadline,
-            entity.Timeslots?.Select(ToModel) ?? [],
-            entity.IsStarted
+            entity.Timeslots?.Select(Map).ToArray() ?? [],
+            entity.StartedAt
         );
     }
 
-    public static EventTimeslot ToModel(this EventTimeslotEntity entity)
+    public EventTimeslot Map(EventTimeslotEntity entity)
     {
         return new EventTimeslot(
-            entity.Id.ToString(),
+            idService.EventTimeslot.Encode(entity.Id),
             entity.Time,
-            entity.MapId.ToString(),
+            idService.Map.Encode(entity.MapId),
             entity.IsFallbackAllowed,
-            entity.Preconfigurations.Select(ToModel),
-            entity.Registrations.Select(x => x.PlayerId.ToString()).Distinct(),
-            entity.Instances.Select(ToModel)
+            entity.Preconfigurations.Select(Map).ToArray(),
+            entity
+                .Registrations.Select(x => idService.User.Encode(x.Player.Id))
+                .Distinct()
+                .ToArray(),
+            entity.Instances.Select(Map).ToArray()
         );
     }
 
-    public static EventInstancePreconfiguration ToModel(
-        this EventInstancePreconfigurationEntity entity
-    )
+    public EventInstancePreconfiguration Map(EventInstancePreconfigurationEntity entity)
     {
         return new EventInstancePreconfiguration(
-            entity.Id.ToString(),
-            entity.Players.Select(x => x.Id.ToString())
+            idService.Preconfiguration.Encode(entity.Id),
+            entity.Players.Select(x => idService.User.Encode(x.Id)).ToArray()
         );
     }
 
-    public static EventInstance ToModel(this EventInstanceEntity entity)
+    public EventInstance Map(EventInstanceEntity entity)
     {
         return new EventInstance(
-            entity.Id.ToString(),
+            idService.EventInstance.Encode(entity.Id),
             entity.GroupCode,
-            entity.Players.Select(x => x.Id.ToString())
+            entity.Players.Select(x => idService.User.Encode(x.Id)).ToArray()
         );
     }
 
-    public static IQueryable<EventEntity> WithIncludes(this IQueryable<EventEntity> events)
+    public IQueryable<EventEntity> AddIncludes(IQueryable<EventEntity> events)
     {
         return events
             .Include(x => x.Timeslots)
@@ -59,7 +62,6 @@ public static class EventMapper
             .ThenInclude(x => x.Registrations)
             .Include(x => x.Timeslots)
             .ThenInclude(x => x.Instances)
-            .ThenInclude(x => x.Players)
-            .AsSplitQuery();
+            .ThenInclude(x => x.Players);
     }
 }
