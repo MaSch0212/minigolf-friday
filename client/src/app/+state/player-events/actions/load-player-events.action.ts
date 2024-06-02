@@ -3,41 +3,33 @@ import { Store, on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap, withLatestFrom } from 'rxjs';
 
-import { GetPlayerEventsResponse } from '../../../models/api/player-event';
-import { PlayerEventsService } from '../../../services/player-events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { ApiGetPlayerEventsResponse } from '../../../api/models';
+import { EventsService } from '../../../api/services';
+import { parsePlayerEvent, PlayerEvent } from '../../../models/parsed-models';
+import { assertBody } from '../../../utils/http.utils';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { PLAYER_EVENTS_ACTION_SCOPE } from '../consts';
 import {
   selectPlayerEventsActionState,
-  selectPlayerEventsLoadedPages,
+  selectPlayerEventsContinuationToken,
 } from '../player-events.selectors';
 import { PlayerEventsFeatureState, playerEventEntityAdapter } from '../player-events.state';
 
-export const loadPlayerEventsAction = createHttpAction<
-  { reload?: boolean },
-  GetPlayerEventsResponse
->()(PLAYER_EVENTS_ACTION_SCOPE, 'Load Player Events');
+type _Response = { events: PlayerEvent[]; continuationToken: string | null };
+export const loadPlayerEventsAction = createHttpAction<{ reload?: boolean }, _Response>()(
+  PLAYER_EVENTS_ACTION_SCOPE,
+  'Load Player Events'
+);
 
 export const loadPlayerEventsReducers: Reducers<PlayerEventsFeatureState> = [
   on(loadPlayerEventsAction.success, (state, { props, response }) =>
     playerEventEntityAdapter.upsertMany(
       response.events,
-      props.reload
-        ? playerEventEntityAdapter.removeAll(
-            produce(state, draft => {
-              draft.loadedPages = 1;
-            })
-          )
-        : produce(state, draft => {
-            draft.loadedPages++;
-          })
+      produce(props.reload ? playerEventEntityAdapter.removeAll(state) : state, draft => {
+        draft.continuationToken = response.continuationToken;
+      })
     )
   ),
   handleHttpAction('load', loadPlayerEventsAction),
@@ -45,14 +37,34 @@ export const loadPlayerEventsReducers: Reducers<PlayerEventsFeatureState> = [
 
 export const loadPlayerEventsEffects: Effects = {
   loadPlayerEvents$: createFunctionalEffect.dispatching(
-    (store = inject(Store), api = inject(PlayerEventsService)) =>
+    (store = inject(Store), api = inject(EventsService)) =>
       onHttpAction(loadPlayerEventsAction, selectPlayerEventsActionState('load')).pipe(
-        withLatestFrom(store.select(selectPlayerEventsLoadedPages)),
-        switchMap(([{ props }, loadedPages]) =>
-          api
-            .getEvents({ page: props.reload ? 1 : loadedPages + 1 })
-            .pipe(mapToHttpAction(loadPlayerEventsAction, props))
+        withLatestFrom(store.select(selectPlayerEventsContinuationToken)),
+        switchMap(([{ props }, continuationToken]) =>
+          toHttpAction(
+            getPlayerEvents(api, props, continuationToken),
+            loadPlayerEventsAction,
+            props
+          )
         )
       )
   ),
 };
+
+async function getPlayerEvents(
+  api: EventsService,
+  props: ReturnType<typeof loadPlayerEventsAction>['props'],
+  continuationToken: string | null
+) {
+  const response = await api.getPlayerEvents({ continuation: continuationToken ?? undefined });
+  return response.ok
+    ? loadPlayerEventsAction.success(props, toResponse(assertBody(response)))
+    : loadPlayerEventsAction.error(props, response);
+}
+
+function toResponse(response: ApiGetPlayerEventsResponse): _Response {
+  return {
+    events: response.events.map(parsePlayerEvent),
+    continuationToken: response.continuation ?? null,
+  };
+}

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,10 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Users;
 
 /// <param name="UserId">The id of the user to retrieve.</param>
-public record GetUserRequest(string UserId);
+public record GetUserRequest([property: Required] string UserId);
 
 /// <param name="User">The retrieved user.</param>
-public record GetuserResponse(User User);
+public record GetuserResponse([property: Required] User User);
 
 public class GetUserRequestValidator : Validator<GetUserRequest>
 {

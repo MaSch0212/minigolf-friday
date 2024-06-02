@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,8 @@ namespace MinigolfFriday.Endpoints.Administration.Events.Preconfigurations;
 /// <param name="PreconfigurationId">The id of the event instance preconfiguration to remove players from.</param>
 /// <param name="PlayerIds">The ids of the players to remove from the event instance preconfiguration.</param>
 public record RemovePlayersFromPreconfigurationRequest(
-    string PreconfigurationId,
-    string[] PlayerIds
+    [property: Required] string PreconfigurationId,
+    [property: Required] string[] PlayerIds
 );
 
 public class RemovePlayersFromPreconfigurationRequestValidator

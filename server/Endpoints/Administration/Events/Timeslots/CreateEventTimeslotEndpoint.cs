@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using FluentValidation.Results;
@@ -16,14 +17,14 @@ namespace MinigolfFriday.Endpoints.Administration.Events.Timeslots;
 /// <param name="MapId">The id of the map that should be played.</param>
 /// <param name="IsFallbackAllowed">Determines whether players can define a fallback timeslot. Players will participate in a fallback timeslot if this timeslot does not take place due to too few players.</param>
 public record CreateEventTimeslotRequest(
-    string EventId,
-    TimeOnly Time,
-    string MapId,
-    bool IsFallbackAllowed
+    [property: Required] string EventId,
+    [property: Required] TimeOnly Time,
+    [property: Required] string MapId,
+    [property: Required] bool IsFallbackAllowed
 );
 
 /// <param name="Timeslot">The created event timeslot.</param>
-public record CreateEventTimeslotResponse(EventTimeslot Timeslot);
+public record CreateEventTimeslotResponse([property: Required] EventTimeslot Timeslot);
 
 public class CreateEventTimeslotRequestValidator : Validator<CreateEventTimeslotRequest>
 {

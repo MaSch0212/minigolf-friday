@@ -19,7 +19,6 @@ import {
   eventSelectors,
   loadEventsAction,
   selectEventsActionState,
-  selectEventsLoadedPages,
 } from '../../+state/events';
 import { TranslateService } from '../../services/translate.service';
 import { selectSignal } from '../../utils/ngrx.utils';
@@ -73,13 +72,12 @@ export class EventsComponent implements OnInit {
     actions$
       .pipe(takeUntilDestroyed(), ofType(addEventAction.success))
       .subscribe(({ response }) =>
-        this._router.navigate([response.event.id], { relativeTo: this._activatedRoute })
+        this._router.navigate([response.id], { relativeTo: this._activatedRoute })
       );
   }
 
   public ngOnInit(): void {
-    const loadedPages = this._store.selectSignal(selectEventsLoadedPages)();
-    if (loadedPages === 0) {
+    if (this.actionState().state === 'none') {
       this._store.dispatch(loadEventsAction({ reload: false }));
     }
   }

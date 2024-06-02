@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Maps;
 
 /// <param name="MapId">The id of the map to delete.</param>
-public record DeleteMapRequest(string MapId);
+public record DeleteMapRequest([property: Required] string MapId);
 
 public class DeleteMapRequestValidator : Validator<DeleteMapRequest>
 {

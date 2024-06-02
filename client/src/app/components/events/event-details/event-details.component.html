@@ -52,7 +52,7 @@
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
-        @if (!event.isStarted) {
+        @if (!event.startedAt) {
           <p-button
             [label]="translations.shared_add()"
             icon="i-[mdi--plus]"
@@ -95,7 +95,7 @@
       @if (canBuildInstances()) {
         <div class="flex flex-row items-center pt-4">
           <h2 class="m-0 grow">{{ translations.events_groups() }}</h2>
-          @if (!event.isStarted) {
+          @if (!event.startedAt) {
             <p-button
               icon="i-[mdi--shuffle]"
               [label]="
@@ -138,7 +138,7 @@
                         <span class="i-[mdi--account]"></span>
                         <span>
                           @if (allUsers()[playerId]; as user) {
-                            {{ user.name }}
+                            {{ user.alias }}
                           } @else {
                             &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
                             <span class="opacity-50">({{ playerId }})</span>
@@ -154,7 +154,7 @@
         </p-accordion>
       }
 
-      @if (!event.isStarted) {
+      @if (!event.startedAt) {
         <p-button
           class="mt-8 self-center"
           severity="danger"

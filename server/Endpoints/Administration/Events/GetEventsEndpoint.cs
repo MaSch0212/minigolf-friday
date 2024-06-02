@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ public record GetEventsRequest(
 
 /// <param name="Events">The events for this page.</param>
 /// <param name="Continuation">A token that can be used to get the next events. If no new items are available, the token is null.</param>
-public record GetEventsResponse(Event[] Events, string? Continuation);
+public record GetEventsResponse([property: Required] Event[] Events, string? Continuation);
 
 public class GetEventsRequestValidator : Validator<GetEventsRequest>
 {

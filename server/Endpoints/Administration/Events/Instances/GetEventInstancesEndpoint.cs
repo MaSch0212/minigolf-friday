@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,10 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Events.Instances;
 
 /// <param name="EventId">The id of the event to get instances from.</param>
-public record GetEventInstancesRequest(string EventId);
+public record GetEventInstancesRequest([property: Required] string EventId);
 
 /// <param name="Instances">The instances of the event.</param>
-public record GetEventInstancesResponse(EventTimeslotInstances[] Instances);
+public record GetEventInstancesResponse([property: Required] EventTimeslotInstances[] Instances);
 
 public class GetEventInstancesRequestValidator : Validator<GetEventInstancesRequest>
 {

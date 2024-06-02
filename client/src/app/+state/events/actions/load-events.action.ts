@@ -3,21 +3,19 @@ import { Store, on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap, withLatestFrom } from 'rxjs';
 
-import { GetAllEventsResponse } from '../../../models/api/event';
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { ApiGetEventsResponse } from '../../../api/models';
+import { EventAdministrationService } from '../../../api/services';
+import { Event, parseEvent } from '../../../models/parsed-models';
+import { assertBody } from '../../../utils/http.utils';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
-import { selectEventsActionState, selectEventsLoadedPages } from '../events.selectors';
+import { selectEventsActionState, selectEventsContinuationToken } from '../events.selectors';
 import { EventsFeatureState, eventEntityAdapter } from '../events.state';
 
-export const loadEventsAction = createHttpAction<{ reload?: boolean }, GetAllEventsResponse>()(
+type _Response = { events: Event[]; continuationToken: string | null };
+export const loadEventsAction = createHttpAction<{ reload?: boolean }, _Response>()(
   EVENTS_ACTION_SCOPE,
   'Load Events'
 );
@@ -26,15 +24,9 @@ export const loadEventsReducers: Reducers<EventsFeatureState> = [
   on(loadEventsAction.success, (state, { props, response }) =>
     eventEntityAdapter.upsertMany(
       response.events,
-      props.reload
-        ? eventEntityAdapter.removeAll(
-            produce(state, draft => {
-              draft.loadedPages = 1;
-            })
-          )
-        : produce(state, draft => {
-            draft.loadedPages++;
-          })
+      produce(props.reload ? eventEntityAdapter.removeAll(state) : state, draft => {
+        draft.continuationToken = response.continuationToken;
+      })
     )
   ),
   handleHttpAction('load', loadEventsAction),
@@ -42,14 +34,30 @@ export const loadEventsReducers: Reducers<EventsFeatureState> = [
 
 export const loadEventsEffects: Effects = {
   loadEvents$: createFunctionalEffect.dispatching(
-    (store = inject(Store), api = inject(EventsService)) =>
+    (store = inject(Store), api = inject(EventAdministrationService)) =>
       onHttpAction(loadEventsAction, selectEventsActionState('load')).pipe(
-        withLatestFrom(store.select(selectEventsLoadedPages)),
-        switchMap(([{ props }, loadedPages]) =>
-          api
-            .getAllEvents({ page: props.reload ? 1 : loadedPages + 1 })
-            .pipe(mapToHttpAction(loadEventsAction, props))
+        withLatestFrom(store.select(selectEventsContinuationToken)),
+        switchMap(([{ props }, continuationToken]) =>
+          toHttpAction(getEvents(api, props, continuationToken), loadEventsAction, props)
         )
       )
   ),
 };
+
+async function getEvents(
+  api: EventAdministrationService,
+  props: ReturnType<typeof loadEventsAction>['props'],
+  continuationToken: string | null
+) {
+  const response = await api.getEvents({ continuation: continuationToken ?? undefined });
+  return response.ok
+    ? loadEventsAction.success(props, toResponse(assertBody(response)))
+    : loadEventsAction.error(props, response);
+}
+
+function toResponse(response: ApiGetEventsResponse): _Response {
+  return {
+    events: response.events.map(parseEvent),
+    continuationToken: response.continuation ?? null,
+  };
+}

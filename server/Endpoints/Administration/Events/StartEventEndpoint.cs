@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Events;
 
 /// <param name="EventId">The id of the event to start.</param>
-public record StartEventRequest(string EventId);
+public record StartEventRequest([property: Required] string EventId);
 
 public class StartEventRequestValidator : Validator<StartEventRequest>
 {

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,10 @@ namespace MinigolfFriday.Endpoints.Administration.Events.Preconfigurations;
 
 /// <param name="PreconfigurationId">The id of the event instance preconfiguration to add players to.</param>
 /// <param name="PlayerIds">The ids of the players to add.</param>
-public record AddPlayersToPreconfigurationRequest(string PreconfigurationId, string[] PlayerIds);
+public record AddPlayersToPreconfigurationRequest(
+    [property: Required] string PreconfigurationId,
+    [property: Required] string[] PlayerIds
+);
 
 public class AddPlayersToPreconfigurationRequestValidator
     : Validator<AddPlayersToPreconfigurationRequest>

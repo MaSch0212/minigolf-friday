@@ -5,7 +5,8 @@
     "ng": "ng",
     "lint": "eslint ./src --ext .ts --ext .html",
     "prestart": "node tools/aspnetcore-https",
-    "prepare": "dotnet build ../server/MinigolfFriday.csproj && node scripts/openapi-gen.js",
+    "prepare": "dotnet build ../server/MinigolfFriday.csproj && pnpm run openapi",
+    "openapi": "node tools/openapi-gen.js",
     "start": "run-script-os",
     "start:windows": "ng serve --port 4200 --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
     "start:default": "ng serve --port 4200 --ssl --ssl-cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --ssl-key \"$HOME/.aspnet/https/${npm_package_name}.key\"",
@@ -19,7 +20,6 @@
   "private": true,
   "packageManager": "pnpm@9.1.2",
   "dependencies": {
-    "@abacritt/angularx-social-login": "^2.2.0",
     "@angular/animations": "^17.1.2",
     "@angular/common": "^17.1.2",
     "@angular/compiler": "^17.1.2",
@@ -38,7 +38,6 @@
     "primeng": "17.6.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.6.2",
-    "zod": "^3.22.4",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
@@ -50,7 +49,7 @@
     "@angular/cli": "^17.1.2",
     "@angular/compiler-cli": "^17.1.2",
     "@goast/core": "^0.2.1",
-    "@goast/typescript": "^0.2.12",
+    "@goast/typescript": "^0.2.14",
     "@iconify-json/flag": "^1.1.48",
     "@iconify-json/mdi": "^1.1.64",
     "@iconify/tailwind": "^0.1.4",

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,12 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Events.Preconfigurations;
 
 /// <param name="TimeslotId">The if of the event timeslot to add a preconfiguration to.</param>
-public record CreatePreconfigurationRequest(string TimeslotId);
+public record CreatePreconfigurationRequest([property: Required] string TimeslotId);
 
 /// <param name="Preconfiguration">The created event instance preconfiguration.</param>
-public record CreatePreconfigurationResponse(EventInstancePreconfiguration Preconfiguration);
+public record CreatePreconfigurationResponse(
+    [property: Required] EventInstancePreconfiguration Preconfiguration
+);
 
 public class CreatePreconfigurationRequestValidator : Validator<CreatePreconfigurationRequest>
 {

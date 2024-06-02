@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,10 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Users;
 
 /// <param name="UserId">The id of the user.</param>
-public record GetUserLoginTokenRequest(string UserId);
+public record GetUserLoginTokenRequest([property: Required] string UserId);
 
 /// <param name="LoginToken">The token the user can use to login.</param>
-public record GetUserLoginTokenResponse(string LoginToken);
+public record GetUserLoginTokenResponse([property: Required] string LoginToken);
 
 public class GetUserLoginTokenRequestValidator : Validator<GetUserLoginTokenRequest>
 {

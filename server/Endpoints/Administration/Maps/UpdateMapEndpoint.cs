@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace MinigolfFriday.Endpoints.Administration.Maps;
 
 /// <param name="MapId">The id of the map to update.</param>
 /// <param name="Name">The new name. Omit to leave unchanged.</param>
-public record UpdateMapRequest(string MapId, string? Name);
+public record UpdateMapRequest([property: Required] string MapId, string? Name);
 
 public class UpdateMapRequestValidator : Validator<UpdateMapRequest>
 {

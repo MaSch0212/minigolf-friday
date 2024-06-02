@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MinigolfFriday.Data;
@@ -8,10 +9,10 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Maps;
 
 /// <param name="Name">The name of the minigolf map.</param>
-public record CreateMapRequest(string Name);
+public record CreateMapRequest([property: Required] string Name);
 
 /// <param name="Map">The map that has been created.</param>
-public record CreateMapResponse(MinigolfMap Map);
+public record CreateMapResponse([property: Required] MinigolfMap Map);
 
 public class CreateMapRequestValidator : Validator<CreateMapRequest>
 {

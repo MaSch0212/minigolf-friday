@@ -7,10 +7,10 @@
   "login": {
     "login": "Anmelden",
     "loginTo": "An {{appName}} anmelden",
-    "loginWith": "Mit {{provider}} anmelden",
-    "registerTo": "Bei {{appName}} registrieren",
-    "register": "Registrieren",
-    "confirmPassword": "Passwort bestätigen"
+    "error": {
+      "invalidCredentials": "Ungültige Anmeldeinformationen.",
+      "unknown": "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut."
+    }
   },
   "nav": {
     "home": "Startseite",

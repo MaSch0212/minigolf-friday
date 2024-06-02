@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MinigolfFriday.Common;
@@ -7,11 +8,14 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Events.Instances;
 
 /// <param name="EventId">The id of the event to build instances for.</param>
-public record BuildEventInstancesRequest(string EventId);
+public record BuildEventInstancesRequest([property: Required] string EventId);
 
 /// <param name="Instances">The built event instances.</param>
 /// <param name="IsPersisted">Determines whether the instance have been persisted. Instances are persitent only after the registration deadline has elapsed and the event has not been started.</param>
-public record BuildEventInstancesResponse(EventTimeslotInstances[] Instances, bool IsPersisted);
+public record BuildEventInstancesResponse(
+    [property: Required] EventTimeslotInstances[] Instances,
+    [property: Required] bool IsPersisted
+);
 
 public class BuildEventInstancesRequestValidator : Validator<BuildEventInstancesRequest>
 {

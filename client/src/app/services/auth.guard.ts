@@ -9,12 +9,12 @@ export class AuthGuard {
   private readonly _authService = inject(AuthService);
 
   public async canActivate(state: RouterStateSnapshot, options: { needsAdminRights: boolean }) {
-    const user = this._authService.user();
+    const user = this._authService.token()?.user;
     if (!user) {
       this.navigateToLogin(state.url);
       return false;
     }
-    if (options.needsAdminRights && !user.isAdmin) {
+    if (options.needsAdminRights && !user.roles.includes('admin')) {
       this.navigateToUnauthorized(state.url);
       return false;
     }

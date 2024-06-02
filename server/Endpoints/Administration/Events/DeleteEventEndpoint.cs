@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Events;
 
 /// <param name="EventId">The id of the event to delete.</param>
-public record DeleteEventRequest(string EventId);
+public record DeleteEventRequest([property: Required] string EventId);
 
 public class DeleteEventRequestValidator : Validator<DeleteEventRequest>
 {

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Users;
 
 /// <param name="UserId">The id of the user to delete.</param>
-public record DeleteUserEndpointRequest(string UserId);
+public record DeleteUserEndpointRequest([property: Required] string UserId);
 
 public class DeleteUserEndpointRequestValidator : Validator<DeleteUserEndpointRequest>
 {

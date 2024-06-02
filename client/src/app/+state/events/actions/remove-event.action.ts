@@ -2,13 +2,8 @@ import { inject } from '@angular/core';
 import { on } from '@ngrx/store';
 import { switchMap } from 'rxjs';
 
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -28,11 +23,19 @@ export const removeEventReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const removeEventEffects: Effects = {
-  removeEvent$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
+  removeEvent$: createFunctionalEffect.dispatching((api = inject(EventAdministrationService)) =>
     onHttpAction(removeEventAction, selectEventsActionState('remove')).pipe(
-      switchMap(({ props }) =>
-        api.removeEvent(props.eventId).pipe(mapToHttpAction(removeEventAction, props))
-      )
+      switchMap(({ props }) => toHttpAction(deleteEvent(api, props), removeEventAction, props))
     )
   ),
 };
+
+async function deleteEvent(
+  api: EventAdministrationService,
+  props: ReturnType<typeof removeEventAction>['props']
+) {
+  const response = await api.deleteEvent({ eventId: props.eventId });
+  return response.ok
+    ? removeEventAction.success(props, undefined)
+    : removeEventAction.error(props, response);
+}

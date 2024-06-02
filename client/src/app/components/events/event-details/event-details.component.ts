@@ -88,7 +88,8 @@ export class EventDetailsComponent {
     ifTruthy(this.event(), event => event.registrationDeadline.getTime() < this.now(), false)
   );
   protected readonly canStart = computed(
-    () => this.canBuildInstances() && this.event()?.isStarted === false && this.hasInstances()
+    () =>
+      this.canBuildInstances() && this.event() && !this.event()?.startedAt && this.hasInstances()
   );
 
   constructor() {

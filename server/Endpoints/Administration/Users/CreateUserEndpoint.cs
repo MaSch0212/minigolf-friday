@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MinigolfFriday.Data;
@@ -11,11 +12,18 @@ namespace MinigolfFriday.Endpoints.Administration.Users;
 /// <param name="Alias">The alias that is used to display the user in the UI.</param>
 /// <param name="Roles">The assigned roles to the user.</param>
 /// <param name="PlayerPreferences">Preferences regarding other players.</param>
-public record CreateUserRequest(string Alias, Role[] Roles, PlayerPreferences PlayerPreferences);
+public record CreateUserRequest(
+    [property: Required] string Alias,
+    [property: Required] Role[] Roles,
+    [property: Required] PlayerPreferences PlayerPreferences
+);
 
 /// <param name="User">The created user.</param>
 /// <param name="LoginToken">The token the user can use to login.</param>
-public record CreateUserResponse(User User, string LoginToken);
+public record CreateUserResponse(
+    [property: Required] User User,
+    [property: Required] string LoginToken
+);
 
 public class CreateUserRequestValidator : Validator<CreateUserRequest>
 {

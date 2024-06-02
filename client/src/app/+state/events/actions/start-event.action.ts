@@ -3,13 +3,8 @@ import { on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -27,7 +22,7 @@ export const startEventReducers: Reducers<EventsFeatureState> = [
       {
         id: props.eventId,
         map: produce(draft => {
-          draft.isStarted = true;
+          draft.startedAt = new Date();
         }),
       },
       state
@@ -37,11 +32,19 @@ export const startEventReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const startEventEffects: Effects = {
-  startEvent$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
+  startEvent$: createFunctionalEffect.dispatching((api = inject(EventAdministrationService)) =>
     onHttpAction(startEventAction, selectEventsActionState('start')).pipe(
-      switchMap(({ props }) =>
-        api.startEvent(props.eventId).pipe(mapToHttpAction(startEventAction, props))
-      )
+      switchMap(({ props }) => toHttpAction(startEvent(api, props), startEventAction, props))
     )
   ),
 };
+
+async function startEvent(
+  api: EventAdministrationService,
+  props: ReturnType<typeof startEventAction>['props']
+) {
+  const response = await api.startEvent({ eventId: props.eventId });
+  return response.ok
+    ? startEventAction.success(props, undefined)
+    : startEventAction.error(props, response);
+}

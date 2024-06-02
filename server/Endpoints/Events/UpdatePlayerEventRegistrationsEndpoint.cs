@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +13,8 @@ namespace MinigolfFriday.Endpoints.Events;
 /// <param name="EventId">The id of the event to change registration.</param>
 /// <param name="TimeslotRegistrations">The registrations to change to.</param>
 public record UpdatePlayerEventRegistrationsRequest(
-    string EventId,
-    EventTimeslotRegistration[] TimeslotRegistrations
+    [property: Required] string EventId,
+    [property: Required] EventTimeslotRegistration[] TimeslotRegistrations
 );
 
 public class UpdatePlayerEventRegistrationsRequestValidator

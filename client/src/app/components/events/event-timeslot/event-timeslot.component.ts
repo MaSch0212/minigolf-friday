@@ -14,7 +14,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
 import { map } from 'rxjs';
 
-import { isActionBusy, hasActionFailed, hasActionSucceeded } from '../../../+state/action-state';
+import { isActionBusy, hasActionFailed } from '../../../+state/action-state';
 import {
   addPlayerToEventPreconfigurationAction,
   loadEventAction,
@@ -28,13 +28,8 @@ import {
 import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
 import { loadMapsAction, mapSelectors } from '../../../+state/maps';
 import { loadUsersAction, selectUsersActionState, userSelectors } from '../../../+state/users';
-import { loadUsersByIdAction } from '../../../+state/users/actions/load-users-by-id.action';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
-import {
-  MinigolfEventInstancePreconfiguration,
-  MinigolfEventTimeslot,
-} from '../../../models/event';
-import { User } from '../../../models/user';
+import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy } from '../../../utils/common.utils';
 import { dateWithTime, timeToString } from '../../../utils/date.utils';
@@ -79,7 +74,6 @@ export class EventTimeslotComponent {
   );
   private readonly actionState = selectSignal(selectEventsActionState('loadOne'));
   private readonly loadUsersActionState = selectSignal(selectUsersActionState('load'));
-  private readonly loadUsersByIdActionState = selectSignal(selectUsersActionState('loadByIds'));
   private readonly addPreconfigActionState = selectSignal(selectEventsActionState('addPreconfig'));
   private readonly addPlayerToPreconfigActionState = selectSignal(
     selectEventsActionState('addPlayerToPreconfig')
@@ -87,14 +81,8 @@ export class EventTimeslotComponent {
 
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState(), [404]));
-  protected readonly isUsersBusy = computed(
-    () => isActionBusy(this.loadUsersActionState()) || isActionBusy(this.loadUsersByIdActionState())
-  );
-  protected readonly hasUsersFailed = computed(
-    () =>
-      hasActionFailed(this.loadUsersByIdActionState()) ||
-      hasActionFailed(this.loadUsersActionState())
-  );
+  protected readonly isUsersBusy = computed(() => isActionBusy(this.loadUsersActionState()));
+  protected readonly hasUsersFailed = computed(() => hasActionFailed(this.loadUsersActionState()));
   protected readonly isAddPreconfigBusy = computed(() =>
     isActionBusy(this.addPreconfigActionState())
   );
@@ -114,7 +102,7 @@ export class EventTimeslotComponent {
       timeslot =>
         timeslot.playerIds
           .map<Partial<User> & { id: string }>(x => this.allUsers()[x] ?? { id: x })
-          .sort((a, b) => (a?.name ?? '').localeCompare(b?.name ?? '')),
+          .sort((a, b) => (a?.alias ?? '').localeCompare(b?.alias ?? '')),
       []
     )
   );
@@ -136,16 +124,6 @@ export class EventTimeslotComponent {
     effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
       allowSignalWrites: true,
     });
-
-    effect(
-      () => {
-        const timeslot = this.timeslot();
-        if (timeslot && hasActionSucceeded(this.loadUsersActionState())) {
-          this.loadUsersFromTimeslot(timeslot);
-        }
-      },
-      { allowSignalWrites: true }
-    );
 
     errorToastEffect(
       this.translations.events_error_addPlayerToPreconfig,
@@ -176,12 +154,6 @@ export class EventTimeslotComponent {
     if (hasActionFailed(this.loadUsersActionState())) {
       this._store.dispatch(loadUsersAction({ reload: true }));
     }
-    if (hasActionFailed(this.loadUsersByIdActionState())) {
-      const timeslot = this.timeslot();
-      if (timeslot) {
-        this.loadUsersFromTimeslot(timeslot);
-      }
-    }
   }
 
   protected addPreconfig() {
@@ -193,7 +165,7 @@ export class EventTimeslotComponent {
     );
   }
 
-  protected removePreconfig(preconfig: MinigolfEventInstancePreconfiguration) {
+  protected removePreconfig(preconfig: EventInstancePreconfiguration) {
     this._confirmationService.confirm({
       header: this.translations.events_deletePreconfigDialog_title(),
       message: interpolate(this.translations.events_deletePreconfigDialog_text(), preconfig),
@@ -255,13 +227,5 @@ export class EventTimeslotComponent {
         );
       },
     });
-  }
-
-  private loadUsersFromTimeslot(timeslot: MinigolfEventTimeslot) {
-    const allUserIds = [
-      ...timeslot.playerIds,
-      ...timeslot.preconfigurations.flatMap(x => x.playerIds),
-    ];
-    this._store.dispatch(loadUsersByIdAction({ userIds: allUserIds }));
   }
 }

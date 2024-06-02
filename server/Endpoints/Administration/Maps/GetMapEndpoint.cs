@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,10 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Administration.Maps;
 
 /// <param name="MapId">The id of the map to retrieve.</param>
-public record GetMapRequest(string MapId);
+public record GetMapRequest([property: Required] string MapId);
 
 /// <param name="Map">The retrieved map.</param>
-public record GetMapResponse(MinigolfMap Map);
+public record GetMapResponse([property: Required] MinigolfMap Map);
 
 public class GetMapRequestValidator : Validator<GetMapRequest>
 {

@@ -23,9 +23,9 @@ import {
   selectEventsActionState,
   updateEventTimeslotAction,
 } from '../../../+state/events';
-import { loadMapsAction, mapSelectors, selectMapsLoadState } from '../../../+state/maps';
+import { loadMapsAction, mapSelectors } from '../../../+state/maps';
 import { ErrorTextDirective } from '../../../directives/error-text.directive';
-import { MinigolfEvent, MinigolfEventTimeslot } from '../../../models/event';
+import { Event, EventTimeslot } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 import {
   compareTimes,
@@ -57,8 +57,8 @@ export class EventTimeslotDialogComponent {
   private readonly _store = inject(Store);
   private readonly _formBuilder = inject(FormBuilder);
 
-  public readonly event = input.required<MinigolfEvent>();
-  public readonly timeslot = input<MinigolfEventTimeslot | null>(null);
+  public readonly event = input.required<Event>();
+  public readonly timeslot = input<EventTimeslot | null>(null);
 
   protected readonly translations = inject(TranslateService).translations;
   protected readonly hasTouchScreen = hasTouchScreen;
@@ -69,7 +69,6 @@ export class EventTimeslotDialogComponent {
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState()));
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly visible = signal(false);
-  protected readonly mapsLoadState = this._store.selectSignal(selectMapsLoadState);
   protected readonly maps = this._store.selectSignal(mapSelectors.selectAll);
 
   protected readonly form = this._formBuilder.group({
@@ -125,9 +124,7 @@ export class EventTimeslotDialogComponent {
   }
 
   public open() {
-    if (!this.mapsLoadState().loaded) {
-      this._store.dispatch(loadMapsAction({ reload: false }));
-    }
+    this._store.dispatch(loadMapsAction({ reload: false }));
 
     this.visible.set(true);
   }
@@ -163,7 +160,7 @@ export class EventTimeslotDialogComponent {
       this._store.dispatch(
         addEventTimeslotAction({
           eventId: event.id,
-          time: timeToString(getTimeFromDate(time), 'minutes'),
+          time: getTimeFromDate(time),
           mapId,
           isFallbackAllowed: !!isFallbackAllowed,
         })
@@ -173,7 +170,7 @@ export class EventTimeslotDialogComponent {
 
   private getTimeValidator(): ValidatorFn {
     return control => {
-      let event: MinigolfEvent;
+      let event: Event;
       try {
         event = this.event();
       } catch {

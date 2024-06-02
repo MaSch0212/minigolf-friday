@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
@@ -6,8 +7,8 @@ using MinigolfFriday.Models;
 
 namespace MinigolfFriday.Endpoints.Administration.Users;
 
-/// <param name="users">All users in the system.</param>
-public record GetUsersResponse(User[] users);
+/// <param name="Users">All users in the system.</param>
+public record GetUsersResponse([property: Required] User[] Users);
 
 /// <summary>Get all users.</summary>
 public class GetUsersEndpoint(DatabaseContext databaseContext, IUserMapper userMapper)

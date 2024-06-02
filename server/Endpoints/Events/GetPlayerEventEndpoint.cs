@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,10 @@ using MinigolfFriday.Services;
 namespace MinigolfFriday.Endpoints.Events;
 
 /// <param name="EventId">The id of the event to retrieve.</param>
-public record GetPlayerEventRequest(string EventId);
+public record GetPlayerEventRequest([property: Required] string EventId);
 
 /// <param name="Event">The retrieved event.</param>
-public record GetPlayerEventResponse(PlayerEvent Event);
+public record GetPlayerEventResponse([property: Required] PlayerEvent Event);
 
 public class GetPlayerEventRequestValidator : Validator<GetPlayerEventRequest>
 {

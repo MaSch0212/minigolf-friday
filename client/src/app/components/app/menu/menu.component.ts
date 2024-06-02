@@ -33,7 +33,7 @@ export class MenuComponent {
     )
   );
   protected isLoggedIn = this._authService.isAuthorized;
-  protected isAdmin = computed(() => this._authService.user()?.isAdmin === true);
+  protected isAdmin = computed(() => this._authService.user()?.roles.includes('admin') ?? false);
 
   protected menuItems = computed<MenuItem[]>(() => [
     {

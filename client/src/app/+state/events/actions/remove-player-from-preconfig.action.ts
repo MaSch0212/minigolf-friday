@@ -3,13 +3,8 @@ import { on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -44,16 +39,32 @@ export const removePlayerFromPreconfigReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const removePlayerFromPreconfigEffects: Effects = {
-  removePlayerFromPreconfig$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(
-      removePlayerFromPreconfigAction,
-      selectEventsActionState('removePlayerFromPreconfig')
-    ).pipe(
-      switchMap(({ props }) =>
-        api
-          .removePlayerFromPreconfig(props.preconfigId, props.playerId)
-          .pipe(mapToHttpAction(removePlayerFromPreconfigAction, props))
+  removePlayerFromPreconfig$: createFunctionalEffect.dispatching(
+    (api = inject(EventAdministrationService)) =>
+      onHttpAction(
+        removePlayerFromPreconfigAction,
+        selectEventsActionState('removePlayerFromPreconfig')
+      ).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(
+            removePlayerFromPreconfiguration(api, props),
+            removePlayerFromPreconfigAction,
+            props
+          )
+        )
       )
-    )
   ),
 };
+
+async function removePlayerFromPreconfiguration(
+  api: EventAdministrationService,
+  props: ReturnType<typeof removePlayerFromPreconfigAction>['props']
+) {
+  const response = await api.removePlayersFromPreconfiguration({
+    preconfigurationId: props.preconfigId,
+    body: { playerIds: [props.playerId] },
+  });
+  return response.ok
+    ? removePlayerFromPreconfigAction.success(props, undefined)
+    : removePlayerFromPreconfigAction.error(props, response);
+}

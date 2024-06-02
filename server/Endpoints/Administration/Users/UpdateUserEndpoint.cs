@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MaSch.Core.Extensions;
@@ -15,7 +16,7 @@ namespace MinigolfFriday.Endpoints.Administration.Users;
 /// <param name="RemoveRoles">Roles to remove from the user.</param>
 /// <param name="PlayerPreferences">Changes to the player preferences.</param>
 public record UpdateUserRequest(
-    string UserId,
+    [property: Required] string UserId,
     string? Alias,
     Role[]? AddRoles,
     Role[]? RemoveRoles,

@@ -13,7 +13,6 @@ import { DialogModule } from 'primeng/dialog';
 
 import { isActionBusy } from '../../../+state/action-state';
 import { addEventAction, selectEventsActionState } from '../../../+state/events';
-import { AddEventRequest } from '../../../models/api/event';
 import { TranslateService } from '../../../services/translate.service';
 import { EventFormComponent } from '../event-form/event-form.component';
 
@@ -57,7 +56,7 @@ export class CreateEventDialogComponent {
     this.visible.set(true);
   }
 
-  protected onSubmit(data: AddEventRequest) {
+  protected onSubmit(data: { date: Date; registrationDeadline: Date }) {
     this._store.dispatch(addEventAction(data));
   }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MinigolfFriday.Data;
@@ -9,10 +10,13 @@ namespace MinigolfFriday.Endpoints.Administration.Events;
 
 /// <param name="Date">The date of the event.</param>
 /// <param name="RegistrationDeadline">The time until a player can change registration to this event.</param>
-public record CreateEventRequest(DateOnly Date, DateTimeOffset RegistrationDeadline);
+public record CreateEventRequest(
+    [property: Required] DateOnly Date,
+    [property: Required] DateTimeOffset RegistrationDeadline
+);
 
 /// <param name="Event">The created event.</param>
-public record CreateEventResponse(Event Event);
+public record CreateEventResponse([property: Required] Event Event);
 
 public class CreateEventRequestValidator : Validator<CreateEventRequest>
 {

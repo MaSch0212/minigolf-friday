@@ -3,14 +3,10 @@ import { on } from '@ngrx/store';
 import { produce, castDraft } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { BuildInstancesResponse } from '../../../models/api/event';
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { EventInstance } from '../../../models/parsed-models';
+import { assertBody } from '../../../utils/http.utils';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -21,7 +17,7 @@ export const buildEventInstancesAction = createHttpAction<
   {
     eventId: string;
   },
-  BuildInstancesResponse
+  Record<string, EventInstance[]>
 >()(EVENTS_ACTION_SCOPE, 'Build Event Instances');
 
 export const buildEventInstancesReducers: Reducers<EventsFeatureState> = [
@@ -31,7 +27,7 @@ export const buildEventInstancesReducers: Reducers<EventsFeatureState> = [
         id: props.eventId,
         map: produce(draft => {
           for (const timeslot of draft.timeslots) {
-            timeslot.instances = castDraft(response.instances[timeslot.id] || []);
+            timeslot.instances = castDraft(response[timeslot.id] || []);
           }
         }),
       },
@@ -42,11 +38,25 @@ export const buildEventInstancesReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const buildEventInstancesEffects: Effects = {
-  buildEventInstances$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(buildEventInstancesAction, selectEventsActionState('buildInstances')).pipe(
-      switchMap(({ props }) =>
-        api.buildInstances(props.eventId).pipe(mapToHttpAction(buildEventInstancesAction, props))
+  buildEventInstances$: createFunctionalEffect.dispatching(
+    (api = inject(EventAdministrationService)) =>
+      onHttpAction(buildEventInstancesAction, selectEventsActionState('buildInstances')).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(buildEventInstances(api, props), buildEventInstancesAction, props)
+        )
       )
-    )
   ),
 };
+
+async function buildEventInstances(
+  api: EventAdministrationService,
+  props: ReturnType<typeof buildEventInstancesAction>['props']
+) {
+  const response = await api.buildEventInstances({ eventId: props.eventId });
+  return response.ok
+    ? buildEventInstancesAction.success(
+        props,
+        Object.fromEntries(assertBody(response).instances.map(x => [x.timeslotId, x.instances]))
+      )
+    : buildEventInstancesAction.error(props, response);
+}

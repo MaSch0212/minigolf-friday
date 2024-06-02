@@ -14,7 +14,7 @@ import {
   selectPlayerEventsActionState,
 } from '../../+state/player-events';
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
-import { MinigolfPlayerEvent } from '../../models/player-event';
+import { PlayerEvent } from '../../models/parsed-models';
 import { TranslateService } from '../../services/translate.service';
 import { areArraysEqual } from '../../utils/array.utils';
 import { selectSignal } from '../../utils/ngrx.utils';
@@ -58,7 +58,7 @@ export class PlayerEventsComponent {
     this._store.dispatch(loadPlayerEventsAction({ reload: false }));
   }
 
-  protected getRegisteredTimeslotsCount(event: MinigolfPlayerEvent) {
+  protected getRegisteredTimeslotsCount(event: PlayerEvent) {
     return event.timeslots.reduce(
       (count, timeslot) => (timeslot.isRegistered ? count + 1 : count),
       0

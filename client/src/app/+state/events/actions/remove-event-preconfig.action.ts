@@ -3,13 +3,8 @@ import { on } from '@ngrx/store';
 import { produce } from 'immer';
 import { switchMap } from 'rxjs';
 
-import { EventsService } from '../../../services/events.service';
-import {
-  createHttpAction,
-  handleHttpAction,
-  mapToHttpAction,
-  onHttpAction,
-} from '../../action-state';
+import { EventAdministrationService } from '../../../api/services';
+import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { EVENTS_ACTION_SCOPE } from '../consts';
@@ -43,13 +38,22 @@ export const removeEventPreconfigReducers: Reducers<EventsFeatureState> = [
 ];
 
 export const removeEventPreconfigEffects: Effects = {
-  removeEventPreconfig$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(removeEventPreconfigAction, selectEventsActionState('removePreconfig')).pipe(
-      switchMap(({ props }) =>
-        api
-          .removePreconfig(props.preconfigId)
-          .pipe(mapToHttpAction(removeEventPreconfigAction, props))
+  removeEventPreconfig$: createFunctionalEffect.dispatching(
+    (api = inject(EventAdministrationService)) =>
+      onHttpAction(removeEventPreconfigAction, selectEventsActionState('removePreconfig')).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(deletePreconfiguration(api, props), removeEventPreconfigAction, props)
+        )
       )
-    )
   ),
 };
+
+async function deletePreconfiguration(
+  api: EventAdministrationService,
+  props: ReturnType<typeof removeEventPreconfigAction>['props']
+) {
+  const response = await api.deletePreconfiguration({ preconfigurationId: props.preconfigId });
+  return response.ok
+    ? removeEventPreconfigAction.success(props, undefined)
+    : removeEventPreconfigAction.error(props, response);
+}
