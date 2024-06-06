@@ -194,7 +194,8 @@
     "why": "Warum?",
     "start": "Start",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "copyToClipboard": "In die Zwischenablage kopieren"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

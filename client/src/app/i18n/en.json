@@ -194,7 +194,8 @@
     "why": "Why?",
     "start": "Start",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "copyToClipboard": "Copy to clipboard"
   },
   "validation": {
     "required": "Cannot be blank.",

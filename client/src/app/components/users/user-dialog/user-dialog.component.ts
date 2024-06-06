@@ -11,6 +11,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import copyToClipboard from 'copy-to-clipboard';
 import { Draft } from 'immer';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -121,7 +122,12 @@ export class UserDialogComponent {
     const actions$ = inject(Actions);
     actions$
       .pipe(ofType(addUserAction.success, updateUserAction.success), takeUntilDestroyed())
-      .subscribe(() => this.close());
+      .subscribe(({ type, response }) => {
+        if (type === addUserAction.success.type) {
+          this.copyLoginToken(response.loginToken);
+        }
+        this.close();
+      });
 
     effect(
       () => {
@@ -190,10 +196,9 @@ export class UserDialogComponent {
     this.tokenVisible.set(true);
   }
 
-  protected async copyLoginToken() {
-    const token = this.loginToken();
+  protected async copyLoginToken(token: string | null | undefined) {
     if (token) {
-      navigator.clipboard.writeText(token);
+      copyToClipboard(token, { message: this.translations.shared_copyToClipboard() });
       this._messageService.add({
         severity: 'success',
         summary: this.translations.users_dialog_loginTokenCopied(),
