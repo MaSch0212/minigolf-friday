@@ -8,8 +8,8 @@ EXPOSE 80
 ENV BUILDTIME=$BUILDTIME
 ENV ASPNETCORE_URLS=http://+:80
 ENV ADMIN__LOGINTOKEN=admin
-ENV AUTHENTICATION__JWT__SECRET=<guid>
-ENV IDS__SEED=<guid>
+ENV AUTHENTICATION__JWT__SECRET=
+ENV IDS__SEED=
 
 COPY server/bin/Release/publish .
 COPY client/dist/minigolf-friday/browser ./wwwroot/
