@@ -1,5 +1,5 @@
 @if (isAdmin()) {
-  <p-menubar class="block" [model]="menuItems()">
+  <p-menubar class="block" [model]="menuItems()" [autoDisplay]="false">
     <ng-template pTemplate="end">
       <div class="flex flex-row flex-wrap items-end justify-end gap-x-8">
         @if (title()) {
@@ -43,7 +43,7 @@
             [pTooltip]="item.label"
             [rounded]="true"
             [text]="true"
-            styleClass="h-14 w-14 text-[1.5rem] p-4"
+            styleClass="h-14 w-14 p-4 text-[1.5rem]"
             (onClick)="menu.toggle($event)"
           />
           <p-menu #menu [model]="item.items" [popup]="true" />
@@ -55,7 +55,7 @@
         [pTooltip]="item.label"
         [rounded]="true"
         [text]="true"
-        styleClass="h-14 w-14 text-[1.5rem] p-4"
+        styleClass="h-14 w-14 p-4 text-[1.5rem]"
         [routerLink]="item.routerLink"
         (onClick)="item.command?.({ originalEvent: $event, item, index })"
       />
