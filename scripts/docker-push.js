@@ -1,5 +1,6 @@
 import { spawnSync } from "child_process";
 import { repository, imageName, repoRootDir, getVersionTag } from "./docker-vars.js";
+import { appendFileSync } from "fs";
 
 const tag = getVersionTag();
 spawnSync(
@@ -15,3 +16,5 @@ spawnSync("docker", ["push", `${repository}/${imageName}:latest`], {
   cwd: repoRootDir,
   stdio: "inherit",
 });
+
+appendFileSync(process.env.GITHUB_OUTPUT, `docker_tag=${tag}\n`);
