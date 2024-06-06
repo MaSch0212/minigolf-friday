@@ -59,4 +59,5 @@ jobs:
           slot-name: "production"
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_4d5a9096408d4948a5453808899f123a }}
           images: "masch0212/minigolf-friday:latest"
+          restart: true
         if: github.ref == 'refs/heads/main'
