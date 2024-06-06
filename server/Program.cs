@@ -17,10 +17,13 @@ ValidatorOptions.Global.LanguageManager = new ValidationLanguageManager();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAndBindOptions<JwtOptions>();
+builder.Services.AddAndBindOptions<JwtOptions>().ValidateOnStart();
 builder.Services.AddAndBindOptions<AdminOptions>();
-builder.Services.AddAndBindOptions<IdOptions>();
+builder.Services.AddAndBindOptions<IdOptions>().ValidateOnStart();
 builder.Services.AddAndBindOptions<LoggingOptions>();
+
+builder.Services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
+builder.Services.AddSingleton<IValidateOptions<IdOptions>, IdOptionsValidator>();
 
 var configureJsonSerializerOptions = new ConfigureJsonSerializerOptions();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
@@ -65,7 +68,7 @@ builder.Services.AddResponseCompression(options =>
 });
 builder.Services.AddSpaStaticFiles(options =>
 {
-    options.RootPath = "wwwroot/browser";
+    options.RootPath = "wwwroot";
 });
 
 var app = builder.Build();
