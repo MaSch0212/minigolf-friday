@@ -13,6 +13,7 @@ ENV IDS__SEED=
 
 COPY server/bin/Release/publish .
 COPY client/dist/minigolf-friday/browser ./wwwroot/
+RUN sed -i "s/\$VERSION/$BUILDTIME/g" wwwroot/index.html
 
 HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost/healthz || exit 1
 

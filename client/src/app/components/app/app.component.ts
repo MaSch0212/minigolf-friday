@@ -30,6 +30,7 @@ export class AppComponent {
   private readonly _router = inject(Router);
 
   protected isLoggedIn = this._authService.isAuthorized;
+  protected version = (window as any)['minigolfFridayVersion'];
 
   constructor() {
     const primengConfig = inject(PrimeNGConfig);

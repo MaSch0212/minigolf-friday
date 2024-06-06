@@ -2,8 +2,9 @@
   <app-menu />
 </header>
 
-<main class="min-h-0 grow px-4">
+<main class="relative min-h-0 grow px-4">
   <router-outlet />
+  <div class="pointer-events-none absolute bottom-2 right-2 text-xs opacity-25">{{ version }}</div>
 </main>
 
 <footer>
