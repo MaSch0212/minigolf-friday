@@ -6,6 +6,10 @@ import { ActionState, initialActionState } from '../action-state';
 export type UsersFeatureState = EntityState<User> & {
   actionStates: {
     load: ActionState;
+    add: ActionState;
+    update: ActionState;
+    remove: ActionState;
+    loadLoginToken: ActionState;
   };
 };
 
@@ -17,5 +21,9 @@ export const userEntityAdapter = createEntityAdapter<User>({
 export const initialUsersFeatureState: UsersFeatureState = userEntityAdapter.getInitialState({
   actionStates: {
     load: initialActionState,
+    add: initialActionState,
+    update: initialActionState,
+    remove: initialActionState,
+    loadLoginToken: initialActionState,
   },
 });

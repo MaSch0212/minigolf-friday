@@ -1,1 +1,188 @@
-<p>user-dialog works!</p>
+<p-dialog
+  [header]="
+    userToUpdate()
+      ? (translations.users_dialog_editHeader() | interpolate: userToUpdate())
+      : translations.users_dialog_addHeader()
+  "
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+>
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2" [formGroup]="form">
+    @if (hasFailed()) {
+      <p-messages class="-mt-4 sm:col-span-2" severity="error">
+        <ng-template pTemplate>
+          <span class="i-[mdi--close-circle-outline] mr-2"></span>
+          <span
+            >{{ translations.users_dialog_error_save() }}
+            {{ translations.shared_tryAgainLater() }}</span
+          >
+        </ng-template>
+      </p-messages>
+    }
+
+    <span class="p-float-label required sm:col-span-2">
+      <input pInputText [id]="id('alias')" type="text" formControlName="alias" autocomplete="off" />
+      <label [htmlFor]="id('alias')">{{ translations.users_dialog_alias() }}</label>
+    </span>
+
+    @if (userToUpdate()) {
+      <p-iconField class="p-float-label min-w-0 grow sm:col-span-2" [iconPosition]="'right'">
+        @if (isTokenLoading()) {
+          <p-inputIcon styleClass="i-[mdi--loading] animate-spin" />
+        } @else if (!tokenVisible()) {
+          <p-inputIcon
+            styleClass="i-[mdi--eye-outline] cursor-pointer"
+            (click)="loadLoginToken()"
+          ></p-inputIcon>
+        } @else {
+          <p-inputIcon
+            styleClass="i-[mdi--content-copy] cursor-pointer"
+            (click)="copyLoginToken(loginToken())"
+          ></p-inputIcon>
+        }
+        <input
+          pInputText
+          [id]="id('loginToken')"
+          [type]="tokenVisible() ? 'text' : 'password'"
+          [value]="loginToken() ?? 'abcdefghijklmnop'"
+          [readOnly]="true"
+          autocomplete="off"
+        />
+        <label [htmlFor]="id('loginToken')">{{ translations.users_dialog_loginToken() }}</label>
+      </p-iconField>
+    }
+
+    <div class="sm:col-span-2">
+      <h4 class="m-0 mb-2">{{ translations.users_dialog_roles_title() }}</h4>
+      <div class="flex flex-row flex-wrap gap-x-4 gap-y-2">
+        <p-checkbox
+          formControlName="isPlayer"
+          [binary]="true"
+          [label]="translations.users_dialog_roles_player()"
+        />
+        <p-checkbox
+          formControlName="isAdmin"
+          [binary]="true"
+          [label]="translations.users_dialog_roles_admin()"
+        />
+      </div>
+    </div>
+
+    <span class="flex flex-col gap-2">
+      <div class="flex flex-row items-center gap-1">
+        <label class="grow" [htmlFor]="id('avoid')"
+          >👎 {{ translations.users_dialog_avoid() }}</label
+        >
+        <p-button
+          icon="i-[mdi--plus]"
+          [rounded]="true"
+          [text]="true"
+          [disabled]="form.controls.preferences.controls.avoid.disabled"
+          size="small"
+          (onClick)="addAvoidPanel.show($event)"
+        />
+      </div>
+      @for (user of avoidUsers(); track user.id; let index = $index) {
+        <div
+          class="flex min-w-0 flex-row items-center border-0 border-solid border-surface-d py-2 pl-4 pr-2 leading-8 hover:bg-surface-c"
+          [class.border-b-[1px]]="index > 0"
+        >
+          <app-user-item [user]="user" class="min-w-0 grow" />
+          <p-button
+            icon="i-[mdi--delete-outline]"
+            [rounded]="true"
+            [text]="true"
+            [disabled]="form.controls.preferences.controls.avoid.disabled"
+            size="small"
+            severity="danger"
+            (onClick)="onRemoveAvoid(user)"
+          />
+        </div>
+      }
+    </span>
+
+    <span class="flex flex-col gap-1 sm:gap-2">
+      <div class="flex flex-row items-center gap-1">
+        <label class="grow" [htmlFor]="id('prefer')"
+          >👍 {{ translations.users_dialog_prefer() }}</label
+        >
+        <p-button
+          icon="i-[mdi--plus]"
+          [rounded]="true"
+          [text]="true"
+          [disabled]="form.controls.preferences.controls.prefer.disabled"
+          size="small"
+          (onClick)="addPreferPanel.show($event)"
+        />
+      </div>
+      @for (user of preferUsers(); track user.id; let index = $index) {
+        <div
+          class="flex min-w-0 flex-row items-center border-0 border-solid border-surface-d py-2 pl-4 pr-2 leading-8 hover:bg-surface-c"
+          [class.border-b-[1px]]="index > 0"
+        >
+          <app-user-item [user]="user" class="min-w-0 grow" />
+          <p-button
+            icon="i-[mdi--delete-outline]"
+            [rounded]="true"
+            [text]="true"
+            [disabled]="form.controls.preferences.controls.avoid.disabled"
+            size="small"
+            severity="danger"
+            (onClick)="onRemovePrefer(user)"
+          />
+        </div>
+      }
+    </span>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button
+      [disabled]="isLoading()"
+      [text]="true"
+      label="{{ translations.shared_cancel() }}"
+      (onClick)="close()"
+    />
+    <p-button
+      [disabled]="isLoading()"
+      label="{{ translations.shared_save() }}"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>
+
+<p-overlayPanel #addAvoidPanel styleClass="p-0">
+  <ng-template pTemplate="content">
+    <p-listbox
+      [autofocus]="true"
+      styleClass="border-none"
+      [options]="unassignedUsers()"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name,alias"
+      (onChange)="onAddAvoid($event.value); addAvoidPanel.hide()"
+    >
+      <ng-template let-user pTemplate="listItem">
+        <app-user-item [user]="user" />
+      </ng-template>
+    </p-listbox>
+  </ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel #addPreferPanel styleClass="p-0">
+  <ng-template pTemplate="content">
+    <p-listbox
+      [autofocus]="true"
+      styleClass="border-none"
+      [options]="unassignedUsers()"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name,alias"
+      (onChange)="onAddPrefer($event.value); addPreferPanel.hide()"
+    >
+      <ng-template let-user pTemplate="listItem">
+        <app-user-item [user]="user" />
+      </ng-template>
+    </p-listbox>
+  </ng-template>
+</p-overlayPanel>

@@ -1,1 +1,62 @@
-<p>users works!</p>
+@if (isLoading()) {
+  <p-progressSpinner class="m-8"></p-progressSpinner>
+} @else if (hasFailed()) {
+  <p-messages severity="error">
+    <ng-template pTemplate>
+      <span class="i-[mdi--close-circle-outline] mr-2"></span>
+      <span>{{ translations.users_error_load() }} {{ translations.shared_tryAgainLater() }}</span>
+    </ng-template>
+  </p-messages>
+} @else {
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
+    <div class="flex flex-row items-center gap-2">
+      <div class="min-w-0 grow">
+        <span class="p-input-icon-left">
+          <i class="i-[mdi--magnify]"></i>
+          <input
+            class="w-full max-w-[350px]"
+            type="text"
+            pInputText
+            autocomplete="off"
+            [ngModel]="filter()"
+            (ngModelChange)="filter.set($event)"
+          />
+        </span>
+      </div>
+      <p-button
+        icon="i-[mdi--plus]"
+        label="{{ translations.shared_add() }}"
+        (onClick)="dialog.open()"
+      />
+    </div>
+    <div class="grow overflow-auto">
+      <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
+        @for (user of users(); track user.id; let index = $index) {
+          <div
+            class="flex min-w-0 flex-row items-center gap-2 border-0 border-solid border-surface-d p-2 pl-4"
+            [class.border-t-[1px]]="index > 0"
+          >
+            <app-user-item [user]="user" class="min-w-0 grow" />
+            <p-button
+              icon="i-[mdi--pencil-outline]"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              (onClick)="dialog.open(user)"
+            />
+            <p-button
+              icon="i-[mdi--delete]"
+              [rounded]="true"
+              [text]="true"
+              size="small"
+              severity="danger"
+              (onClick)="deleteUser(user)"
+            />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<app-user-dialog #dialog />

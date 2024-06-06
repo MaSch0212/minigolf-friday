@@ -19,3 +19,9 @@ export function selectUsersActionState(action: keyof UsersFeatureState['actionSt
 export function selectUser(id: string) {
   return createDistinctSelector(selectUsersFeature, state => state.entities[id]);
 }
+
+export function selectUserLoginToken(id: string | null | undefined) {
+  return createDistinctSelector(selectUsersFeature, state =>
+    id ? state.entities[id]?.loginToken : undefined
+  );
+}

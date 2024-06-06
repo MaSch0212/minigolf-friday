@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-import { User } from '../../../models/user';
+import { User } from '../../../models/parsed-models';
 
 @Component({
   selector: 'app-user-item',
@@ -11,5 +11,4 @@ import { User } from '../../../models/user';
 })
 export class UserItemComponent {
   public user = input.required<User>();
-  public showLoginType = input(false);
 }

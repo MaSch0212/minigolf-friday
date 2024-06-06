@@ -108,7 +108,6 @@
     }
   },
   "maps": {
-    "loadError": "Failed to load maps.",
     "deleteDialog": {
       "title": "Delete map",
       "text": "Are you sure you want to delete map \"{{name}}\"?"
@@ -122,10 +121,33 @@
       }
     },
     "error": {
+      "load": "Failed to load maps.",
       "delete": "Failed to delete map."
     }
   },
   "users": {
+    "deleteDialog": {
+      "title": "Delete user",
+      "text": "Are you sure you want to delete user \"{{alias}}\"?"
+    },
+    "dialog": {
+      "addHeader": "Add user",
+      "editHeader": "Edit user \"{{alias}}\"",
+      "alias": "Alias",
+      "loginToken": "Password",
+      "loginTokenCopied": "Password copied",
+      "preferences": "Preferences",
+      "avoid": "Avoid players",
+      "prefer": "Prefer players",
+      "roles": {
+        "title": "Roles",
+        "player": "Player",
+        "admin": "Administrator"
+      },
+      "error": {
+        "save": "Failed to save user."
+      }
+    },
     "error": {
       "load": "Failed to load users."
     }
@@ -172,7 +194,8 @@
     "why": "Why?",
     "start": "Start",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "copyToClipboard": "Copy to clipboard"
   },
   "validation": {
     "required": "Cannot be blank.",

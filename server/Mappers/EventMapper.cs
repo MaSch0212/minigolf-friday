@@ -28,7 +28,7 @@ public class EventMapper(IIdService idService) : IEventMapper
             entity.IsFallbackAllowed,
             entity.Preconfigurations.Select(Map).ToArray(),
             entity
-                .Registrations.Select(x => idService.User.Encode(x.Player.Id))
+                .Registrations.Select(x => idService.User.Encode(x.PlayerId))
                 .Distinct()
                 .ToArray(),
             entity.Instances.Select(Map).ToArray()
