@@ -32,6 +32,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/manifest.json",
               "src/assets",
               {
                 "input": "node_modules/flag-icons/flags",
