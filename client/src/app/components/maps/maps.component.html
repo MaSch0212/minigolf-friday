@@ -8,7 +8,7 @@
     </ng-template>
   </p-messages>
 } @else {
-  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-1">
     <div class="flex flex-row items-center gap-2">
       <div class="min-w-0 grow">
         <span class="p-input-icon-left">
@@ -29,7 +29,7 @@
         (onClick)="dialog.open()"
       />
     </div>
-    <div class="grow overflow-auto">
+    <div class="grow overflow-auto pb-4 pt-3">
       <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
         @for (map of maps(); track map.id; let index = $index) {
           <div

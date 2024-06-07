@@ -11,7 +11,7 @@
     </ng-template>
   </p-messages>
 } @else {
-  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto">
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto pb-4">
     <h2 class="m-0">{{ translations.playerEvents_currentEvents() }}</h2>
     <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
       @for (event of currentEvents(); track event.id; let index = $index) {
@@ -42,7 +42,7 @@
       }
     </div>
 
-    <h2 class="m-0 pt-4">{{ translations.playerEvents_pastEvents() }}</h2>
+    <h2 class="m-0">{{ translations.playerEvents_pastEvents() }}</h2>
     <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
       @for (event of pastEvents(); track event.id; let index = $index) {
         <a

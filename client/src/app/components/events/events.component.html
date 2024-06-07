@@ -1,7 +1,7 @@
 @if (events().length === 0 && isBusy()) {
   <p-progressSpinner class="m-8" />
 } @else {
-  <div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-1">
     @if (hasFailed()) {
       <p-messages severity="error">
         <ng-template pTemplate>
@@ -27,7 +27,7 @@
       ></p-button>
     }
     @if (events().length > 0) {
-      <div class="flex grow flex-col overflow-auto">
+      <div class="flex grow flex-col overflow-auto pb-4 pt-3">
         <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
           @for (event of events(); track event.id; let index = $index) {
             <a
