@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Maps;
 public class GetMapTests
 {
     [TestMethod]
-    public async Task GetMap_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetMap_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
 
         var response = await sut.AppClient.GetMapAsync(map.Id);

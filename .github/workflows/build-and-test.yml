@@ -32,7 +32,7 @@ jobs:
 
       - name: Lint client
         run: pnpm lint
-        working-directory: ./client
+        working-directory: ./src/client
 
       - name: Build client
         run: pnpm client:build

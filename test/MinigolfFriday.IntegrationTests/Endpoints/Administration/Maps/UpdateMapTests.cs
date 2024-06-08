@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Maps;
 public class UpdateMapTests
 {
     [TestMethod]
-    public async Task UpdateMap_NoChanges_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateMap_NoChanges_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
 
         await sut.AppClient.UpdateMapAsync(map.Id, new());
@@ -15,9 +16,10 @@ public class UpdateMapTests
     }
 
     [TestMethod]
-    public async Task UpdateMap_Name_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateMap_Name_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
 
         await sut.AppClient.UpdateMapAsync(map.Id, new() { Name = "Renamed Map" });

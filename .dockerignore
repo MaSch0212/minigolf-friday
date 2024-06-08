@@ -1,3 +1,3 @@
 **/*
-!server/bin/**/*
-!client/dist/minigolf-friday/browser/**/*
+!src/server/host/bin/**/*
+!src/client/dist/minigolf-friday/browser/**/*

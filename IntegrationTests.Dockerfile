@@ -2,6 +2,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 
 ARG CONFIGURATION=Release
 
+# Install the ICU package
+RUN apk update \
+    && apk add --no-cache icu-libs
+
 WORKDIR /app
 EXPOSE 80
 
@@ -12,9 +16,9 @@ ENV AUTHENTICATION__JWT__EXPIRATION=365.00:00:00
 ENV IDS__SEED=inttest
 ENV ENABLE_DEV_ENDPOINTS=true
 
-COPY server/bin/$CONFIGURATION .
+COPY src/server/host/bin/$CONFIGURATION .
 RUN rm -rf ./data
 
 HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost/healthz || exit 1
 
-ENTRYPOINT ["dotnet", "MinigolfFriday.dll"]
+ENTRYPOINT ["dotnet", "MinigolfFriday.Host.dll"]

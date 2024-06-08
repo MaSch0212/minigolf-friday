@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Events;
 public class GetPlayerEventTests
 {
     [TestMethod]
-    public async Task GetPlayerEvent_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetPlayerEvent_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var user = await sut.User().BuildAsync();
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event()
@@ -38,9 +39,10 @@ public class GetPlayerEventTests
     }
 
     [TestMethod]
-    public async Task GetPlayerEvent_WithRegistration_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetPlayerEvent_WithRegistration_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var user = await sut.User().BuildAsync();
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event()

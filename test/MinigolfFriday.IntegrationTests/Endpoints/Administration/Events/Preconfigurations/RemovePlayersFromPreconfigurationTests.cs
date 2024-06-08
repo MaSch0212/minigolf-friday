@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events.Precon
 public class RemovePlayersFromPreconfigurationTests
 {
     [TestMethod]
-    public async Task RemovePlayersFromPreconfig_Single_Success()
+    [DatabaseProviderDataSource]
+    public async Task RemovePlayersFromPreconfig_Single_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var userIds = (await sut.User().BuildAsync(2)).Select(x => x.User.Id).ToArray();
         var @event = await sut.Event()
@@ -24,9 +25,10 @@ public class RemovePlayersFromPreconfigurationTests
     }
 
     [TestMethod]
-    public async Task RemovePlayersFromPreconfig_Multiple_Success()
+    [DatabaseProviderDataSource]
+    public async Task RemovePlayersFromPreconfig_Multiple_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var userIds = (await sut.User().BuildAsync(4)).Select(x => x.User.Id).ToArray();
         var @event = await sut.Event()
@@ -44,9 +46,10 @@ public class RemovePlayersFromPreconfigurationTests
     }
 
     [TestMethod]
-    public async Task RemovePlayersFromPreconfig_All_Success()
+    [DatabaseProviderDataSource]
+    public async Task RemovePlayersFromPreconfig_All_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var userIds = (await sut.User().BuildAsync(2)).Select(x => x.User.Id).ToArray();
         var @event = await sut.Event()

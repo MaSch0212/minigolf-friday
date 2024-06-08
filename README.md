@@ -20,17 +20,21 @@ docker run -d \
 
 ### Environment Variables
 
-| Variable                                  | Description                                       | Required | Default                  |
-| ----------------------------------------- | ------------------------------------------------- | -------- | ------------------------ |
-| `IDS__SEED`                               | The seed for the id obfuscation.                  | Yes      | -                        |
-| `AUTHENTICATION__JWT__SECRET`             | The secret for the JWT token.                     | Yes      | -                        |
-| `ADMIN__LOGINTOKEN`                       | The password for the admin user.                  | No       | `admin`                  |
-| `AUTHENTICATION__JWT__ISSUER`             | The issuer for the JWT token.                     | No       | `/api/auth/token`        |
-| `AUTHENTICATION__JWT__AUDIENCE`           | The audience for the JWT token.                   | No       | `MinigolfFridayAudience` |
-| `AUTHENTICATION__JWT__EXPIRATION`         | The expiration time for the JWT token.            | No       | `00:15:00`               |
-| `LOGGING__LOGLEVEL__DEFAULT`              | The default log level.                            | No       | `Information`            |
-| `LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE` | The log level for the ASP.NET Core specific logs. | No       | `Warning`                |
-| `LOGGING__ENABLEDBLOGGING`                | Enable database logging.                          | No       | `false`                  |
+| Variable                                  | Description                                                             | Required | Default                              |
+| ----------------------------------------- | ----------------------------------------------------------------------- | -------- | ------------------------------------ |
+| `IDS__SEED`                               | The seed for the id obfuscation.                                        | Yes      | -                                    |
+| `AUTHENTICATION__JWT__SECRET`             | The secret for the JWT token.                                           | Yes      | -                                    |
+| `ADMIN__LOGINTOKEN`                       | The password for the admin user.                                        | No       | `admin`                              |
+| `AUTHENTICATION__JWT__ISSUER`             | The issuer for the JWT token.                                           | No       | `/api/auth/token`                    |
+| `AUTHENTICATION__JWT__AUDIENCE`           | The audience for the JWT token.                                         | No       | `MinigolfFridayAudience`             |
+| `AUTHENTICATION__JWT__EXPIRATION`         | The expiration time for the JWT token.                                  | No       | `00:15:00`                           |
+| `LOGGING__LOGLEVEL__DEFAULT`              | The default log level.                                                  | No       | `Information`                        |
+| `LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE` | The log level for the ASP.NET Core specific logs.                       | No       | `Warning`                            |
+| `LOGGING__ENABLEDBLOGGING`                | Enable database logging.                                                | No       | `false`                              |
+| `DATABASE__PROVIDER`                      | The database provider. Possible values: `Sqlite`, `MsSql`, `PostgreSql` | No       | `Sqlite`                             |
+| `DATABASE__SQLITECONNECTIONSTRING`        | The connection string for the SQLite database.                          | No       | `Data Source=data/MinigolfFriday.db` |
+| `DATABASE__MSSQLCONNECTIONSTRING`         | The connection string for the MS SQL database.                          | No       | -                                    |
+| `DATABASE__POSTGRESQLCONNECTIONSTRING`    | The connection string for the PostgreSQL database.                      | No       | -                                    |
 
 ## Build
 

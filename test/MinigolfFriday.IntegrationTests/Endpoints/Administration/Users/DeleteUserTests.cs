@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Users;
 public class DeleteUserTests
 {
     [TestMethod]
-    public async Task DeleteUser_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeleteUser_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var (user, _) = await sut.User().BuildAsync();
 
         await sut.AppClient.DeleteUserAsync(user.Id);

@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events;
 public class DeleteEventTests
 {
     [TestMethod]
-    public async Task DeleteEvent_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeleteEvent_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var @event = await sut.Event().BuildAsync();
 
         await sut.AppClient.DeleteEventAsync(@event.Id);
@@ -16,9 +17,12 @@ public class DeleteEventTests
     }
 
     [TestMethod]
-    public async Task DeleteEvent_WithTimeslots_And_Preconfigs_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeleteEvent_WithTimeslots_And_Preconfigs_Success(
+        DatabaseProvider databaseProvider
+    )
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var users = await sut.User().BuildAsync(4);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event()

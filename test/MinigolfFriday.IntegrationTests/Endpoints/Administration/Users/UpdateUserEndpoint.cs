@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Users;
 public class UpdateUserEndpoint
 {
     [TestMethod]
-    public async Task UpdateUser_NoChanges_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateUser_NoChanges_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var (user, _) = await sut.User().BuildAsync();
 
         await sut.AppClient.UpdateUserAsync(user.Id, new());
@@ -15,9 +16,10 @@ public class UpdateUserEndpoint
     }
 
     [TestMethod]
-    public async Task UpdateUser_Alias_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateUser_Alias_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var (user, _) = await sut.User().BuildAsync();
 
         await sut.AppClient.UpdateUserAsync(user.Id, new() { Alias = "Renamed User" });
@@ -36,9 +38,10 @@ public class UpdateUserEndpoint
     }
 
     [TestMethod]
-    public async Task UpdateUser_Roles_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateUser_Roles_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var (user, _) = await sut.User().BuildAsync();
 
         await sut.AppClient.UpdateUserAsync(
@@ -60,9 +63,10 @@ public class UpdateUserEndpoint
     }
 
     [TestMethod]
-    public async Task UpdateUser_AvoidedPlayers_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateUser_AvoidedPlayers_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var users = await sut.User().BuildAsync(3);
         var (user, _) = await sut.User()
             .WithAvoidedPlayers(users[0].User.Id)
@@ -99,9 +103,10 @@ public class UpdateUserEndpoint
     }
 
     [TestMethod]
-    public async Task UpdateUser_PreferredPlayers_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateUser_PreferredPlayers_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var users = await sut.User().BuildAsync(3);
         var (user, _) = await sut.User()
             .WithAvoidedPlayers(users[0].User.Id)
@@ -138,9 +143,10 @@ public class UpdateUserEndpoint
     }
 
     [TestMethod]
-    public async Task UpdateUser_All_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateUser_All_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var users = await sut.User().BuildAsync(4);
         var (user, _) = await sut.User()
             .WithAvoidedPlayers(users[0].User.Id)

@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Users;
 public class GetUsersTests
 {
     [TestMethod]
-    public async Task GetUsers_Single_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetUsers_Single_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var (user, _) = await sut.User().BuildAsync();
 
         var response = await sut.AppClient.GetUsersAsync();
@@ -15,9 +16,10 @@ public class GetUsersTests
     }
 
     [TestMethod]
-    public async Task Getusers_Multiple_Success()
+    [DatabaseProviderDataSource]
+    public async Task Getusers_Multiple_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var users = await sut.User().BuildAsync(3);
         var userWithPrefs = await sut.User()
             .WithAvoidedPlayers(users[0].User.Id)
