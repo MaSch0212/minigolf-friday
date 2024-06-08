@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events.Timesl
 public class DeleteEventTimeslotTests
 {
     [TestMethod]
-    public async Task DeleteEventTimeslot_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeleteEventTimeslot_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event().WithTimeslot(map.Id).BuildAsync();
 
@@ -16,9 +17,12 @@ public class DeleteEventTimeslotTests
     }
 
     [TestMethod]
-    public async Task DeleteEventTimeslot_WithPlayersAndPreconfigs_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeleteEventTimeslot_WithPlayersAndPreconfigs_Success(
+        DatabaseProvider databaseProvider
+    )
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var user = await sut.User().BuildAsync();
         var @event = await sut.Event()

@@ -6,9 +6,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Auth;
 public class GetTokenTests
 {
     [TestMethod]
-    public async Task GetToken_Admin_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetToken_Admin_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync(getAdminToken: false);
+        await using var sut = await Sut.CreateAsync(databaseProvider, getAdminToken: false);
 
         var response = await sut.AppClient.GetTokenAsync(new() { LoginToken = "admin" });
 
@@ -19,9 +20,10 @@ public class GetTokenTests
     }
 
     [TestMethod]
-    public async Task GetToken_PlayerUser_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetToken_PlayerUser_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var user = await sut.User().WithRoles([Role.Player]).BuildAsync();
         sut.AppClient.Token = null;
 
@@ -36,9 +38,10 @@ public class GetTokenTests
     }
 
     [TestMethod]
-    public async Task GetToken_AdminUser_Success()
+    [DatabaseProviderDataSource]
+    public async Task GetToken_AdminUser_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var user = await sut.User().WithRoles([Role.Player, Role.Admin]).BuildAsync();
         sut.AppClient.Token = null;
 
@@ -57,9 +60,10 @@ public class GetTokenTests
     }
 
     [TestMethod]
-    public async Task GetToken_InvalidLoginToken_Unauthorized()
+    [DatabaseProviderDataSource]
+    public async Task GetToken_InvalidLoginToken_Unauthorized(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync(getAdminToken: false);
+        await using var sut = await Sut.CreateAsync(databaseProvider, getAdminToken: false);
 
         var getTokenCall = () => sut.AppClient.GetTokenAsync(new() { LoginToken = "abcdef" });
 

@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events;
 public class CreateEventTests
 {
     [TestMethod]
-    public async Task CreateEvent_Success()
+    [DatabaseProviderDataSource]
+    public async Task CreateEvent_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
 
         var request = new CreateEventRequest()
         {

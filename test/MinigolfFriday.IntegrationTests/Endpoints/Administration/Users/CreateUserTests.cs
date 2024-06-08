@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Users;
 public class CreateUserTests
 {
     [TestMethod]
-    public async Task CreateUser_Success()
+    [DatabaseProviderDataSource]
+    public async Task CreateUser_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
 
         var request = new CreateUserRequest() { Alias = "MyUser", Roles = [Role.Player] };
         var createResponse = await sut.AppClient.CreateUserAsync(request);
@@ -20,9 +21,10 @@ public class CreateUserTests
     }
 
     [TestMethod]
-    public async Task CreateUser_WithPreferences_Success()
+    [DatabaseProviderDataSource]
+    public async Task CreateUser_WithPreferences_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var users = await sut.User().BuildAsync(2);
 
         var request = new CreateUserRequest()
@@ -42,9 +44,10 @@ public class CreateUserTests
     }
 
     [TestMethod]
-    public async Task CreateUser_NoToken_Unauthorized()
+    [DatabaseProviderDataSource]
+    public async Task CreateUser_NoToken_Unauthorized(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         sut.AppClient.Token = null;
 
         var request = new CreateUserRequest() { Alias = "MyUser", Roles = [Role.Player] };
@@ -54,9 +57,10 @@ public class CreateUserTests
     }
 
     [TestMethod]
-    public async Task CreateUser_NoAdmin_Forbidden()
+    [DatabaseProviderDataSource]
+    public async Task CreateUser_NoAdmin_Forbidden(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var user = await sut.User().BuildAsync();
 
         var request = new CreateUserRequest() { Alias = "MyUser", Roles = [Role.Player] };

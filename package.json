@@ -4,14 +4,16 @@
   "type": "module",
   "packageManager": "pnpm@9.1.2",
   "scripts": {
-    "preinstall": "pnpm install -C client && dotnet restore",
+    "preinstall": "pnpm install -C src/client && dotnet restore",
     "build": "pnpm server:build && pnpm client:build && pnpm docker:build",
     "push": "pnpm docker:push",
-    "server:build": "dotnet publish server -c Release",
-    "client:build": "pnpm run -C client build",
-    "docker:build": "node scripts/docker-build.js",
-    "docker:build:inttest": "node scripts/docker-build-inttest.js",
-    "docker:push": "node scripts/docker-push.js",
+    "migrations:add": "node src/scripts/add-migration.js",
+    "migrations:remove": "node src/scripts/remove-migration.js",
+    "server:build": "dotnet publish src/server/host -c Release",
+    "client:build": "pnpm run -C src/client build",
+    "docker:build": "node src/scripts/docker-build.js",
+    "docker:build:inttest": "node src/scripts/docker-build-inttest.js",
+    "docker:push": "node src/scripts/docker-push.js",
     "test:integration": "dotnet test test/MinigolfFriday.IntegrationTests/MinigolfFriday.IntegrationTests.csproj"
   }
 }

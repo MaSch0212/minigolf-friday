@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events.Timesl
 public class UpdateEventTimeslotTests
 {
     [TestMethod]
-    public async Task UpdateEventTimeslot_MapId_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateEventTimeslot_MapId_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var maps = await sut.MinigolfMap().BuildAsync(2);
         var @event = await sut.Event().WithTimeslot(maps[0].Id).BuildAsync();
 
@@ -20,9 +21,12 @@ public class UpdateEventTimeslotTests
     }
 
     [TestMethod]
-    public async Task UpdateEventTimeslot_IsFallbackAllowed_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateEventTimeslot_IsFallbackAllowed_Success(
+        DatabaseProvider databaseProvider
+    )
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event().WithTimeslot(map.Id).BuildAsync();
 
@@ -36,9 +40,10 @@ public class UpdateEventTimeslotTests
     }
 
     [TestMethod]
-    public async Task UpdateEventTimeslot_All_Success()
+    [DatabaseProviderDataSource]
+    public async Task UpdateEventTimeslot_All_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var maps = await sut.MinigolfMap().BuildAsync(2);
         var @event = await sut.Event().WithTimeslot(maps[0].Id).BuildAsync();
 

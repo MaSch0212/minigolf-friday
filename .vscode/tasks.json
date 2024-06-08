@@ -1,21 +1,10 @@
 {
   "tasks": [
     {
-      "label": "✨ Setup",
-      "type": "shell",
-      "options": {
-        "cwd": "${workspaceFolder}/client"
-      },
-      "command": "pnpm run init",
-      "group": {
-        "kind": "build"
-      }
-    },
-    {
       "label": "🚀 Start Client",
       "type": "shell",
       "options": {
-        "cwd": "${workspaceFolder}/client"
+        "cwd": "${workspaceFolder}/src/client"
       },
       "command": "pnpm run start",
       "group": {
@@ -26,7 +15,7 @@
       "label": "🚀 Start Server (watch)",
       "type": "shell",
       "options": {
-        "cwd": "${workspaceFolder}/server"
+        "cwd": "${workspaceFolder}/src/server/host"
       },
       "command": "dotnet watch run",
       "group": {
@@ -44,7 +33,7 @@
       "label": "🚀 Start Client (Stubbed)",
       "type": "shell",
       "options": {
-        "cwd": "${workspaceFolder}/client"
+        "cwd": "${workspaceFolder}/src/client"
       },
       "command": "pnpm run start:stub",
       "group": {
@@ -55,7 +44,7 @@
       "label": "🐋 Build docker image",
       "type": "shell",
       "options": {
-        "cwd": "${workspaceFolder}/scripts"
+        "cwd": "${workspaceFolder}/src/scripts"
       },
       "command": "pnpm docker:build",
       "group": {
@@ -66,7 +55,7 @@
       "label": "🐋 Push docker image",
       "type": "shell",
       "options": {
-        "cwd": "${workspaceFolder}/scripts"
+        "cwd": "${workspaceFolder}/src/scripts"
       },
       "command": "pnpm docker:push",
       "group": {

@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events.Precon
 public class DeletePreconfigurationTests
 {
     [TestMethod]
-    public async Task DeletePreconfiguration_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeletePreconfiguration_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event()
             .WithTimeslot(map.Id, x => x.WithPreconfiguration())
@@ -21,9 +22,10 @@ public class DeletePreconfigurationTests
     }
 
     [TestMethod]
-    public async Task DeletePreconfiguration_WithPlayers_Success()
+    [DatabaseProviderDataSource]
+    public async Task DeletePreconfiguration_WithPlayers_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var users = await sut.User().BuildAsync(3);
         var @event = await sut.Event()

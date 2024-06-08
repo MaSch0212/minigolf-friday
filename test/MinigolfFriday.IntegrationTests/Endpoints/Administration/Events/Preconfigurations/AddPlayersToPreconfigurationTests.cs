@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events.Precon
 public class AddPlayersToPreconfigurationTests
 {
     [TestMethod]
-    public async Task AddPlayersToPreconfig_Single_Success()
+    [DatabaseProviderDataSource]
+    public async Task AddPlayersToPreconfig_Single_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event()
             .WithTimeslot(map.Id, x => x.WithPreconfiguration())
@@ -24,9 +25,10 @@ public class AddPlayersToPreconfigurationTests
     }
 
     [TestMethod]
-    public async Task AddPlayersToPreconfig_Multiple_Success()
+    [DatabaseProviderDataSource]
+    public async Task AddPlayersToPreconfig_Multiple_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event()
             .WithTimeslot(map.Id, x => x.WithPreconfiguration())

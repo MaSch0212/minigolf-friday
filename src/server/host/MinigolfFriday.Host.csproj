@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <UserSecretsId>d202c6ce-6225-4dd2-a10e-291bb0b1131a</UserSecretsId>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" />
+    <PackageReference Include="FastEndpoints.Generator">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FastEndpoints.Swagger" />
+    <PackageReference Include="FastEnum" />
+    <PackageReference Include="FluentResults" />
+    <PackageReference Include="FluentValidation.AspNetCore" />
+    <PackageReference Include="InterfaceGenerator">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MaSch.Core" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
+    <PackageReference Include="NSwag.MSBuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Sqids" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../domain/MinigolfFriday.Domain.csproj" />
+    <ProjectReference Include="../data/MinigolfFriday.Data.csproj" />
+    <ProjectReference Include="../migrations/mssql/MinigolfFriday.Migrations.MsSql.csproj" />
+    <ProjectReference Include="../migrations/postgresql/MinigolfFriday.Migrations.PostgreSql.csproj" />
+    <ProjectReference Include="../migrations/sqlite/MinigolfFriday.Migrations.Sqlite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="InterfaceGenerator" />
+    <Using Include="MinigolfFriday.Extensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
+  <Target Name="ExportOpenApi" AfterTargets="Build">
+    <Exec EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="dotnet run --no-build --OpenApiOutput openapi.yml" />
+  </Target>
+
+  <Target Name="BuildInttestApiClient" AfterTargets="Build" DependsOnTargets="ExportOpenApi">
+    <Exec Command="$(NSwagExe_Net80) openapi2csclient /input:openapi.yml /classname:MinigolfFridayClient /namespace:MinigolfFriday.IntegrationTests.Api /output:$(ProjectDir)../../../test/MinigolfFriday.IntegrationTests/Api/MinigolfFridayClient.cs" />
+  </Target>
+
+  <Target Name="BuildInttestDockerContainer" AfterTargets="Build">
+    <Exec Command="pnpm run docker:build:inttest -c $(Configuration)" WorkingDirectory="$(ProjectDir)../../.." />
+  </Target>
+
+</Project>

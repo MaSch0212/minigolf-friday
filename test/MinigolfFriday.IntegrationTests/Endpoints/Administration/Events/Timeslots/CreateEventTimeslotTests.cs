@@ -4,9 +4,10 @@ namespace MinigolfFriday.IntegrationTests.Endpoints.Administration.Events.Timesl
 public class CreateEventTimeslotTests
 {
     [TestMethod]
-    public async Task CreateEventTimeslot_Success()
+    [DatabaseProviderDataSource]
+    public async Task CreateEventTimeslot_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event().BuildAsync();
 
@@ -28,9 +29,10 @@ public class CreateEventTimeslotTests
     }
 
     [TestMethod]
-    public async Task CreateEventTimeslot_WithFallback_Success()
+    [DatabaseProviderDataSource]
+    public async Task CreateEventTimeslot_WithFallback_Success(DatabaseProvider databaseProvider)
     {
-        await using var sut = await Sut.CreateAsync();
+        await using var sut = await Sut.CreateAsync(databaseProvider);
         var map = await sut.MinigolfMap().BuildAsync();
         var @event = await sut.Event().BuildAsync();
 
