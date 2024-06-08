@@ -4,6 +4,7 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "p@ssw0rd"
+    hostname: mssql
     ports:
       - "1433:1433"
   postgres:
@@ -12,5 +13,6 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "postgres"
+    hostname: postgres
     ports:
       - "5432:5432"
