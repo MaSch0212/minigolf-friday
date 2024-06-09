@@ -22,7 +22,7 @@ export const updateEventRegistrationAction = createHttpAction<{
 }>()(PLAYER_EVENTS_ACTION_SCOPE, 'Update Event Registration');
 
 export const updateEventRegistrationReducers: Reducers<PlayerEventsFeatureState> = [
-  on(updateEventRegistrationAction, (state, { props }) =>
+  on(updateEventRegistrationAction.success, (state, { props }) =>
     playerEventEntityAdapter.mapOne(
       {
         id: props.eventId,

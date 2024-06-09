@@ -163,9 +163,9 @@
                       [ngModel]="null"
                       [disabled]="isAddPlayerToPreconfigBusy()"
                       [options]="preconfigPlayerOptions()"
-                      optionLabel="name"
+                      optionLabel="alias"
                       [filter]="true"
-                      filterBy="name"
+                      filterBy="alias"
                       [resetFilterOnHide]="true"
                       (onChange)="
                         addPlayerToPreconfig(preconfig.id, $event.value.id);

@@ -44,17 +44,6 @@
             </ng-template>
           </p-messages>
         }
-        @if (hasRegistrationFailed()) {
-          <p-messages severity="error">
-            <ng-template pTemplate>
-              <span class="i-[mdi--close-circle-outline] mr-2"></span>
-              <span
-                >{{ translations.playerEvents_error_registration() }}
-                {{ translations.shared_tryAgainLater() }}</span
-              >
-            </ng-template>
-          </p-messages>
-        }
 
         @if (canRegister() || !event.isStarted) {
           <h2 class="m-0 pt-4">{{ translations.playerEvents_registrations() }}</h2>
@@ -76,6 +65,7 @@
                       "
                       [ngModel]="timeslot.isRegistered"
                       (ngModelChange)="setTimeslotRegistration(timeslot, $event)"
+                      [resetNgModel]="resetNgModel"
                     />
                     <app-fading-message
                       class="pointer-events-none absolute top-1/2 -translate-x-[calc(100%+8px)] -translate-y-1/2 truncate rounded bg-green-900 px-4 py-2 text-green-200"
@@ -106,6 +96,7 @@
                       [disabled]="!canRegister() || isChanginRegistration()"
                       [ngModel]="timeslot.chosenFallbackTimeslotId"
                       (ngModelChange)="setFallbackTimeslot(timeslot, $event)"
+                      [resetNgModel]="resetNgModel"
                       [options]="timeslotsWithoutFallback()"
                       [optionValue]="'id'"
                       [placeholder]="translations.playerEvents_noFallbackTimeslot()"

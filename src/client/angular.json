@@ -60,7 +60,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
+                  "maximumWarning": "600kb",
                   "maximumError": "1mb"
                 },
                 {
@@ -77,17 +77,6 @@
                 }
               ]
             },
-            "stubbed": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/app/environments/environment.ts",
-                  "with": "src/app/environments/environment.stub.ts"
-                }
-              ]
-            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -101,9 +90,6 @@
           "configurations": {
             "production": {
               "buildTarget": "minigolf-friday:build:production"
-            },
-            "stubbed": {
-              "buildTarget": "minigolf-friday:build:stubbed"
             },
             "development": {
               "buildTarget": "minigolf-friday:build:development"

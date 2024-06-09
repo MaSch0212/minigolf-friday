@@ -1,5 +1,5 @@
 @if (!isAuthInitialized()) {
-  <p-progressSpinner class="m-8 self-center" />
+  <p-progressSpinner class="m-8 absolute-center" />
 } @else {
   <div class="grid h-full grid-rows-[1fr,auto,2fr] overflow-auto py-4">
     <p-card
@@ -29,7 +29,7 @@
           <div class="relative flex flex-row justify-end gap-2">
             @if (isLoggingIn()) {
               <p-progressSpinner
-                class="absolute-center-y left-0"
+                class="left-0 absolute-center-y"
                 styleClass="size-12"
                 strokeWidth="5px"
               />

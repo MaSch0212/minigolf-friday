@@ -157,9 +157,9 @@
       [autofocus]="true"
       styleClass="border-none"
       [options]="unassignedUsers()"
-      optionLabel="name"
+      optionLabel="alias"
       [filter]="true"
-      filterBy="name,alias"
+      filterBy="alias"
       (onChange)="onAddAvoid($event.value); addAvoidPanel.hide()"
     >
       <ng-template let-user pTemplate="listItem">
@@ -175,9 +175,9 @@
       [autofocus]="true"
       styleClass="border-none"
       [options]="unassignedUsers()"
-      optionLabel="name"
+      optionLabel="alias"
       [filter]="true"
-      filterBy="name,alias"
+      filterBy="alias"
       (onChange)="onAddPrefer($event.value); addPreferPanel.hide()"
     >
       <ng-template let-user pTemplate="listItem">

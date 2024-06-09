@@ -33,6 +33,7 @@ public class EventTimeslotRegistrationEntity
         builder
             .HasOne(x => x.FallbackEventTimeslot)
             .WithMany()
+            .OnDelete(DeleteBehavior.SetNull)
             .HasForeignKey(x => x.FallbackEventTimeslotId);
 
         builder.HasKey(x => x.Id);
