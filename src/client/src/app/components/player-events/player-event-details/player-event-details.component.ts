@@ -1,10 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { produce } from 'immer';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,12 +20,13 @@ import { MessagesModule } from 'primeng/messages';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { map, Subject, timer } from 'rxjs';
+import { filter, map, Subject, timer } from 'rxjs';
 
+import { FadingMessageComponent } from '../../+common/fading-message.component';
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import {
   loadPlayerEventAction,
-  registerForEventAction,
+  updateEventRegistrationAction,
   selectPlayerEvent,
   selectPlayerEventsActionState,
 } from '../../../+state/player-events';
@@ -27,9 +35,11 @@ import { ResetNgModelDirective } from '../../../directives/reset-ng-model.direct
 import { PlayerEventTimeslot } from '../../../models/parsed-models';
 import { AuthService } from '../../../services/auth.service';
 import { TranslateService } from '../../../services/translate.service';
+import { areArraysEqual } from '../../../utils/array.utils';
 import { ifTruthy } from '../../../utils/common.utils';
 import { compareTimes, getTimeDifference } from '../../../utils/date.utils';
 import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
+import { chainSignals } from '../../../utils/signal.utils';
 import { hasTouchScreen } from '../../../utils/user-agent.utils';
 
 // 1 1/2 hours
@@ -43,6 +53,7 @@ const gameDuration = 90 * 60 * 1000;
     ButtonModule,
     CardModule,
     DropdownModule,
+    FadingMessageComponent,
     FormsModule,
     ProgressSpinnerModule,
     OverlayPanelModule,
@@ -60,6 +71,7 @@ export class PlayerEventDetailsComponent {
   private readonly _store = inject(Store);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _translateService = inject(TranslateService);
+  private readonly _actions$ = inject(Actions);
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
@@ -69,11 +81,11 @@ export class PlayerEventDetailsComponent {
 
   private readonly eventId = toSignal(this._activatedRoute.params.pipe(map(data => data['id'])));
   private readonly actionState = selectSignal(selectPlayerEventsActionState('loadOne'));
-  private readonly registerActionState = selectSignal(selectPlayerEventsActionState('register'));
   private readonly now = toSignal(timer(1000).pipe(map(() => Date.now())), {
     initialValue: Date.now(),
   });
 
+  protected readonly registerActionState = selectSignal(selectPlayerEventsActionState('register'));
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState(), [404]));
   protected readonly isChanginRegistration = computed(() =>
@@ -83,6 +95,24 @@ export class PlayerEventDetailsComponent {
   protected readonly timeslots = computed(() =>
     [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
   );
+  protected readonly timeslotSaveStates = chainSignals(
+    computed(() => this.timeslots().map(x => x.id), { equal: areArraysEqual }),
+    id =>
+      computed(() =>
+        id().map(id =>
+          this._actions$.pipe(
+            ofType(
+              updateEventRegistrationAction.starting,
+              updateEventRegistrationAction.success,
+              updateEventRegistrationAction.error
+            ),
+            filter(x => x.props.timeslotId === id),
+            map(x => x.type === updateEventRegistrationAction.success.type)
+          )
+        )
+      )
+  );
+  protected readonly lastChangedTimeslotId = signal<string | null>(null);
   protected readonly games = computed(() =>
     this.timeslots()
       .filter(x => x.instance)
@@ -138,30 +168,20 @@ export class PlayerEventDetailsComponent {
 
   protected setTimeslotRegistration(timeslot: PlayerEventTimeslot, isRegistered: boolean) {
     this._store.dispatch(
-      registerForEventAction({
+      updateEventRegistrationAction({
         eventId: this.eventId(),
-        registrations: produce(this.currentRegistrations(), draft => {
-          const existing = draft.find(x => x.timeslotId === timeslot.id);
-          if (existing && !isRegistered) {
-            draft.splice(draft.indexOf(existing), 1);
-          } else if (!existing && isRegistered) {
-            draft.push({ timeslotId: timeslot.id });
-          }
-        }),
+        timeslotId: timeslot.id,
+        isRegistered,
       })
     );
   }
 
-  protected setFallbackTimeslot(timeslot: PlayerEventTimeslot, fallbackTimeslotId: string) {
+  protected setFallbackTimeslot(timeslot: PlayerEventTimeslot, fallbackTimeslotId: string | null) {
     this._store.dispatch(
-      registerForEventAction({
+      updateEventRegistrationAction({
         eventId: this.eventId(),
-        registrations: produce(this.currentRegistrations(), draft => {
-          const existing = draft.find(x => x.timeslotId === timeslot.id);
-          if (existing) {
-            existing.fallbackTimeslotId = fallbackTimeslotId;
-          }
-        }),
+        timeslotId: timeslot.id,
+        fallbackTimeslotId,
       })
     );
   }
