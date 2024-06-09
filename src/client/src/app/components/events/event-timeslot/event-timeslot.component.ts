@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService } from 'primeng/api';
@@ -118,6 +119,8 @@ export class EventTimeslotComponent {
   });
 
   constructor() {
+    const actions$ = inject(Actions);
+
     this._store.dispatch(loadMapsAction({ reload: false }));
     this._store.dispatch(loadUsersAction({ reload: false }));
 
@@ -142,6 +145,10 @@ export class EventTimeslotComponent {
 
     const removeTimeslotActionState = selectSignal(selectEventsActionState('removeTimeslot'));
     errorToastEffect(this.translations.events_error_deleteTimeslot, removeTimeslotActionState);
+
+    actions$
+      .pipe(takeUntilDestroyed(), ofType(removeEventTimeslotAction.success))
+      .subscribe(() => this.navigateBack());
   }
 
   protected navigateBack() {
