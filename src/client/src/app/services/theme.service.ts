@@ -43,10 +43,12 @@ export class ThemeService {
 
   constructor() {
     effect(() => {
-      const css = `${this.theme()}-theme.css`;
+      const theme = this.theme();
+      const css = `${theme}-theme.css`;
       if (!this._linkElement.href.endsWith(css)) {
         this._linkElement.href = css;
       }
+      document.body.classList.toggle('dark', theme === 'dark');
     });
   }
 

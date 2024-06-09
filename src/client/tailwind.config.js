@@ -5,6 +5,7 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
   content: ['./src/**/*.{html,ts}'],
   corePlugins: { preflight: false },
+  darkMode: 'selector',
   theme: {
     extend: {
       fontSize: {

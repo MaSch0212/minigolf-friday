@@ -33,6 +33,10 @@
       linkElement.type = 'text/css';
       document.head.appendChild(linkElement);
 
+      if (theme === 'dark') {
+        document.body.classList.add('dark');
+      }
+
       window.minigolfFridayVersion = '$VERSION';
     </script>
     <app-root></app-root>
