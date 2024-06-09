@@ -368,7 +368,8 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
 
                     b.HasOne("MinigolfFriday.Data.Entities.EventTimeslotEntity", "FallbackEventTimeslot")
                         .WithMany()
-                        .HasForeignKey("FallbackEventTimeslotId");
+                        .HasForeignKey("FallbackEventTimeslotId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("MinigolfFriday.Data.Entities.UserEntity", "Player")
                         .WithMany()
