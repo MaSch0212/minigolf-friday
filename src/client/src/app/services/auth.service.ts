@@ -77,8 +77,7 @@ export class AuthService implements OnDestroy {
     }
 
     const loginToken = getLoginToken();
-    if (loginToken) {
-      await this.signIn(loginToken);
+    if (loginToken && (await this.signIn(loginToken)) === 'success') {
       return;
     }
 
