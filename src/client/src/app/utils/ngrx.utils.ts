@@ -36,6 +36,7 @@ export function errorToastEffect(
         severity: 'error',
         summary: message(),
         detail: translations.shared_tryAgainLater(),
+        life: 7500,
       });
     }
   });

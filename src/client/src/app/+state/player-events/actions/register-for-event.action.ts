@@ -18,7 +18,7 @@ export const registerForEventAction = createHttpAction<{
 }>()(PLAYER_EVENTS_ACTION_SCOPE, 'Register For Event');
 
 export const registerForEventReducers: Reducers<PlayerEventsFeatureState> = [
-  on(registerForEventAction, (state, { props }) =>
+  on(registerForEventAction.success, (state, { props }) =>
     playerEventEntityAdapter.mapOne(
       {
         id: props.eventId,

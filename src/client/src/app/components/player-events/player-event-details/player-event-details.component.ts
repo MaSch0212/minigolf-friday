@@ -13,7 +13,7 @@ import { MessagesModule } from 'primeng/messages';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
-import { map, timer } from 'rxjs';
+import { map, Subject, timer } from 'rxjs';
 
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import {
@@ -23,12 +23,13 @@ import {
   selectPlayerEventsActionState,
 } from '../../../+state/player-events';
 import { ApiEventTimeslotRegistration } from '../../../api/models';
+import { ResetNgModelDirective } from '../../../directives/reset-ng-model.directive';
 import { PlayerEventTimeslot } from '../../../models/parsed-models';
 import { AuthService } from '../../../services/auth.service';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy } from '../../../utils/common.utils';
 import { compareTimes, getTimeDifference } from '../../../utils/date.utils';
-import { selectSignal } from '../../../utils/ngrx.utils';
+import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
 import { hasTouchScreen } from '../../../utils/user-agent.utils';
 
 // 1 1/2 hours
@@ -49,6 +50,7 @@ const gameDuration = 90 * 60 * 1000;
     TooltipModule,
     MessagesModule,
     InputSwitchModule,
+    ResetNgModelDirective,
   ],
   templateUrl: './player-event-details.component.html',
   styleUrl: './player-event-details.component.scss',
@@ -63,6 +65,7 @@ export class PlayerEventDetailsComponent {
   protected readonly locale = this._translateService.language;
   protected readonly hasTouchScreen = hasTouchScreen;
   protected readonly user = inject(AuthService).user;
+  protected readonly resetNgModel = new Subject<void>();
 
   private readonly eventId = toSignal(this._activatedRoute.params.pipe(map(data => data['id'])));
   private readonly actionState = selectSignal(selectPlayerEventsActionState('loadOne'));
@@ -75,9 +78,6 @@ export class PlayerEventDetailsComponent {
   protected readonly hasFailed = computed(() => hasActionFailed(this.actionState(), [404]));
   protected readonly isChanginRegistration = computed(() =>
     isActionBusy(this.registerActionState())
-  );
-  protected readonly hasRegistrationFailed = computed(() =>
-    hasActionFailed(this.registerActionState())
   );
   protected readonly event = selectSignal(computed(() => selectPlayerEvent(this.eventId())));
   protected readonly timeslots = computed(() =>
@@ -119,6 +119,20 @@ export class PlayerEventDetailsComponent {
         }
       },
       { allowSignalWrites: true }
+    );
+
+    effect(
+      () => {
+        if (hasActionFailed(this.registerActionState())) {
+          this.resetNgModel.next();
+        }
+      },
+      { allowSignalWrites: true }
+    );
+
+    errorToastEffect(
+      computed(() => this.translations.playerEvents_error_registration()),
+      this.registerActionState
     );
   }
 
