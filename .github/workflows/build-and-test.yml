@@ -51,13 +51,3 @@ jobs:
         id: push_docker
         run: pnpm docker:push
         if: github.ref == 'refs/heads/main'
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "Minigolffreitag"
-          slot-name: "production"
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_4d5a9096408d4948a5453808899f123a }}
-          images: "masch0212/minigolf-friday:${{ steps.push_docker.outputs.docker_tag }}"
-        if: github.ref == 'refs/heads/main'
