@@ -30,6 +30,17 @@
       }
     },
     {
+      "label": "🚀 Start Client (with Service Worker)",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/src/client"
+      },
+      "command": "pnpm run build && pnpm run start:sw",
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
       "label": "🚀 Start Client (Stubbed)",
       "type": "shell",
       "options": {

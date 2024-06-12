@@ -32,12 +32,11 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/manifest.json",
               "src/assets",
               {
-                "input": "node_modules/flag-icons/flags",
-                "glob": "**/(de|us).svg",
-                "output": "assets/flags"
+                "input": "public",
+                "glob": "**/*",
+                "output": "./"
               }
             ],
             "styles": [
@@ -75,7 +74,8 @@
                   "replace": "src/app/environments/environment.ts",
                   "with": "src/app/environments/environment.prod.ts"
                 }
-              ]
+              ],
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,

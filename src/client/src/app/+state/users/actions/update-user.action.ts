@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { concatLatestFrom } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { on, Store } from '@ngrx/store';
 import { filter, switchMap } from 'rxjs';
 
