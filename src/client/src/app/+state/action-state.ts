@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { ReducerTypes, Store, createAction, on } from '@ngrx/store';
-import { Action, Selector, TypedAction } from '@ngrx/store/src/models';
+import { Action, Selector } from '@ngrx/store/src/models';
 import { produce } from 'immer';
 import { catchError, filter, from, map, of, pipe, startWith, withLatestFrom } from 'rxjs';
 
@@ -51,13 +51,13 @@ export function creatorWithResponse<TProps, TResponse>(): _CreatorWithResponse<T
 }
 type _ActionCreator<TName extends string, TProps> = ((
   props: TProps
-) => { props: TProps } & TypedAction<TName>) &
-  TypedAction<TName>;
+) => { props: TProps } & Action<TName>) &
+  Action<TName>;
 type _ActionCreatorWithResponse<TName extends string, TProps, TResponse> = ((
   props: TProps,
   response: TResponse
-) => { props: TProps; response: TResponse } & TypedAction<TName>) &
-  TypedAction<TName>;
+) => { props: TProps; response: TResponse } & Action<TName>) &
+  Action<TName>;
 export type HttpActionCreator<
   TScope extends string,
   TName extends string,
@@ -68,6 +68,8 @@ export type HttpActionCreator<
   success: _ActionCreatorWithResponse<`[${TScope}] [Success] ${TName}`, TProps, TSuccess>;
   error: _ActionCreatorWithResponse<`[${TScope}] [Error] ${TName}`, TProps, unknown>;
 };
+
+type x = HttpActionCreator<'a', 'b', { a: string }, { b: number }>;
 
 export function createHttpAction<TProps extends object, TSuccess = unknown>() {
   return <TScope extends string, TName extends string>(scope: TScope, name: TName) => {

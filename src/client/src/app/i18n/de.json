@@ -196,7 +196,8 @@
     "yes": "Ja",
     "no": "Nein",
     "copyToClipboard": "In die Zwischenablage kopieren",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "update": "Aktualisieren"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

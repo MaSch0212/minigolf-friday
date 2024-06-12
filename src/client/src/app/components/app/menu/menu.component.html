@@ -1,25 +1,44 @@
 @if (isAdmin()) {
-  <p-menubar class="block" [model]="menuItems()" [autoDisplay]="false">
+  <p-menubar class="relative block" [model]="menuItems()" [autoDisplay]="false">
     <ng-template pTemplate="end">
-      <div class="flex flex-row flex-wrap items-end justify-end gap-x-8">
+      <div class="flex flex-row flex-wrap items-baseline justify-end gap-x-4">
         @if (title()) {
           <span class="font-semibold">{{ title() }}</span>
-          <span class="text-xs">{{ translations.title() }}</span>
+          <span class="ml-8 text-xs">{{ translations.title() }}</span>
         } @else {
           <span class="font-semibold">{{ translations.title() }}</span>
         }
       </div>
+      <ng-container *ngTemplateOutlet="updateButtonTemplate"></ng-container>
     </ng-template>
   </p-menubar>
 } @else {
-  <div class="flex flex-row gap-2">
+  <div class="relative flex flex-row gap-2">
     @for (item of menuItems(); track index; let index = $index) {
       <ng-container
         *ngTemplateOutlet="menuItemTemplate; context: { $implicit: item, index }"
       ></ng-container>
     }
+    <ng-container *ngTemplateOutlet="updateButtonTemplate"></ng-container>
   </div>
 }
+
+<ng-template #updateButtonTemplate>
+  @if (newVersionAvailable()) {
+    <div class="top-5 absolute-center">
+      <div [@flyInTopAnimation]>
+        <p-button
+          [icon]="'i-[mdi--cloud-download]'"
+          [label]="translations.shared_update()"
+          [severity]="'success'"
+          [size]="'large'"
+          [raised]="true"
+          (onClick)="updateApp()"
+        />
+      </div>
+    </div>
+  }
+</ng-template>
 
 <ng-template #menuItemTemplate let-item let-index="index">
   @if (item.visible !== false) {

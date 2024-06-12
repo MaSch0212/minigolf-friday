@@ -54,8 +54,8 @@ docker run -d \
 
 ### Run
 
-1. Run `dotnet watch run` in the `server` directory to start the server.
-2. Run `pnpm run start` in the `client` directory to start the client.
+1. Run `dotnet watch run` in the `src/server/host` directory to start the server.
+2. Run `pnpm run start` in the `src/client` directory to start the client.
 
 or
 
@@ -63,6 +63,20 @@ or
 
 Now you can visit [`https://localhost:5001`](https://localhost:5001) in your browser.
 The swagger UI is available at [`https://localhost:5001/swagger/index.html`](https://localhost:5001/swagger/index.html).
+
+#### With Service Worker
+
+If you want to test the service worker locally, follow these steps:
+
+1. Run `dotnet watch run` in the `src/server/host` directory to start the server.
+2. Run `pnpm run build` in the `src/client` directory to build the client.
+3. Run `pnpm run start:sw` in the `src/client` directory to start the client with the service worker.
+
+or
+
+1. Run the `🚀 Start Server (watch)` task in Visual Studio Code.
+2. Run the `🚀 Start Client (with Service Worker)` task in Visual Studio Code.
+   - If you change the client, you need to rerun this task.
 
 ### Build
 

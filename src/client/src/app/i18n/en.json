@@ -196,7 +196,8 @@
     "yes": "Yes",
     "no": "No",
     "copyToClipboard": "Copy to clipboard",
-    "saved": "Saved"
+    "saved": "Saved",
+    "update": "Update"
   },
   "validation": {
     "required": "Cannot be blank.",
