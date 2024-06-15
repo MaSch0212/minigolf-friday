@@ -9,10 +9,10 @@ public class EventTimeslotEntity
     public required TimeOnly Time { get; set; }
     public bool IsFallbackAllowed { get; set; }
     public long EventId { get; set; }
-    public long MapId { get; set; }
+    public long? MapId { get; set; }
 
     public EventEntity Event { get; set; } = null!;
-    public MinigolfMapEntity Map { get; set; } = null!;
+    public MinigolfMapEntity? Map { get; set; } = null;
 
     public List<EventInstancePreconfigurationEntity> Preconfigurations { get; set; } = [];
     public List<EventInstanceEntity> Instances { get; set; } = [];
@@ -25,7 +25,7 @@ public class EventTimeslotEntity
         builder.Property(x => x.Id).HasColumnName("id").IsRequired().ValueGeneratedOnAdd();
         builder.Property(x => x.Time).HasColumnName("time").IsRequired();
         builder.Property(x => x.EventId).HasColumnName("event_id").IsRequired();
-        builder.Property(x => x.MapId).HasColumnName("map_id").IsRequired();
+        builder.Property(x => x.MapId).HasColumnName("map_id");
         builder
             .Property(x => x.IsFallbackAllowed)
             .HasColumnName("is_fallback_allowed")

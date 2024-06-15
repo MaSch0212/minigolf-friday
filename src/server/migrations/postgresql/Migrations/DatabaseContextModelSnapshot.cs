@@ -109,7 +109,7 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_fallback_allowed");
 
-                    b.Property<long>("MapId")
+                    b.Property<long?>("MapId")
                         .HasColumnType("bigint")
                         .HasColumnName("map_id");
 
@@ -393,9 +393,7 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
 
                     b.HasOne("MinigolfFriday.Data.Entities.MinigolfMapEntity", "Map")
                         .WithMany("EventTimeslots")
-                        .HasForeignKey("MapId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MapId");
 
                     b.Navigation("Event");
 

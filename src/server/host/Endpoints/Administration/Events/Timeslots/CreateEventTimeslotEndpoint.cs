@@ -19,7 +19,7 @@ namespace MinigolfFriday.Host.Endpoints.Administration.Events.Timeslots;
 public record CreateEventTimeslotRequest(
     [property: Required] string EventId,
     [property: Required] TimeOnly Time,
-    [property: Required] string MapId,
+    string? MapId,
     [property: Required] bool IsFallbackAllowed
 );
 
@@ -32,7 +32,7 @@ public class CreateEventTimeslotRequestValidator : Validator<CreateEventTimeslot
     {
         RuleFor(x => x.EventId).NotEmpty().ValidSqid(idService.Event);
         RuleFor(x => x.Time).NotEmpty();
-        RuleFor(x => x.MapId).NotEmpty().ValidSqid(idService.Map);
+        When(x => x.MapId != null, () => RuleFor(x => x.MapId!).ValidSqid(idService.Map));
     }
 }
 
@@ -72,14 +72,19 @@ public class CreateEventTimeslotEndpoint(
             await this.SendErrorAsync(EndpointErrors.EventAlreadyStarted, req.EventId, ct);
             return;
         }
-
-        var mapId = idService.Map.DecodeSingle(req.MapId);
-        var mapExists = await databaseContext.Maps.AnyAsync(x => x.Id == mapId, ct);
-
-        if (!mapExists)
+        long? mapId = null;
+        if (req.MapId != null)
         {
-            Logger.LogWarning(EndpointErrors.MapNotFound, mapId);
-            ValidationFailures.Add(new ValidationFailure(nameof(req.MapId), "Map does not exist."));
+            mapId = idService.Map.DecodeSingle(req.MapId);
+            var mapExists = await databaseContext.Maps.AnyAsync(x => x.Id == mapId, ct);
+
+            if (!mapExists)
+            {
+                Logger.LogWarning(EndpointErrors.MapNotFound, mapId);
+                ValidationFailures.Add(
+                    new ValidationFailure(nameof(req.MapId), "Map does not exist.")
+                );
+            }
         }
 
         ThrowIfAnyErrors();
@@ -87,7 +92,7 @@ public class CreateEventTimeslotEndpoint(
         var timeslot = new EventTimeslotEntity
         {
             Time = req.Time,
-            Map = databaseContext.MapById(mapId),
+            Map = mapId != null ? databaseContext.MapById(mapId.Value) : null,
             Event = databaseContext.EventById(eventId),
             IsFallbackAllowed = req.IsFallbackAllowed,
         };

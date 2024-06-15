@@ -37,7 +37,8 @@ public class StartEventEndpoint(
             EndpointErrors.EventNotFound,
             EndpointErrors.EventRegistrationNotElapsed,
             EndpointErrors.EventHasNoInstances,
-            EndpointErrors.EventAlreadyStarted
+            EndpointErrors.EventAlreadyStarted,
+            EndpointErrors.EventMissingMapOnStart
         );
     }
 
@@ -50,7 +51,10 @@ public class StartEventEndpoint(
             {
                 x.RegistrationDeadline,
                 HasInstances = x.Timeslots.Any(t => t.Instances.Any()),
-                IsStarted = x.StartedAt != null
+                IsStarted = x.StartedAt != null,
+                HasMissingMap = x
+                    .Timeslots.Where(t => t.Instances.Count > 0)
+                    .Any(x => x.MapId == null)
             })
             .FirstOrDefaultAsync(ct);
 
@@ -88,6 +92,13 @@ public class StartEventEndpoint(
         {
             Logger.LogWarning(EndpointErrors.EventAlreadyStarted, eventId);
             await this.SendErrorAsync(EndpointErrors.EventAlreadyStarted, req.EventId, ct);
+            return;
+        }
+
+        if (info.HasMissingMap)
+        {
+            Logger.LogWarning(EndpointErrors.EventMissingMapOnStart, eventId);
+            await this.SendErrorAsync(EndpointErrors.EventMissingMapOnStart, req.EventId, ct);
             return;
         }
 

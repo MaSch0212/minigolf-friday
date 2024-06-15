@@ -2,25 +2,28 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinigolfFriday.Data;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MinigolfFriday.Migrations.MsSql.Migrations
+namespace MinigolfFriday.Migrations.PostgreSql.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240615205300_MapNotRequired")]
+    partial class MapNotRequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.EventEntity", b =>
                 {
@@ -29,18 +32,18 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date")
                         .HasColumnName("date");
 
                     b.Property<DateTimeOffset>("RegistrationDeadline")
-                        .HasColumnType("datetimeoffset")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("registration_deadline");
 
                     b.Property<DateTimeOffset?>("StartedAt")
-                        .HasColumnType("datetimeoffset")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("started_at");
 
                     b.HasKey("Id");
@@ -55,12 +58,12 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("GroupCode")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("group_code");
 
                     b.Property<long>("timeslot_id")
@@ -80,7 +83,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("event_timeslot_id")
                         .HasColumnType("bigint");
@@ -99,14 +102,14 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("EventId")
                         .HasColumnType("bigint")
                         .HasColumnName("event_id");
 
                     b.Property<bool>("IsFallbackAllowed")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("is_fallback_allowed");
 
                     b.Property<long?>("MapId")
@@ -114,7 +117,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnName("map_id");
 
                     b.Property<TimeOnly>("Time")
-                        .HasColumnType("time")
+                        .HasColumnType("time without time zone")
                         .HasColumnName("time");
 
                     b.HasKey("Id");
@@ -134,7 +137,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("EventTimeslotId")
                         .HasColumnType("bigint")
@@ -166,18 +169,18 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("name");
 
                     b.HasKey("Id");
@@ -188,13 +191,13 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.RoleEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
                     b.HasKey("Id");
@@ -221,23 +224,22 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Alias")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)")
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("alias");
 
                     b.Property<string>("LoginToken")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
+                        .HasColumnType("character varying(32)")
                         .HasColumnName("login_token");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LoginToken")
-                        .IsUnique()
-                        .HasFilter("[login_token] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("users", (string)null);
                 });
@@ -249,28 +251,28 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Auth")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("auth");
 
                     b.Property<string>("Endpoint")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)")
+                        .HasColumnType("character varying(2048)")
                         .HasColumnName("endpoint");
 
                     b.Property<string>("Lang")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("character varying(10)")
                         .HasColumnName("lang");
 
                     b.Property<string>("P256DH")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("p256dh");
 
                     b.Property<long>("UserId")
@@ -350,7 +352,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
             modelBuilder.Entity("users_to_roles", b =>
                 {
                     b.Property<int>("role_id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<long>("user_id")
                         .HasColumnType("bigint");
@@ -464,7 +466,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.HasOne("MinigolfFriday.Data.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -494,7 +496,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.HasOne("MinigolfFriday.Data.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

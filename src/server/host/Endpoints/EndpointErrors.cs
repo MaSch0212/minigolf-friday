@@ -17,6 +17,8 @@ public class EndpointErrors
         new(404, "An event with the id {0} does not exist.", "EventId");
     public static readonly EndpointError.Params1 EventAlreadyStarted =
         new(409, "The event with id {0} has already been started.", "EventId");
+    public static readonly EndpointError.Params1 EventMissingMapOnStart =
+        new(409, "The event with id {0} has timeslots with players and no map.", "EventId");
     public static readonly EndpointError.Params2 EventRegistrationNotElapsed =
         new(
             409,

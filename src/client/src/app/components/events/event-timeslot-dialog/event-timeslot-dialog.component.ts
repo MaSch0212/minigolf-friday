@@ -76,7 +76,7 @@ export class EventTimeslotDialogComponent {
       Validators.required,
       this.getTimeValidator(),
     ]),
-    mapId: this._formBuilder.control<string | null>(null, [Validators.required]),
+    mapId: this._formBuilder.control<string | null>(null),
     isFallbackAllowed: this._formBuilder.control<boolean>(false, { nonNullable: true }),
   });
 
@@ -104,7 +104,7 @@ export class EventTimeslotDialogComponent {
           untracked(() =>
             this.form.setValue({
               time: dateWithTime(new Date(), timeslot.time),
-              mapId: timeslot.mapId,
+              mapId: timeslot.mapId ?? null,
               isFallbackAllowed: timeslot.isFallbackAllowed,
             })
           );
@@ -144,24 +144,23 @@ export class EventTimeslotDialogComponent {
     const timeslot = this.timeslot();
 
     if (timeslot) {
-      if (!mapId) return;
       this._store.dispatch(
         updateEventTimeslotAction({
           eventId: event.id,
           timeslotId: timeslot.id,
           changes: {
-            mapId,
+            mapId: mapId ?? null,
             isFallbackAllowed: !!isFallbackAllowed,
           },
         })
       );
     } else {
-      if (!time || !mapId) return;
+      if (!time) return;
       this._store.dispatch(
         addEventTimeslotAction({
           eventId: event.id,
           time: getTimeFromDate(time),
-          mapId,
+          mapId: mapId ?? null,
           isFallbackAllowed: !!isFallbackAllowed,
         })
       );
