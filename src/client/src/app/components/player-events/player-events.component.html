@@ -1,3 +1,7 @@
+@if (user(); as user) {
+  <h1>{{ translations.playerEvents_greetings() | interpolate: { name: user.alias } }}</h1>
+}
+
 @if (!hasEvents() && isLoading()) {
   <p-progressSpinner class="m-8" />
 } @else if (hasLoadFailed()) {

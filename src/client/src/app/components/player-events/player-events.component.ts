@@ -15,6 +15,7 @@ import {
 } from '../../+state/player-events';
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
 import { PlayerEvent } from '../../models/parsed-models';
+import { AuthService } from '../../services/auth.service';
 import { TranslateService } from '../../services/translate.service';
 import { areArraysEqual } from '../../utils/array.utils';
 import { selectSignal } from '../../utils/ngrx.utils';
@@ -35,6 +36,7 @@ export class PlayerEventsComponent {
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
+  protected readonly user = inject(AuthService).user;
 
   private readonly events = selectSignal(playerEventSelectors.selectAll);
   private readonly now = toSignal(timer(60000).pipe(map(() => Date.now())), {

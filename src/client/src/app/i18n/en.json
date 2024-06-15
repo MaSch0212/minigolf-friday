@@ -155,6 +155,7 @@
     }
   },
   "playerEvents": {
+    "greetings": "Hello {{name}}!",
     "notFound": "This event does not exist.",
     "currentEvents": "Current events",
     "pastEvents": "Past events",
