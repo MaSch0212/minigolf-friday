@@ -5,6 +5,7 @@ namespace MinigolfFriday.Domain.Models.Push;
 public interface IPushNotificationData
 {
     string Type { get; }
+    Dictionary<string, PushNotificationOnActionClick> OnActionClick { get; }
 
     string GetTitle(string lang);
     string GetBody(string lang);
@@ -18,6 +19,9 @@ public static class PushNotificationData
     public record EventPublished(string EventId, DateOnly Date) : IPushNotificationData
     {
         public string Type => "event-published";
+
+        public Dictionary<string, PushNotificationOnActionClick> OnActionClick =>
+            new() { { "default", new($"/events/{EventId}") } };
 
         public string GetTitle(string lang) =>
             NormalizeLang(lang) switch
@@ -42,6 +46,9 @@ public static class PushNotificationData
     {
         public string Type => "event-started";
 
+        public Dictionary<string, PushNotificationOnActionClick> OnActionClick =>
+            new() { { "default", new($"/events/{EventId}") } };
+
         public string GetTitle(string lang) =>
             NormalizeLang(lang) switch
             {
@@ -60,6 +67,9 @@ public static class PushNotificationData
     public record EventInstanceUpdated(string EventId) : IPushNotificationData
     {
         public string Type => "event-instance-updated";
+
+        public Dictionary<string, PushNotificationOnActionClick> OnActionClick =>
+            new() { { "default", new($"/events/{EventId}") } };
 
         public string GetTitle(string lang) =>
             NormalizeLang(lang) switch
@@ -85,6 +95,9 @@ public static class PushNotificationData
     ) : IPushNotificationData
     {
         public string Type => "event-timeslot-starting";
+
+        public Dictionary<string, PushNotificationOnActionClick> OnActionClick =>
+            new() { { "default", new($"/events/{EventId}") } };
 
         public string GetTitle(string lang) =>
             NormalizeLang(lang) switch
