@@ -45,5 +45,6 @@ public record PlayerEventTimeslot(
 public record PlayerEventInstance(
     [property: Required] string Id,
     [property: Required] string GroupCode,
-    [property: Required] MinigolfMap Map
+    [property: Required] MinigolfMap Map,
+    [property: Required] int PlayerAmount
 );
