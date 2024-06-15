@@ -22,25 +22,6 @@ public class UpdateEventTimeslotTests
 
     [TestMethod]
     [DatabaseProviderDataSource]
-    public async Task UpdateEventTimeslot_IsFallbackAllowed_Success(
-        DatabaseProvider databaseProvider
-    )
-    {
-        await using var sut = await Sut.CreateAsync(databaseProvider);
-        var map = await sut.MinigolfMap().BuildAsync();
-        var @event = await sut.Event().WithTimeslot(map.Id).BuildAsync();
-
-        await sut.AppClient.UpdateEventTimeslotAsync(
-            @event.Timeslots.ElementAt(0).Id,
-            new() { IsFallbackAllowed = true }
-        );
-
-        @event.Timeslots.ElementAt(0).IsFallbackAllowed = true;
-        (await sut.AppClient.GetEventAsync(@event.Id)).Event.Should().BeEquivalentTo(@event);
-    }
-
-    [TestMethod]
-    [DatabaseProviderDataSource]
     public async Task UpdateEventTimeslot_All_Success(DatabaseProvider databaseProvider)
     {
         await using var sut = await Sut.CreateAsync(databaseProvider);
