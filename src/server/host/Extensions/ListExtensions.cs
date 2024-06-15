@@ -1,4 +1,4 @@
-namespace MinigolfFriday.Extensions;
+namespace MinigolfFriday.Host.Extensions;
 
 public static class ListExtensions
 {

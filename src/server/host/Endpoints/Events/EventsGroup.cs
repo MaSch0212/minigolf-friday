@@ -1,7 +1,7 @@
 using FastEndpoints;
 using MinigolfFriday.Domain.Models;
 
-namespace MinigolfFriday.Endpoints.Events;
+namespace MinigolfFriday.Host.Endpoints.Events;
 
 public class EventsGroup : Group
 {

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Mappers;
+using MinigolfFriday.Host.Mappers;
 
-namespace MinigolfFriday.Endpoints.Administration.Events;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events;
 
 /// <param name="Amount">The maximum number of events to return.</param>
 /// <param name="Continuation">The continuation token from the last API call.</param>

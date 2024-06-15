@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Options;
 
-namespace MinigolfFriday.Services;
+namespace MinigolfFriday.Host.Services;
 
 [GenerateAutoInterface]
 public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions, IIdService idService) : IJwtService

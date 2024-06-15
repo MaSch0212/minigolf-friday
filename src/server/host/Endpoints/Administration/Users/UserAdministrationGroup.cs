@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace MinigolfFriday.Endpoints.Administration.Users;
+namespace MinigolfFriday.Host.Endpoints.Administration.Users;
 
 public class UserAdministrationGroup : Group
 {

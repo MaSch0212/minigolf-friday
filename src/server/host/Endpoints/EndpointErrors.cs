@@ -1,6 +1,6 @@
-using MinigolfFriday.Common;
+using MinigolfFriday.Host.Common;
 
-namespace MinigolfFriday.Endpoints;
+namespace MinigolfFriday.Host.Endpoints;
 
 public class EndpointErrors
 {

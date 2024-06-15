@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace MinigolfFriday.Endpoints.Administration.Maps;
+namespace MinigolfFriday.Host.Endpoints.Administration.Maps;
 
 public class MapAdministrationGroup : Group
 {

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Primitives;
 
-namespace MinigolfFriday.Middlewares;
+namespace MinigolfFriday.Host.Middlewares;
 
 public static class PathBaseMiddleware
 {

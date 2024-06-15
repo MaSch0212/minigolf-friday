@@ -2,7 +2,7 @@ using System.Numerics;
 using FluentValidation;
 using Sqids;
 
-namespace MinigolfFriday.Extensions;
+namespace MinigolfFriday.Host.Extensions;
 
 public static class SqidsExtensions
 {

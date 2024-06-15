@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Mappers;
+namespace MinigolfFriday.Host.Mappers;
 
 [GenerateAutoInterface]
 public class MinigolfMapMapper(IIdService idService) : IMinigolfMapMapper

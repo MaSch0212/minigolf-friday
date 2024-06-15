@@ -2,7 +2,7 @@ using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 
-namespace MinigolfFriday.Endpoints.Administration.Dev;
+namespace MinigolfFriday.Host.Endpoints.Administration.Dev;
 
 /// <summary>Reset the database.</summary>
 public class ResetDatabaseEndpoint(DatabaseContext databaseContext) : EndpointWithoutRequest

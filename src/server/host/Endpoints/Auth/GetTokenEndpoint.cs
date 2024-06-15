@@ -6,9 +6,9 @@ using Microsoft.Extensions.Options;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Options;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Auth;
+namespace MinigolfFriday.Host.Endpoints.Auth;
 
 /// <param name="LoginToken">The login token of a specific user.</param>
 public record GetTokenRequest([property: Required] string LoginToken);

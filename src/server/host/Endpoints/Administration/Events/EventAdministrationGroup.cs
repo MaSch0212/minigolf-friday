@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace MinigolfFriday.Endpoints.Administration.Events;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events;
 
 public class EventAdministrationGroup : Group
 {

@@ -3,14 +3,14 @@ using FastEndpoints;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Mappers;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Mappers;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Events.Timeslots;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events.Timeslots;
 
 /// <param name="EventId">The id of the event to add the timeslot to.</param>
 /// <param name="Time">The time at which the timeslot starts.</param>

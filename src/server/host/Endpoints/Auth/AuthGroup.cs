@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace MinigolfFriday.Endpoints.Auth;
+namespace MinigolfFriday.Host.Endpoints.Auth;
 
 public class AuthGroup : Group
 {

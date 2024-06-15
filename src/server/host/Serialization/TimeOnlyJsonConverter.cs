@@ -1,8 +1,7 @@
-using System.Formats.Asn1;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace MinigolfFriday.Serialization;
+namespace MinigolfFriday.Host.Serialization;
 
 public class TimeOnlyJsonConverter : JsonConverter<TimeOnly>
 {

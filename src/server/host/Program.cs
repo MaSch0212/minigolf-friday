@@ -4,14 +4,13 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Extensions;
 using MinigolfFriday.Domain.Options;
-using MinigolfFriday.Mappers;
-using MinigolfFriday.Middlewares;
-using MinigolfFriday.Options;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Mappers;
+using MinigolfFriday.Host.Middlewares;
+using MinigolfFriday.Host.Options;
+using MinigolfFriday.Host.Services;
 using NSwag;
 using NSwag.Generation.AspNetCore;
 

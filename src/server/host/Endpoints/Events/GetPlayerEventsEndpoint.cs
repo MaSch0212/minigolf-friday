@@ -2,14 +2,14 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Mappers;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Mappers;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Events;
+namespace MinigolfFriday.Host.Endpoints.Events;
 
 /// <param name="Amount">The maximum number of events to return.</param>
 /// <param name="Continuation">The continuation token from the last API call.</param>

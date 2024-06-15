@@ -2,9 +2,9 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Mappers;
+namespace MinigolfFriday.Host.Mappers;
 
 [GenerateAutoInterface]
 public class UserMapper(IIdService idService) : IUserMapper

@@ -2,13 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Events;
+namespace MinigolfFriday.Host.Endpoints.Events;
 
 /// <param name="EventId">The id of the event to change registration.</param>
 /// <param name="TimeslotRegistrations">The registrations to change to.</param>

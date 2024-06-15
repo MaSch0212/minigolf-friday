@@ -4,10 +4,10 @@ using FluentValidation;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
-using MinigolfFriday.Utilities;
+using MinigolfFriday.Host.Services;
+using MinigolfFriday.Host.Utilities;
 
-namespace MinigolfFriday.Endpoints.Administration.Users;
+namespace MinigolfFriday.Host.Endpoints.Administration.Users;
 
 /// <param name="Alias">The alias that is used to display the user in the UI.</param>
 /// <param name="Roles">The assigned roles to the user.</param>

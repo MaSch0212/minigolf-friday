@@ -4,9 +4,9 @@ using FluentValidation;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Mappers;
+using MinigolfFriday.Host.Mappers;
 
-namespace MinigolfFriday.Endpoints.Administration.Events;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events;
 
 /// <param name="Date">The date of the event.</param>
 /// <param name="RegistrationDeadline">The time until a player can change registration to this event.</param>

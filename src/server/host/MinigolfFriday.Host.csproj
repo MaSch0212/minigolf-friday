@@ -50,7 +50,7 @@
 
   <ItemGroup>
     <Using Include="InterfaceGenerator" />
-    <Using Include="MinigolfFriday.Extensions" />
+    <Using Include="MinigolfFriday.Host.Extensions" />
   </ItemGroup>
 
   <ItemGroup>

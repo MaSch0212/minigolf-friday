@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
-using MinigolfFriday.Serialization;
+using MinigolfFriday.Host.Serialization;
 
-namespace MinigolfFriday.Options;
+namespace MinigolfFriday.Host.Options;
 
 public class ConfigureJsonSerializerOptions : IConfigureOptions<JsonSerializerOptions>
 {

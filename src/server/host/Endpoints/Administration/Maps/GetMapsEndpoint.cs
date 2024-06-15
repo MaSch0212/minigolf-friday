@@ -3,9 +3,9 @@ using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Mappers;
+using MinigolfFriday.Host.Mappers;
 
-namespace MinigolfFriday.Endpoints.Administration.Maps;
+namespace MinigolfFriday.Host.Endpoints.Administration.Maps;
 
 /// <param name="Maps">All the maps in the system.</param>
 public record GetMapsResponse([property: Required] MinigolfMap[] Maps);

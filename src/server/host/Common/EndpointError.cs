@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using FastEndpoints;
 
-namespace MinigolfFriday.Common;
+namespace MinigolfFriday.Host.Common;
 
 public abstract class BaseEndpointError(int statusCode, string message)
 {
