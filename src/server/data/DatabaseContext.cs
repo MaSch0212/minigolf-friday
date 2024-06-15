@@ -16,6 +16,7 @@ public class DatabaseContext(
 {
     public DbSet<MinigolfMapEntity> Maps { get; set; }
     public DbSet<UserEntity> Users { get; set; }
+    public DbSet<UserPushSubscriptionEntity> UserPushSubscriptions { get; set; }
     public DbSet<EventEntity> Events { get; set; }
     public DbSet<EventTimeslotEntity> EventTimeslots { get; set; }
     public DbSet<EventInstanceEntity> EventInstances { get; set; }
@@ -136,6 +137,7 @@ public class DatabaseContext(
         builder.Entity<MinigolfMapEntity>(MinigolfMapEntity.Configure);
         builder.Entity<RoleEntity>(RoleEntity.Configure);
         builder.Entity<UserEntity>(UserEntity.Configure);
+        builder.Entity<UserPushSubscriptionEntity>(UserPushSubscriptionEntity.Configure);
     }
 
     private static DbContextOptionsBuilder ConfigureSqlite(

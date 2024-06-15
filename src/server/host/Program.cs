@@ -25,19 +25,26 @@ builder.Services.AddAndBindOptions<AdminOptions>();
 builder.Services.AddAndBindOptions<IdOptions>();
 builder.Services.AddAndBindOptions<LoggingOptions>();
 builder.Services.AddAndBindOptions<DatabaseOptions>();
+builder.Services.AddAndBindOptions<WebPushOptions>();
 
 var configureJsonSerializerOptions = new ConfigureJsonSerializerOptions();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.ConfigureOptions(configureJsonSerializerOptions);
 
+builder.Services.AddSingleton<IIdService, IdService>();
+
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
+builder.Services.AddScoped<IWebPushService, WebPushService>();
+
 builder.Services.AddScoped<IEventMapper, EventMapper>();
 builder.Services.AddScoped<IMinigolfMapMapper, MinigolfMapMapper>();
 builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
 builder.Services.AddScoped<IUserMapper, UserMapper>();
-builder.Services.AddSingleton<IIdService, IdService>();
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
+builder.Services.AddScoped<IUserPushSubscriptionMapper, UserPushSubscriptionMapper>();
 
 builder.Services.AddHealthChecks().AddDbContextCheck<DatabaseContext>();
 builder.Services.AddFastEndpoints(o =>
@@ -62,7 +69,6 @@ builder.Services.SwaggerDocument(c =>
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddAuthorization();
-builder.Services.AddHttpClient();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;

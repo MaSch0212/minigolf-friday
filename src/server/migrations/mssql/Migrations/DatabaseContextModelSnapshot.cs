@@ -242,6 +242,51 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Auth")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("auth");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)")
+                        .HasColumnName("endpoint");
+
+                    b.Property<string>("Lang")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("lang");
+
+                    b.Property<string>("P256DH")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("p256dh");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Endpoint")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("user_push_subscriptions", (string)null);
+                });
+
             modelBuilder.Entity("event_instances_to_users", b =>
                 {
                     b.Property<long>("event_instance_id")
@@ -384,6 +429,17 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.Navigation("Player");
                 });
 
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.Data.Entities.UserEntity", "User")
+                        .WithMany("PushSubscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("event_instances_to_users", b =>
                 {
                     b.HasOne("MinigolfFriday.Data.Entities.EventInstanceEntity", null)
@@ -476,6 +532,11 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.MinigolfMapEntity", b =>
                 {
                     b.Navigation("EventTimeslots");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
+                {
+                    b.Navigation("PushSubscriptions");
                 });
 #pragma warning restore 612, 618
         }

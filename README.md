@@ -20,21 +20,26 @@ docker run -d \
 
 ### Environment Variables
 
-| Variable                                  | Description                                                             | Required | Default                              |
-| ----------------------------------------- | ----------------------------------------------------------------------- | -------- | ------------------------------------ |
-| `IDS__SEED`                               | The seed for the id obfuscation.                                        | Yes      | -                                    |
-| `AUTHENTICATION__JWT__SECRET`             | The secret for the JWT token.                                           | Yes      | -                                    |
-| `ADMIN__LOGINTOKEN`                       | The password for the admin user.                                        | No       | `admin`                              |
-| `AUTHENTICATION__JWT__ISSUER`             | The issuer for the JWT token.                                           | No       | `/api/auth/token`                    |
-| `AUTHENTICATION__JWT__AUDIENCE`           | The audience for the JWT token.                                         | No       | `MinigolfFridayAudience`             |
-| `AUTHENTICATION__JWT__EXPIRATION`         | The expiration time for the JWT token.                                  | No       | `00:15:00`                           |
-| `LOGGING__LOGLEVEL__DEFAULT`              | The default log level.                                                  | No       | `Information`                        |
-| `LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE` | The log level for the ASP.NET Core specific logs.                       | No       | `Warning`                            |
-| `LOGGING__ENABLEDBLOGGING`                | Enable database logging.                                                | No       | `false`                              |
-| `DATABASE__PROVIDER`                      | The database provider. Possible values: `Sqlite`, `MsSql`, `PostgreSql` | No       | `Sqlite`                             |
-| `DATABASE__SQLITECONNECTIONSTRING`        | The connection string for the SQLite database.                          | No       | `Data Source=data/MinigolfFriday.db` |
-| `DATABASE__MSSQLCONNECTIONSTRING`         | The connection string for the MS SQL database.                          | No       | -                                    |
-| `DATABASE__POSTGRESQLCONNECTIONSTRING`    | The connection string for the PostgreSQL database.                      | No       | -                                    |
+| Variable                                  | Description                                                                       | Required | Default                              |
+| ----------------------------------------- | --------------------------------------------------------------------------------- | -------- | ------------------------------------ |
+| `IDS__SEED`                               | The seed for the id obfuscation.                                                  | Yes      | -                                    |
+| `AUTHENTICATION__JWT__SECRET`             | The secret for the JWT token.                                                     | Yes      | -                                    |
+| `WEBPUSH__SUBJECT`                        | The VAPID subject for sending push notifications. Should be `mailto:<YoutEmail>`. | Yes      | -                                    |
+| `WEBPUSH__PUBLICKEY`                      | The VAPID public key for sending push notifications. \*1                          | Yes      | -                                    |
+| `WEBPUSH__PRIVATEKEY`                     | The VAPID private key for sending push notifications. \*1                         | Yes      | -                                    |
+| `ADMIN__LOGINTOKEN`                       | The password for the admin user.                                                  | No       | `admin`                              |
+| `AUTHENTICATION__JWT__ISSUER`             | The issuer for the JWT token.                                                     | No       | `/api/auth/token`                    |
+| `AUTHENTICATION__JWT__AUDIENCE`           | The audience for the JWT token.                                                   | No       | `MinigolfFridayAudience`             |
+| `AUTHENTICATION__JWT__EXPIRATION`         | The expiration time for the JWT token.                                            | No       | `00:15:00`                           |
+| `LOGGING__LOGLEVEL__DEFAULT`              | The default log level.                                                            | No       | `Information`                        |
+| `LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE` | The log level for the ASP.NET Core specific logs.                                 | No       | `Warning`                            |
+| `LOGGING__ENABLEDBLOGGING`                | Enable database logging.                                                          | No       | `false`                              |
+| `DATABASE__PROVIDER`                      | The database provider. Possible values: `Sqlite`, `MsSql`, `PostgreSql`           | No       | `Sqlite`                             |
+| `DATABASE__SQLITECONNECTIONSTRING`        | The connection string for the SQLite database.                                    | No       | `Data Source=data/MinigolfFriday.db` |
+| `DATABASE__MSSQLCONNECTIONSTRING`         | The connection string for the MS SQL database.                                    | No       | -                                    |
+| `DATABASE__POSTGRESQLCONNECTIONSTRING`    | The connection string for the PostgreSQL database.                                | No       | -                                    |
+
+\*1: The VAPID keys can be generated by running `npx web-push generate-vapid-keys` int the terminal.
 
 ## Build
 
@@ -49,8 +54,13 @@ docker run -d \
 
 ### Preparation
 
-1. Run `pnpm install` in the root directory to install all dependencies.
-2. Run `dotnet dev-certs https --trust` to trust the development certificate.
+1. Create VAPID keys for the push notifications (run all command in the root directory).
+   - Run `npx web-push generate-vapid-keys`
+   - Run `dotnet user-secrets set WebPush:Subject mailto:<YourEmail> -p src/server/host`
+   - Run `dotnet user-secrets set WebPush:PublicKey mailto:<PublicKey> -p src/server/host`
+   - Run `dotnet user-secrets set WebPush:PrivateKey mailto:<PrivateKey> -p src/server/host`
+2. Run `pnpm install` in the root directory to install all dependencies.
+3. Run `dotnet dev-certs https --trust` to trust the development certificate.
 
 ### Run
 

@@ -9,6 +9,7 @@ public class ConfigureJsonSerializerOptions : IConfigureOptions<JsonSerializerOp
 {
     public void Configure(JsonSerializerOptions options)
     {
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, false));
         options.Converters.Add(new DateOnlyJsonConverter());
         options.Converters.Add(new TimeOnlyJsonConverter());

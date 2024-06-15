@@ -29,7 +29,9 @@
     "useSystemLanguage": "Use system language",
     "darkTheme": "Dark",
     "lightTheme": "Light",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "enableNotifications": "Enable notifications",
+    "enableNotificationsDescription": "Do you want to receive notifications? You can later change this setting and can disable notifications at any time."
   },
   "events": {
     "notFound": "This event does not exist.",
