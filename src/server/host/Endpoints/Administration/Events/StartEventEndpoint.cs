@@ -2,11 +2,13 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Domain.Models.Push;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Mappers;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Events;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events;
 
 /// <param name="EventId">The id of the event to start.</param>
 public record StartEventRequest([property: Required] string EventId);
@@ -20,8 +22,12 @@ public class StartEventRequestValidator : Validator<StartEventRequest>
 }
 
 /// <summary>Starts an event.</summary>
-public class StartEventEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<StartEventRequest>
+public class StartEventEndpoint(
+    DatabaseContext databaseContext,
+    IIdService idService,
+    IUserPushSubscriptionMapper userPushSubscriptionMapper,
+    IWebPushService webPushService
+) : Endpoint<StartEventRequest>
 {
     public override void Configure()
     {
@@ -89,6 +95,21 @@ public class StartEventEndpoint(DatabaseContext databaseContext, IIdService idSe
         await databaseContext
             .Events.Where(x => x.Id == eventId)
             .ExecuteUpdateAsync(x => x.SetProperty(x => x.StartedAt, now), ct);
+
+        var pushSubscription = await databaseContext
+            .Events.Where(x => x.Id == eventId)
+            .SelectMany(x => x.Timeslots)
+            .SelectMany(x => x.Instances)
+            .SelectMany(x => x.Players)
+            .SelectMany(x => x.PushSubscriptions)
+            .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
+            .ToListAsync(ct);
+        await webPushService.SendAsync(
+            pushSubscription,
+            new PushNotificationData.EventStarted(idService.Event.Encode(eventId)),
+            ct
+        );
+
         await SendAsync(null, cancellation: ct);
     }
 }

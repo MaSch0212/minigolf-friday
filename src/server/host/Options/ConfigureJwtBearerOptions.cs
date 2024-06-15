@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MinigolfFriday.Domain.Options;
 
-namespace MinigolfFriday.Options;
+namespace MinigolfFriday.Host.Options;
 
 public class ConfigureJwtBearerOptions(IOptionsMonitor<JwtOptions> jwtOptions)
     : IConfigureNamedOptions<JwtBearerOptions>

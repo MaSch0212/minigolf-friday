@@ -222,6 +222,49 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Auth")
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("auth");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("endpoint");
+
+                    b.Property<string>("Lang")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("lang");
+
+                    b.Property<string>("P256DH")
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("p256dh");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Endpoint")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("user_push_subscriptions", (string)null);
+                });
+
             modelBuilder.Entity("event_instances_to_users", b =>
                 {
                     b.Property<long>("event_instance_id")
@@ -364,6 +407,17 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                     b.Navigation("Player");
                 });
 
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.Data.Entities.UserEntity", "User")
+                        .WithMany("PushSubscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("event_instances_to_users", b =>
                 {
                     b.HasOne("MinigolfFriday.Data.Entities.EventInstanceEntity", null)
@@ -456,6 +510,11 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.MinigolfMapEntity", b =>
                 {
                     b.Navigation("EventTimeslots");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
+                {
+                    b.Navigation("PushSubscriptions");
                 });
 #pragma warning restore 612, 618
         }

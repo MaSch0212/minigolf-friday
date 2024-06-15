@@ -29,7 +29,9 @@
     "useSystemLanguage": "Systemsprache verwenden",
     "darkTheme": "Dunkel",
     "lightTheme": "Hell",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "enableNotifications": "Benachrichtigungen aktivieren",
+    "enableNotificationsDescription": "Möchten Sie Benachrichtigungen erhalten? Sie können diese Einstellung später ändern und die Benachrichtigungen jederzeit deaktivieren."
   },
   "events": {
     "notFound": "Diese Veranstaltung existiert nicht.",

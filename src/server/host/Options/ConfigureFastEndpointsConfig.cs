@@ -4,7 +4,7 @@ using FastEndpoints;
 using Microsoft.Extensions.Options;
 using MinigolfFriday.Domain;
 
-namespace MinigolfFriday.Options;
+namespace MinigolfFriday.Host.Options;
 
 public class ConfigureFastEndpointsConfig(
     IConfigureOptions<JsonSerializerOptions> configureJsonSerializerOptions

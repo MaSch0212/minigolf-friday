@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Users;
+namespace MinigolfFriday.Host.Endpoints.Administration.Users;
 
 /// <param name="UserId">The id of the user.</param>
 public record GetUserLoginTokenRequest([property: Required] string UserId);

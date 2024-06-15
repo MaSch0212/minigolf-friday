@@ -41,3 +41,11 @@ export function getLoginToken(): string | null {
 export function setLoginToken(token: string | null) {
   setLocalStorage(LOGIN_TOKEN_KEY, token);
 }
+
+export function getHasRejectedPush(): boolean {
+  const hasRejected = getLocalStorage('hasRejectedPush');
+  return hasRejected === 'true';
+}
+export function setHasRejectedPush(hasRejected: boolean) {
+  setLocalStorage('hasRejectedPush', hasRejected ? 'true' : 'false');
+}

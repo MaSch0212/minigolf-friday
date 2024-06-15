@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace MinigolfFriday.Extensions;
+namespace MinigolfFriday.Host.Extensions;
 
 public static class FastEndpointExtensions
 {

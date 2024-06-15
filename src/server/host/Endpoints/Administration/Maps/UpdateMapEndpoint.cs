@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Maps;
+namespace MinigolfFriday.Host.Endpoints.Administration.Maps;
 
 /// <param name="MapId">The id of the map to update.</param>
 /// <param name="Name">The new name. Omit to leave unchanged.</param>

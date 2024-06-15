@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 
-namespace MinigolfFriday.Extensions;
+namespace MinigolfFriday.Host.Extensions;
 
 public static class JwtSecurityTokenExtensions
 {

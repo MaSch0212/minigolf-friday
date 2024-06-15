@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Events.Timeslots;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events.Timeslots;
 
 /// <param name="TimeslotId">The id of the event timeslot to delete.</param>
 public record DeleteEventTimeslotRequest([property: Required] string TimeslotId);

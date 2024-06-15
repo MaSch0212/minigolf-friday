@@ -3,11 +3,11 @@ using FastEndpoints;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Events.Timeslots;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events.Timeslots;
 
 /// <param name="TimeslotId">The id of the timeslot to update.</param>
 /// <param name="MapId">The id of the map that should be played.</param>

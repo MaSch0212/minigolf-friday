@@ -15,7 +15,10 @@
       "label": "🚀 Start Server (watch)",
       "type": "shell",
       "options": {
-        "cwd": "${workspaceFolder}/src/server/host"
+        "cwd": "${workspaceFolder}/src/server/host",
+        "env": {
+          "ENABLE_DEV_ENDPOINTS": "true"
+        }
       },
       "command": "dotnet watch run",
       "group": {

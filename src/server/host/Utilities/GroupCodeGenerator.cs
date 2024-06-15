@@ -1,4 +1,4 @@
-namespace MinigolfFriday.Utilities;
+namespace MinigolfFriday.Host.Utilities;
 
 public static class GroupCodeGenerator
 {

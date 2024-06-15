@@ -1,9 +1,9 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Dev;
+namespace MinigolfFriday.Host.Endpoints.Administration.Dev;
 
 public record SetRegistrationDeadlineRequest(string EventId, DateTimeOffset Deadline);
 

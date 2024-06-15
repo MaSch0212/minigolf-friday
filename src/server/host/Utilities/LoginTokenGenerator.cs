@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace MinigolfFriday.Utilities;
+namespace MinigolfFriday.Host.Utilities;
 
 public static class LoginTokenGenerator
 {

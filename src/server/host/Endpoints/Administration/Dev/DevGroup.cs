@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace MinigolfFriday.Endpoints.Administration.Dev;
+namespace MinigolfFriday.Host.Endpoints.Administration.Dev;
 
 public class DevGroup : Group
 {

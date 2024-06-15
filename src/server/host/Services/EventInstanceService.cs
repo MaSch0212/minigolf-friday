@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Utilities;
+using MinigolfFriday.Host.Utilities;
 
-namespace MinigolfFriday.Services;
+namespace MinigolfFriday.Host.Services;
 
 [GenerateAutoInterface]
 public class EventInstanceService(DatabaseContext databaseContext, IIdService idService)

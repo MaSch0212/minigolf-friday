@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Mappers;
+namespace MinigolfFriday.Host.Mappers;
 
 [GenerateAutoInterface]
 public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper

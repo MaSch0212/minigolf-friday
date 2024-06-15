@@ -1,7 +1,7 @@
 using FastEndpoints;
 using MinigolfFriday.Domain.Models;
 
-namespace MinigolfFriday.Endpoints.Administration;
+namespace MinigolfFriday.Host.Endpoints.Administration;
 
 public class AdministrationGroup : Group
 {

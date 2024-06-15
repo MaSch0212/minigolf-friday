@@ -137,6 +137,10 @@
     @apply gap-6 bg-surface-a p-6;
   }
 
+  .p-dialog-header-close {
+    @apply p-3;
+  }
+
   .p-dialog-header,
   .p-dialog-content,
   .p-dialog-footer {

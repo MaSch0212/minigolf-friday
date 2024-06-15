@@ -1,6 +1,6 @@
 using FluentValidation.Resources;
 
-namespace MinigolfFriday.Common;
+namespace MinigolfFriday.Host.Options;
 
 public class ValidationLanguageManager : LanguageManager
 {

@@ -3,12 +3,12 @@ using FastEndpoints;
 using FluentValidation;
 using MaSch.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Users;
+namespace MinigolfFriday.Host.Endpoints.Administration.Users;
 
 /// <param name="UserId">The id of the user to update.</param>
 /// <param name="Alias">The new alias. Omit to leave unchanged.</param>

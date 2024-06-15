@@ -3,7 +3,7 @@ using FastEndpoints;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MinigolfFriday.Extensions;
+namespace MinigolfFriday.Host.Extensions;
 
 public static class ResultExtensions
 {

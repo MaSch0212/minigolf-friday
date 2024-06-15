@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Events.Preconfigurations;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events.Preconfigurations;
 
 /// <param name="PreconfigurationId">The id of the event instance preconfiguration to delete.</param>
 public record DeletePreconfigurationRequest([property: Required] string PreconfigurationId);

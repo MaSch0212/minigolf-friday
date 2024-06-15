@@ -38,6 +38,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Sqids" />
+    <PackageReference Include="WebPush" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +51,7 @@
 
   <ItemGroup>
     <Using Include="InterfaceGenerator" />
-    <Using Include="MinigolfFriday.Extensions" />
+    <Using Include="MinigolfFriday.Host.Extensions" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using MinigolfFriday.Domain.Options;
 using Sqids;
 
-namespace MinigolfFriday.Services;
+namespace MinigolfFriday.Host.Services;
 
 [GenerateAutoInterface]
 public class IdService : IIdService

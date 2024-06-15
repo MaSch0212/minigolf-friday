@@ -3,9 +3,9 @@ using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Mappers;
+using MinigolfFriday.Host.Mappers;
 
-namespace MinigolfFriday.Endpoints.Administration.Users;
+namespace MinigolfFriday.Host.Endpoints.Administration.Users;
 
 /// <param name="Users">All users in the system.</param>
 public record GetUsersResponse([property: Required] User[] Users);

@@ -4,9 +4,9 @@ using FluentValidation;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Maps;
+namespace MinigolfFriday.Host.Endpoints.Administration.Maps;
 
 /// <param name="Name">The name of the minigolf map.</param>
 public record CreateMapRequest([property: Required] string Name);

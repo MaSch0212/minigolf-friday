@@ -4,14 +4,13 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MinigolfFriday.Common;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Extensions;
 using MinigolfFriday.Domain.Options;
-using MinigolfFriday.Mappers;
-using MinigolfFriday.Middlewares;
-using MinigolfFriday.Options;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Mappers;
+using MinigolfFriday.Host.Middlewares;
+using MinigolfFriday.Host.Options;
+using MinigolfFriday.Host.Services;
 using NSwag;
 using NSwag.Generation.AspNetCore;
 
@@ -26,19 +25,26 @@ builder.Services.AddAndBindOptions<AdminOptions>();
 builder.Services.AddAndBindOptions<IdOptions>();
 builder.Services.AddAndBindOptions<LoggingOptions>();
 builder.Services.AddAndBindOptions<DatabaseOptions>();
+builder.Services.AddAndBindOptions<WebPushOptions>();
 
 var configureJsonSerializerOptions = new ConfigureJsonSerializerOptions();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 builder.Services.ConfigureOptions(configureJsonSerializerOptions);
 
+builder.Services.AddSingleton<IIdService, IdService>();
+
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
+builder.Services.AddScoped<IWebPushService, WebPushService>();
+
 builder.Services.AddScoped<IEventMapper, EventMapper>();
 builder.Services.AddScoped<IMinigolfMapMapper, MinigolfMapMapper>();
 builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
 builder.Services.AddScoped<IUserMapper, UserMapper>();
-builder.Services.AddSingleton<IIdService, IdService>();
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
+builder.Services.AddScoped<IUserPushSubscriptionMapper, UserPushSubscriptionMapper>();
 
 builder.Services.AddHealthChecks().AddDbContextCheck<DatabaseContext>();
 builder.Services.AddFastEndpoints(o =>
@@ -63,7 +69,6 @@ builder.Services.SwaggerDocument(c =>
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddAuthorization();
-builder.Services.AddHttpClient();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;

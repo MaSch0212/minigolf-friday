@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace MinigolfFriday.Middlewares;
+namespace MinigolfFriday.Host.Middlewares;
 
 public static partial class HtmlBaseTagInjectorMiddleware
 {

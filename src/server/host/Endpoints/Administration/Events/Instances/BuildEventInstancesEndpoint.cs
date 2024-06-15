@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
-using MinigolfFriday.Common;
 using MinigolfFriday.Domain.Models;
-using MinigolfFriday.Services;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Endpoints.Administration.Events.Instances;
+namespace MinigolfFriday.Host.Endpoints.Administration.Events.Instances;
 
 /// <param name="EventId">The id of the event to build instances for.</param>
 public record BuildEventInstancesRequest([property: Required] string EventId);
