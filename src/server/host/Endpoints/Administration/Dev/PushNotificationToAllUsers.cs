@@ -38,6 +38,9 @@ public class PushNotificationToAllUsersEndpoint(
     {
         public string Type => "debug";
 
+        public Dictionary<string, PushNotificationOnActionClick> OnActionClick =>
+            new() { { "default", new($"/") } };
+
         public string GetTitle(string lang) => "Debug Message";
 
         public string GetBody(string lang) => Message;

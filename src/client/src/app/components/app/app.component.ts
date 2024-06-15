@@ -13,7 +13,6 @@ import { MenuComponent } from './menu/menu.component';
 import { NotificationPromptDialogComponent } from './notification-prompt-dialog/notification-prompt-dialog.component';
 import { NotificationsService } from '../../api/services';
 import { environment } from '../../environments/environment';
-import { PushNotificationData } from '../../models/push-notification-data';
 import { AuthService } from '../../services/auth.service';
 import { getHasRejectedPush } from '../../services/storage';
 import { TranslateService } from '../../services/translate.service';
@@ -87,27 +86,6 @@ export class AppComponent {
             this._notificationsService.unsubscribeFromNotifications({
               body: { endpoint: oldSub.endpoint },
             });
-          }
-        });
-
-      this._swPush.notificationClicks
-        .pipe(takeUntilDestroyed())
-        .subscribe(({ notification: { data } }) => {
-          if (data && typeof data === 'object' && 'type' in data) {
-            const parsedData = data as PushNotificationData;
-            switch (parsedData.type) {
-              case 'event-published':
-              case 'event-started':
-              case 'event-instance-updated':
-              case 'event-timeslot-starting':
-                this._router.navigate(['/events', parsedData.eventId]);
-                break;
-              default:
-                console.warn('Unknown notification type:', data.type);
-                break;
-            }
-          } else {
-            console.warn('Invalid notification data:', data);
           }
         });
     }
