@@ -18,7 +18,7 @@ export const addEventTimeslotAction = createHttpAction<
   {
     eventId: string;
     time: Time;
-    mapId: string;
+    mapId: string | null;
     isFallbackAllowed: boolean;
   },
   EventTimeslot

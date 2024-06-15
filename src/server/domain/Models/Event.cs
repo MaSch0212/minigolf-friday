@@ -31,7 +31,7 @@ public record Event(
 public record EventTimeslot(
     [property: Required] string Id,
     [property: Required] TimeOnly Time,
-    [property: Required] string MapId,
+    string? MapId,
     [property: Required] bool IsFallbackAllowed,
     [property: Required] EventInstancePreconfiguration[] Preconfigurations,
     [property: Required] string[] PlayerIds,

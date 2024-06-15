@@ -96,7 +96,7 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("is_fallback_allowed");
 
-                    b.Property<long>("MapId")
+                    b.Property<long?>("MapId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("map_id");
 
@@ -372,9 +372,7 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
 
                     b.HasOne("MinigolfFriday.Data.Entities.MinigolfMapEntity", "Map")
                         .WithMany("EventTimeslots")
-                        .HasForeignKey("MapId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MapId");
 
                     b.Navigation("Event");
 

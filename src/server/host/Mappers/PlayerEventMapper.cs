@@ -51,7 +51,7 @@ public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
         return new(
             idService.EventInstance.Encode(entity.Id),
             entity.GroupCode,
-            Map(entity.EventTimeslot.Map),
+            Map(entity.EventTimeslot.Map!),
             entity.Players.Count
         );
     }

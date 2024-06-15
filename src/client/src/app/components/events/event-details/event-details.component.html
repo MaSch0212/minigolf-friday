@@ -45,6 +45,7 @@
               [label]="translations.events_start()"
               (onClick)="startEvent()"
               [loading]="isStartBusy()"
+              [disabled]="!allowToStart()"
             />
           }
         </div>
@@ -76,9 +77,11 @@
                   timeslot.time.minute | number: '2.0-0'
                 }}</span
               >
-              @if (maps()[timeslot.mapId]; as map) {
-                <span class="i-[mdi--golf] ml-4"></span>
-                <span class="truncate">{{ map.name }}</span>
+              @if (timeslot.mapId) {
+                @if (maps()[timeslot.mapId]; as map) {
+                  <span class="i-[mdi--golf] ml-4"></span>
+                  <span class="truncate">{{ map.name }}</span>
+                }
               }
               <span class="i-[mdi--account] ml-2"></span>
               <span>{{ timeslot.playerIds.length }}</span>
@@ -118,9 +121,11 @@
                     timeslot.time.minute | number: '2.0-0'
                   }}
                 </span>
-                @if (maps()[timeslot.mapId]; as map) {
-                  <span class="i-[mdi--golf] ml-4"></span>
-                  <span class="truncate">{{ map.name }}</span>
+                @if (timeslot.mapId) {
+                  @if (maps()[timeslot.mapId]; as map) {
+                    <span class="i-[mdi--golf] ml-4"></span>
+                    <span class="truncate">{{ map.name }}</span>
+                  }
                 }
               </h3>
               @for (instance of timeslot.instances; track ii; let ii = $index) {

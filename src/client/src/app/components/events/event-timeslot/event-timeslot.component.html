@@ -66,14 +66,16 @@
                 >
               </span>
               <span>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</span>
-              @if (maps()[timeslot.mapId]; as map) {
-                <span>
-                  <span class="i-[mdi--golf] mr-2"></span>
-                  <span class="truncate font-semibold">{{
-                    translations.events_timeslot_map()
-                  }}</span>
-                </span>
-                <span class="truncate">{{ map.name }}</span>
+              @if (timeslot.mapId) {
+                @if (maps()[timeslot.mapId]; as map) {
+                  <span>
+                    <span class="i-[mdi--golf] mr-2"></span>
+                    <span class="truncate font-semibold">{{
+                      translations.events_timeslot_map()
+                    }}</span>
+                  </span>
+                  <span class="truncate">{{ map.name }}</span>
+                }
               }
             </div>
           </div>

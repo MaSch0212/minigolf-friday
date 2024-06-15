@@ -92,6 +92,13 @@ export class EventDetailsComponent {
       this.canBuildInstances() && this.event() && !this.event()?.startedAt && this.hasInstances()
   );
 
+  protected readonly allowToStart = computed(
+    () =>
+      !this.event()
+        ?.timeslots.filter(x => x.instances.length > 0)
+        .some(x => x.mapId === null || x.mapId === undefined)
+  );
+
   constructor() {
     this._store.dispatch(loadMapsAction({ reload: false }));
     this._store.dispatch(loadUsersAction({ reload: false }));

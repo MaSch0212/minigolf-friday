@@ -15,7 +15,7 @@ export const updateEventTimeslotAction = createHttpAction<{
   eventId: string;
   timeslotId: string;
   changes: {
-    mapId?: string;
+    mapId?: string | null;
     isFallbackAllowed?: boolean;
   };
 }>()(EVENTS_ACTION_SCOPE, 'Update Event Timeslot');

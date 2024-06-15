@@ -85,6 +85,10 @@ public class UpdateEventTimeslotEndpoint(DatabaseContext databaseContext, IIdSer
                 );
             }
         }
+        else
+        {
+            updateBuilder.With(x => x.SetProperty(x => x.MapId, (long?)null));
+        }
 
         if (req.IsFallbackAllowed != null)
             updateBuilder.With(x => x.SetProperty(x => x.IsFallbackAllowed, req.IsFallbackAllowed));
