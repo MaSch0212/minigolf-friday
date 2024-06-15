@@ -111,52 +111,45 @@
             />
           }
         </div>
-        <p-accordion>
-          @for (timeslot of timeslots(); track timeslot.id; let ti = $index) {
-            @if (timeslot.instances.length > 0) {
-              <h3 class="m-0 flex flex-row items-center gap-2 pb-2" [class.pt-4]="ti > 0">
+        <div class="flex shrink-0 flex-row overflow-auto text-xs">
+          @for (timeslot of timeslots(); track timeslot.id) {
+            <div class="flex w-1/3 min-w-28 shrink-0 flex-col gap-2 px-1">
+              <h3 class="m-0 flex flex-row items-center gap-4 px-2">
                 <span class="i-[mdi--clock-time-four-outline]"></span>
-                <span class="grow">
+                <span>
                   {{ timeslot.time.hour | number: '2.0-0' }}:{{
                     timeslot.time.minute | number: '2.0-0'
                   }}
                 </span>
-                @if (timeslot.mapId) {
-                  @if (maps()[timeslot.mapId]; as map) {
-                    <span class="i-[mdi--golf] ml-4"></span>
-                    <span class="truncate">{{ map.name }}</span>
-                  }
-                }
               </h3>
-              @for (instance of timeslot.instances; track ii; let ii = $index) {
-                <p-accordionTab>
-                  <ng-template pTemplate="header">
+              @for (instance of timeslot.instances; track $index) {
+                <div
+                  class="flex flex-col gap-2 rounded p-2"
+                  [ngClass]="$index % 2 === 0 ? 'bg-surface-a' : 'bg-surface-b'"
+                >
+                  <div class="flex flex-row items-center font-semibold">
                     <span class="i-[mdi--pound] mr-2"></span>
                     <span class="grow uppercase">{{ instance.groupCode }}</span>
-                    <span class="i-[mdi--account-group] mr-2"></span>
-                    <span>{{ instance.playerIds.length }}</span>
-                  </ng-template>
-
-                  <div class="flex flex-col gap-2">
+                  </div>
+                  <div class="flex flex-col gap-1">
                     @for (playerId of instance.playerIds; track playerId; let pi = $index) {
-                      <div class="flex flex-row items-center gap-2">
-                        <span class="i-[mdi--account]"></span>
-                        <span>
+                      <div class="flex flex-row items-center gap-1">
+                        <div class="truncate">
                           @if (allUsers()[playerId]; as user) {
                             {{ user.alias }}
                           } @else {
                             &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
                             <span class="opacity-50">({{ playerId }})</span>
                           }
-                        </span>
+                        </div>
                       </div>
                     }
                   </div>
-                </p-accordionTab>
+                </div>
               }
-            }
+            </div>
           }
-        </p-accordion>
+        </div>
       }
 
       @if (!event.startedAt) {
