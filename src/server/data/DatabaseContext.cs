@@ -69,7 +69,8 @@ public class DatabaseContext(
         {
             Id = id,
             Date = default,
-            RegistrationDeadline = default
+            RegistrationDeadline = default,
+            Staged = true
         };
         Entry(entity).State = EntityState.Unchanged;
         return entity;

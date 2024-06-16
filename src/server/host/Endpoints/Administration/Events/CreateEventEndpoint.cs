@@ -51,7 +51,8 @@ public class CreateEventEndpoint(
         var entity = new EventEntity
         {
             Date = req.Date,
-            RegistrationDeadline = req.RegistrationDeadline
+            RegistrationDeadline = req.RegistrationDeadline,
+            Staged = true
         };
         databaseContext.Events.Add(entity);
         await databaseContext.SaveChangesAsync(ct);

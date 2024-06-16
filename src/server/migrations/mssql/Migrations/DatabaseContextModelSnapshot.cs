@@ -39,6 +39,10 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("registration_deadline");
 
+                    b.Property<bool>("Staged")
+                        .HasColumnType("bit")
+                        .HasColumnName("staged");
+
                     b.Property<DateTimeOffset?>("StartedAt")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("started_at");

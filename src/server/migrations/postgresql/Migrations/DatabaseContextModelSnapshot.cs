@@ -39,6 +39,10 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registration_deadline");
 
+                    b.Property<bool>("Staged")
+                        .HasColumnType("boolean")
+                        .HasColumnName("staged");
+
                     b.Property<DateTimeOffset?>("StartedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("started_at");

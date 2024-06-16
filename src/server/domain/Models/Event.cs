@@ -15,7 +15,8 @@ public record Event(
     [property: Required] DateOnly Date,
     [property: Required] DateTimeOffset RegistrationDeadline,
     [property: Required] EventTimeslot[] Timeslots,
-    DateTimeOffset? StartedAt
+    DateTimeOffset? StartedAt,
+    [property: Required] bool Staged
 );
 
 /// <summary>

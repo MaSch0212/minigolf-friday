@@ -15,7 +15,8 @@ public class EventMapper(IIdService idService) : IEventMapper
             entity.Date,
             entity.RegistrationDeadline,
             entity.Timeslots?.Select(Map).ToArray() ?? [],
-            entity.StartedAt
+            entity.StartedAt,
+            entity.Staged
         );
     }
 
