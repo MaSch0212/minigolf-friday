@@ -34,8 +34,10 @@ public class UpdateEventRequestValidator : Validator<UpdateEventRequest>
 /// <summary>Update a new event.</summary>
 public class UpdateEventEndpoint(
     DatabaseContext databaseContext,
-    IIdService idService //,
-// IWebPushService webPushService
+    IIdService idService,
+    IEventMapper eventMapper,
+    IUserPushSubscriptionMapper userPushSubscriptionMapper,
+    IWebPushService webPushService
 ) : Endpoint<UpdateEventRequest, UpdateEventResponse>
 {
     public override void Configure()
@@ -49,9 +51,7 @@ public class UpdateEventEndpoint(
     {
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var eventQuery = databaseContext.Events.Where(x => x.Id == eventId);
-        var eventInfo = await eventQuery
-            .Select(x => new { x.Staged, x.Id })
-            .FirstOrDefaultAsync(ct);
+        var eventInfo = await eventQuery.FirstOrDefaultAsync(ct);
 
         if (eventInfo == null)
         {
@@ -79,5 +79,21 @@ public class UpdateEventEndpoint(
 
         await updateBuilder.ExecuteAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        var pushSubscriptions = await databaseContext
+            .UserPushSubscriptions.Select(
+                userPushSubscriptionMapper.MapUserPushSubscriptionExpression
+            )
+            .ToListAsync(ct);
+        await webPushService.SendAsync(
+            pushSubscriptions,
+            new PushNotificationData.EventPublished(
+                idService.Event.Encode(eventId),
+                eventInfo.Date
+            ),
+            ct
+        );
+
+        await SendAsync(new(eventMapper.Map(eventInfo)), 201, ct);
     }
 }
