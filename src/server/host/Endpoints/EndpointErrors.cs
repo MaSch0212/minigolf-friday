@@ -15,6 +15,8 @@ public class EndpointErrors
 
     public static readonly EndpointError.Params1 EventNotFound =
         new(404, "An event with the id {0} does not exist.", "EventId");
+    public static readonly EndpointError.Params1 EventNotStaged =
+        new(404, "The event with the id {0} is not staged.", "EventId");
     public static readonly EndpointError.Params1 EventAlreadyStarted =
         new(409, "The event with id {0} has already been started.", "EventId");
     public static readonly EndpointError.Params1 EventMissingMapOnStart =
