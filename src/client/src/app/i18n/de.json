@@ -51,6 +51,7 @@
     "buildGroups": "Gruppen bilden",
     "rebuildGroups": "Gruppen neu bilden",
     "commit": "Event freigeben",
+    "staged": "vorbereitet",
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
