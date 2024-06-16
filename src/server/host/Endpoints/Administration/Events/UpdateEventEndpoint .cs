@@ -19,9 +19,6 @@ public record UpdateEventRequest(
     [property: Required] bool Commit
 );
 
-/// <param name="Event">The Updated event.</param>
-public record UpdateEventResponse([property: Required] Event Event);
-
 public class UpdateEventRequestValidator : Validator<UpdateEventRequest>
 {
     public UpdateEventRequestValidator(IIdService idService)
@@ -37,7 +34,7 @@ public class UpdateEventEndpoint(
     IIdService idService,
     IUserPushSubscriptionMapper userPushSubscriptionMapper,
     IWebPushService webPushService
-) : Endpoint<UpdateEventRequest, UpdateEventResponse>
+) : Endpoint<UpdateEventRequest>
 {
     public override void Configure()
     {
