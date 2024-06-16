@@ -51,6 +51,7 @@
     "buildGroups": "Build groups",
     "rebuildGroups": "Rebuild groups",
     "commit": "commit event",
+    "staged": "staged",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",

@@ -37,6 +37,9 @@
               pRipple
             >
               {{ event.date | date: 'fullDate' : undefined : locale() }}
+              @if (event.staged) {
+                - {{ translations.events_staged() }}
+              }
             </a>
           }
           @if (events().length === 0) {
