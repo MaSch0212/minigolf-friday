@@ -21,6 +21,7 @@ import {
   selectEvent,
   selectEventsActionState,
   startEventAction,
+  commitEventAction,
 } from '../../../+state/events';
 import { loadMapsAction, mapSelectors } from '../../../+state/maps';
 import { loadUsersAction, userSelectors } from '../../../+state/users';
@@ -92,6 +93,14 @@ export class EventDetailsComponent {
       this.canBuildInstances() && this.event() && !this.event()?.startedAt && this.hasInstances()
   );
 
+  protected readonly canCommit = computed(
+    () =>
+      this.event() &&
+      this.event()?.staged &&
+      this.event()?.timeslots &&
+      this.event()!.timeslots.length > 0
+  );
+
   protected readonly allowToStart = computed(
     () =>
       !this.event()
@@ -161,6 +170,28 @@ export class EventDetailsComponent {
         this._store.dispatch(
           startEventAction({
             eventId: this.eventId()!,
+          })
+        );
+      },
+    });
+  }
+
+  protected commitEvent() {
+    this._confirmationService.confirm({
+      header: this.translations.events_commitDialog_title(),
+      message: interpolate(this.translations.events_commitDialog_text(), {
+        date: formatDate(this.event()!.date, 'mediumDate', this.locale()),
+      }),
+      acceptLabel: this.translations.shared_commit(),
+      acceptButtonStyleClass: 'p-button-success',
+      acceptIcon: 'p-button-icon-left i-[mdi--play]',
+      rejectLabel: this.translations.shared_cancel(),
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this._store.dispatch(
+          commitEventAction({
+            eventId: this.eventId()!,
+            commit: true,
           })
         );
       },

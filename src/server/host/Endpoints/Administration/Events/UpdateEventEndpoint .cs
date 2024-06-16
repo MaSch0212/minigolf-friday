@@ -35,7 +35,6 @@ public class UpdateEventRequestValidator : Validator<UpdateEventRequest>
 public class UpdateEventEndpoint(
     DatabaseContext databaseContext,
     IIdService idService,
-    IEventMapper eventMapper,
     IUserPushSubscriptionMapper userPushSubscriptionMapper,
     IWebPushService webPushService
 ) : Endpoint<UpdateEventRequest, UpdateEventResponse>
@@ -93,7 +92,5 @@ public class UpdateEventEndpoint(
             ),
             ct
         );
-
-        await SendAsync(new(eventMapper.Map(eventInfo)), 201, ct);
     }
 }

@@ -50,6 +50,7 @@
     "groups": "Groups",
     "buildGroups": "Build groups",
     "rebuildGroups": "Rebuild groups",
+    "commit": "commit event",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",
@@ -96,6 +97,10 @@
     "startDialog": {
       "title": "Start event",
       "text": "Are you sure you want to start event {{date}}? The groups cannot be changed after the event has started."
+    },
+    "commitDialog": {
+      "title": "Commit event",
+      "text": "Do you really want to release the event {{date}}? The time slots can no longer be adjusted and players will be notified of a new event"
     },
     "error": {
       "load": "Failed to load events.",
@@ -201,7 +206,8 @@
     "no": "No",
     "copyToClipboard": "Copy to clipboard",
     "saved": "Saved",
-    "update": "Update"
+    "update": "Update",
+    "commit": "Commit"
   },
   "validation": {
     "required": "Cannot be blank.",
