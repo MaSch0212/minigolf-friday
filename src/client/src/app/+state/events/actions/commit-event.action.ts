@@ -43,7 +43,6 @@ async function commitEvent(
   api: EventAdministrationService,
   props: ReturnType<typeof commitEventAction>['props']
 ) {
-  console.log('another test');
   const response = await api.updateEvent({
     eventId: props.eventId,
     body: { commit: true },
