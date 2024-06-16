@@ -85,7 +85,6 @@ internal sealed class EventBuilder
                                 );
                             }
 
-                            var response3 = await _sut.AppClient.GetEventsAsync(null, null);
                             response.Event.Timeslots = await Task.WhenAll(
                                 _timeslots.Select(x => x.BuildAsync(response.Event.Id))
                             );
