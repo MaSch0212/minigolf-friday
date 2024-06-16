@@ -5,6 +5,8 @@ internal sealed class EventBuilder
     private static object _lastLock = new();
     private static DateTime _next = new(2020, 1, 1);
 
+    private bool _commit = false;
+
     private readonly Sut _sut;
     private readonly CreateEventRequest _request;
     private readonly List<EventTimeslotBuilder> _timeslots = [];
@@ -40,6 +42,12 @@ internal sealed class EventBuilder
         return this;
     }
 
+    public EventBuilder WithCommitEvent()
+    {
+        _commit = true;
+        return this;
+    }
+
     public async Task<Event> BuildAsync()
     {
         var response = await _sut.AppClient.CreateEventAsync(_request);
@@ -68,6 +76,16 @@ internal sealed class EventBuilder
                                 RegistrationDeadline = _request.RegistrationDeadline.AddDays(i)
                             };
                             var response = await _sut.AppClient.CreateEventAsync(request);
+
+                            if (_commit)
+                            {
+                                await _sut.AppClient.UpdateEventAsync(
+                                    response.Event.Id,
+                                    new UpdateEventRequest { Commit = true }
+                                );
+                            }
+
+                            var response3 = await _sut.AppClient.GetEventsAsync(null, null);
                             response.Event.Timeslots = await Task.WhenAll(
                                 _timeslots.Select(x => x.BuildAsync(response.Event.Id))
                             );
