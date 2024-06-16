@@ -3,6 +3,7 @@ import { addEventTimeslotEffects } from './actions/add-event-timeslot.action';
 import { addEventEffects } from './actions/add-event.action';
 import { addPlayerToEventPreconfigurationEffects } from './actions/add-player-to-preconfig.action';
 import { buildEventInstancesEffects } from './actions/build-event-instances.action';
+import { commitEventEffects } from './actions/commit-event.action';
 import { loadEventEffects } from './actions/load-event.action';
 import { loadEventsEffects } from './actions/load-events.action';
 import { removeEventPreconfigEffects } from './actions/remove-event-preconfig.action';
@@ -26,5 +27,6 @@ export const eventsFeatureEffects: Effects[] = [
   removeEventEffects,
   removePlayerFromPreconfigEffects,
   startEventEffects,
+  commitEventEffects,
   updateEventTimeslotEffects,
 ];

@@ -74,6 +74,7 @@ public class GetPlayerEventsEndpoint(
         var events = await query
             .OrderByDescending(x => x.Date)
             .Take(req.Amount)
+            .Where(x => !x.Staged)
             .Select(x => playerEventMapper.Map(x, userId))
             .ToArrayAsync(ct);
 

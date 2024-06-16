@@ -48,12 +48,21 @@
               [disabled]="!allowToStart()"
             />
           }
+          @if (canCommit()) {
+            <p-button
+              class="self-center"
+              icon="i-[mdi--play]"
+              [label]="translations.events_commit()"
+              (onClick)="commitEvent()"
+              [loading]="isStartBusy()"
+            />
+          }
         </div>
       </p-card>
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
-        @if (!event.startedAt) {
+        @if (!event.startedAt && event.staged) {
           <p-button
             [label]="translations.shared_add()"
             icon="i-[mdi--plus]"

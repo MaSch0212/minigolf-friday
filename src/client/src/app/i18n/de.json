@@ -50,6 +50,7 @@
     "groups": "Gruppen",
     "buildGroups": "Gruppen bilden",
     "rebuildGroups": "Gruppen neu bilden",
+    "commit": "Event freigeben",
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
@@ -96,6 +97,10 @@
     "startDialog": {
       "title": "Veranstaltung starten",
       "text": "Möchtest du die Veranstaltung {{date}} wirklich starten? Die Gruppen können danach nicht mehr geändert werden."
+    },
+    "commitDialog": {
+      "title": "Veranstaltung freigeben",
+      "text": "Möchtest du die Veranstlaung {{date}} wirklich freigeben? Die Zeitfenster können nicht mehr angepasst werden und die Spieler werden über ein neues Event benachrichtig"
     },
     "error": {
       "load": "Fehler beim Laden der Veranstaltungen.",
@@ -201,7 +206,8 @@
     "no": "Nein",
     "copyToClipboard": "In die Zwischenablage kopieren",
     "saved": "Gespeichert",
-    "update": "Aktualisieren"
+    "update": "Aktualisieren",
+    "commit": "Freigeben"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

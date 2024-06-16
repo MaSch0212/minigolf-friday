@@ -9,6 +9,7 @@ public class EventEntity
     public required DateOnly Date { get; set; }
     public required DateTimeOffset RegistrationDeadline { get; set; }
     public DateTimeOffset? StartedAt { get; set; }
+    public required bool Staged { get; set; }
 
     public List<EventTimeslotEntity> Timeslots { get; set; } = [];
 
@@ -25,5 +26,6 @@ public class EventEntity
         builder.Property(x => x.StartedAt).HasColumnName("started_at");
 
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Staged).HasColumnName("staged").IsRequired();
     }
 }
