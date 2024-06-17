@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
 
 namespace MinigolfFriday.Host.Endpoints.User.Settings;
@@ -18,6 +20,7 @@ public record UpdateUserSettingsRequest(
     bool? EnableNotifications,
     bool? NotifyOnEventPublish,
     bool? NotifyOnEventStart,
+    bool? NotifyOnEventUpdated,
     bool? NotifyOnTimeslotStart,
     int? SecondsToNotifyBeforeTimeslotStart
 );
@@ -34,11 +37,8 @@ public class UpdateUserSettingsRequestValidator : Validator<UpdateUserSettingsRe
     }
 }
 
-public class UpdateUserSettingsEndpoint(
-    DatabaseContext databaseContext,
-    IIdService idService,
-    IJwtService jwtService
-) : Endpoint<UpdateUserSettingsRequest>
+public class UpdateUserSettingsEndpoint(DatabaseContext databaseContext, IJwtService jwtService)
+    : Endpoint<UpdateUserSettingsRequest>
 {
     public override void Configure()
     {
@@ -55,5 +55,41 @@ public class UpdateUserSettingsEndpoint(
             await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
             return;
         }
+
+        var user = await databaseContext
+            .Users.Include(x => x.Settings)
+            .FirstAsync(x => x.Id == userId, ct);
+
+        if (user.Settings == null)
+        {
+            user.Settings = new()
+            {
+                EnableNotifications = req.EnableNotifications ?? true,
+                NotifyOnEventPublish = req.NotifyOnEventPublish ?? true,
+                NotifyOnEventStart = req.NotifyOnEventStart ?? true,
+                NotifyOnEventUpdated = req.NotifyOnEventUpdated ?? true,
+                NotifyOnTimeslotStart = req.NotifyOnTimeslotStart ?? true,
+                SecondsToNotifyBeforeTimeslotStart = req.SecondsToNotifyBeforeTimeslotStart ?? 600
+            };
+        }
+        else
+        {
+            user.Settings.EnableNotifications =
+                req.EnableNotifications ?? user.Settings.EnableNotifications;
+            user.Settings.NotifyOnEventPublish =
+                req.NotifyOnEventPublish ?? user.Settings.NotifyOnEventPublish;
+            user.Settings.NotifyOnEventStart =
+                req.NotifyOnEventStart ?? user.Settings.NotifyOnEventStart;
+            user.Settings.NotifyOnEventUpdated =
+                req.NotifyOnEventUpdated ?? user.Settings.NotifyOnEventUpdated;
+            user.Settings.NotifyOnTimeslotStart =
+                req.NotifyOnTimeslotStart ?? user.Settings.NotifyOnTimeslotStart;
+            user.Settings.SecondsToNotifyBeforeTimeslotStart =
+                req.SecondsToNotifyBeforeTimeslotStart
+                ?? user.Settings.SecondsToNotifyBeforeTimeslotStart;
+        }
+
+        await databaseContext.SaveChangesAsync(ct);
+        await SendOkAsync(ct);
     }
 }

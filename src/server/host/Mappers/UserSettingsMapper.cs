@@ -7,10 +7,10 @@ namespace MinigolfFriday.Host.Mappers;
 [GenerateAutoInterface]
 public class UserSettingsMapper : IUserSettingsMapper
 {
-    public Expression<Func<UserEntity, UserSettings>> MapUserToUserSettingsExpression { get; } =
+    public Expression<Func<UserEntity, UserSettings?>> MapUserToUserSettingsExpression { get; } =
         (UserEntity entity) =>
             entity.Settings == null
-                ? new()
+                ? null
                 : new()
                 {
                     EnableNotifications = entity.Settings.EnableNotifications,
