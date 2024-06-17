@@ -73,7 +73,8 @@ public class GetTokenEndpoint(
                 user.Id < 0 ? "admin" : idService.User.Encode(user.Id),
                 user.Alias ?? "unknown",
                 user.Roles.ToArray(),
-                new([], [])
+                new([], []),
+                null
             );
         await SendAsync(new(token.ToTokenString(), token.ValidTo, u), cancellation: ct);
     }

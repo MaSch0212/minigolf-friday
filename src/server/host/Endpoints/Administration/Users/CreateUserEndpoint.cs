@@ -79,7 +79,13 @@ public class CreateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(
             new(
-                new(idService.User.Encode(user.Id), req.Alias, req.Roles, req.PlayerPreferences),
+                new(
+                    idService.User.Encode(user.Id),
+                    req.Alias,
+                    req.Roles,
+                    req.PlayerPreferences,
+                    null
+                ),
                 user.LoginToken
             ),
             201,
