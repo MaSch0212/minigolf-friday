@@ -1,16 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
-using MinigolfFriday.Data.Entities;
-using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Host.Common;
-using MinigolfFriday.Host.Options;
 using MinigolfFriday.Host.Services;
-using MinigolfFriday.Host.Utilities;
 
-namespace MinigolfFriday.Host.Endpoints.UserSettings;
+namespace MinigolfFriday.Host.Endpoints.User.Settings;
 
 /// <param name="UserId">The id of the user to change settings.</param>
 /// <param name="EnableNotifications">Whether to enable notifications.</param>
