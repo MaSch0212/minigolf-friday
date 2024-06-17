@@ -112,6 +112,13 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'settings',
+    loadComponent: () =>
+      import('./components/settings/settings.component').then(
+        ({ SettingsComponent }) => SettingsComponent
+      ),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login.component').then(({ LoginComponent }) => LoginComponent),

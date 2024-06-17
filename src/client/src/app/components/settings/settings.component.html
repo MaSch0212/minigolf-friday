@@ -1,0 +1,14 @@
+@if (isLoading()) {
+  <p-progressSpinner class="m-8"></p-progressSpinner>
+} @else if (hasFailed()) {
+  <p-messages severity="error">
+    <ng-template pTemplate>
+      <span class="i-[mdi--close-circle-outline] mr-2"></span>
+      <span>{{ translations.users_error_load() }} {{ translations.shared_tryAgainLater() }}</span>
+    </ng-template>
+  </p-messages>
+} @else {
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-1">
+    <a> settings works </a>
+  </div>
+}
