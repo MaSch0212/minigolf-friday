@@ -139,6 +139,7 @@ public class DatabaseContext(
         builder.Entity<RoleEntity>(RoleEntity.Configure);
         builder.Entity<UserEntity>(UserEntity.Configure);
         builder.Entity<UserPushSubscriptionEntity>(UserPushSubscriptionEntity.Configure);
+        builder.Entity<UserSettingsEntity>(UserSettingsEntity.Configure);
     }
 
     private static DbContextOptionsBuilder ConfigureSqlite(

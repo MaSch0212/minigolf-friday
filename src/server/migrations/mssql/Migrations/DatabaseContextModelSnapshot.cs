@@ -300,28 +300,34 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("EnableNotifications")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("enable_notifications");
 
                     b.Property<bool>("NotifyOnEventPublish")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("notify_on_event_publish");
 
                     b.Property<bool>("NotifyOnEventStart")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("notify_on_event_start");
 
                     b.Property<bool>("NotifyOnTimeslotStart")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("notify_on_timeslot_start");
 
                     b.Property<long>("SecondsToNotifyBeforeTimeslotStart")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("seconds_to_notify_before_timeslot_start");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserSettingsEntity");
+                    b.ToTable("user_settings", (string)null);
                 });
 
             modelBuilder.Entity("event_instances_to_users", b =>

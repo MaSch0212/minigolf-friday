@@ -278,26 +278,32 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<bool>("EnableNotifications")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("enable_notifications");
 
                     b.Property<bool>("NotifyOnEventPublish")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_event_publish");
 
                     b.Property<bool>("NotifyOnEventStart")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_event_start");
 
                     b.Property<bool>("NotifyOnTimeslotStart")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_timeslot_start");
 
                     b.Property<long>("SecondsToNotifyBeforeTimeslotStart")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("seconds_to_notify_before_timeslot_start");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserSettingsEntity");
+                    b.ToTable("user_settings", (string)null);
                 });
 
             modelBuilder.Entity("event_instances_to_users", b =>

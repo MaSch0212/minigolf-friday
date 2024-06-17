@@ -15,15 +15,15 @@ public class UserSettingsEntity
 
     public static void Configure(EntityTypeBuilder<UserSettingsEntity> builder)
     {
-        builder.ToTable("userSettings");
+        builder.ToTable("user_settings");
 
         builder.Property(x => x.Id).HasColumnName("id").IsRequired().ValueGeneratedOnAdd();
-        builder.Property(x => x.EnableNotifications).HasColumnName("enableNotifications");
-        builder.Property(x => x.NotifyOnEventPublish).HasColumnName("notifyOnEventPublish");
-        builder.Property(x => x.NotifyOnEventStart).HasColumnName("notifyOnEventStart");
-        builder.Property(x => x.NotifyOnTimeslotStart).HasColumnName("notifyOnTimeslotStart");
+        builder.Property(x => x.EnableNotifications).HasColumnName("enable_notifications");
+        builder.Property(x => x.NotifyOnEventPublish).HasColumnName("notify_on_event_publish");
+        builder.Property(x => x.NotifyOnEventStart).HasColumnName("notify_on_event_start");
+        builder.Property(x => x.NotifyOnTimeslotStart).HasColumnName("notify_on_timeslot_start");
         builder
             .Property(x => x.SecondsToNotifyBeforeTimeslotStart)
-            .HasColumnName("secondsToNotifyBeforeTimeslotStart");
+            .HasColumnName("seconds_to_notify_before_timeslot_start");
     }
 }
