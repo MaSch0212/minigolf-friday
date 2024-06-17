@@ -4,15 +4,15 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Host.Common;
-using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
 
-namespace MinigolfFriday.Host.Endpoints.User.Settings;
+namespace MinigolfFriday.Host.Endpoints.UserSettings;
 
 /// <param name="UserId">The id of the user to change settings.</param>
 /// <param name="EnableNotifications">Whether to enable notifications.</param>
 /// <param name="NotifyOnEventPublish">Whether to notify on event publish.</param>
 /// <param name="NotifyOnEventStart">Whether to notify on event start.</param>
+/// <param name="NotifyOnEventUpdated">Whether to notify on event updated.</param>
 /// <param name="NotifyOnTimeslotStart">Whether to notify on timeslot start.</param>
 /// <param name="SecondsToNotifyBeforeTimeslotStart">The number of seconds to notify before a timeslot starts.</param>
 public record UpdateUserSettingsRequest(

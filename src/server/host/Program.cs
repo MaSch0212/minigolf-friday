@@ -45,6 +45,7 @@ builder.Services.AddScoped<IMinigolfMapMapper, MinigolfMapMapper>();
 builder.Services.AddScoped<IPlayerEventMapper, PlayerEventMapper>();
 builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<IUserPushSubscriptionMapper, UserPushSubscriptionMapper>();
+builder.Services.AddScoped<IUserSettingsMapper, UserSettingsMapper>();
 
 builder.Services.AddHealthChecks().AddDbContextCheck<DatabaseContext>();
 builder.Services.AddFastEndpoints(o =>

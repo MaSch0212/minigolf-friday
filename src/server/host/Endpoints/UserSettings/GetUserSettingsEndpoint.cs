@@ -1,15 +1,15 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
-using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
+using Settings = MinigolfFriday.Domain.Models.UserSettings;
 
-namespace MinigolfFriday.Host.Endpoints.User.Settings;
+namespace MinigolfFriday.Host.Endpoints.UserSettings;
 
 /// <param name="Settings">The settings of the user.</param>
-public record GetUserSettingsResponse(UserSettings Settings);
+public record GetUserSettingsResponse(Settings Settings);
 
 public class GetUserSettingsEndpoint(
     DatabaseContext databaseContext,
