@@ -15,6 +15,7 @@ public class UserEntity
 
     public List<EventInstanceEntity> EventInstances { get; set; } = [];
     public List<UserPushSubscriptionEntity> PushSubscriptions { get; set; } = [];
+    public UserSettingsEntity? UserSettings { get; set; } = null;
 
     public static void Configure(EntityTypeBuilder<UserEntity> builder)
     {
