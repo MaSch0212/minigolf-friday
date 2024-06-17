@@ -15,6 +15,7 @@ import { provideAppState } from './+state/app';
 import { provideEventsState } from './+state/events';
 import { provideMapsState } from './+state/maps';
 import { providePlayerEventsState } from './+state/player-events';
+import { provideUserSettingsState } from './+state/user-settings';
 import { provideUsersState } from './+state/users';
 import { provideApi } from './api/services';
 import { routes } from './app.routes';
@@ -38,6 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideMapsState(),
     provideEventsState(),
     providePlayerEventsState(),
+    provideUserSettingsState(),
     environment.getProviders(),
     provideAuth(),
     provideServiceWorker('ngsw-worker.js', {

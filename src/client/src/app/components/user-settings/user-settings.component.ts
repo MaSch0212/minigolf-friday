@@ -28,7 +28,7 @@ import { selectSignal } from '../../utils/ngrx.utils';
 // }
 
 @Component({
-  selector: 'app-settings',
+  selector: 'app-user-settings',
   standalone: true,
   imports: [
     ButtonModule,
@@ -40,11 +40,11 @@ import { selectSignal } from '../../utils/ngrx.utils';
     // UserItemComponent,
     ProgressSpinnerModule,
   ],
-  templateUrl: './settings.component.html',
-  styleUrl: './settings.component.scss',
+  templateUrl: './user-settings.component.html',
+  styleUrl: './user-settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent {
+export class UserSettingsComponent {
   private readonly _store = inject(Store);
   private readonly _allUsers = selectSignal(userSelectors.selectAll);
   private readonly _confirmationService = inject(ConfirmationService);

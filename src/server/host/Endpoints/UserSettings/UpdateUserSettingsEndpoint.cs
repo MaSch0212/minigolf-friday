@@ -8,7 +8,6 @@ using MinigolfFriday.Host.Services;
 
 namespace MinigolfFriday.Host.Endpoints.UserSettings;
 
-/// <param name="UserId">The id of the user to change settings.</param>
 /// <param name="EnableNotifications">Whether to enable notifications.</param>
 /// <param name="NotifyOnEventPublish">Whether to notify on event publish.</param>
 /// <param name="NotifyOnEventStart">Whether to notify on event start.</param>
@@ -16,7 +15,6 @@ namespace MinigolfFriday.Host.Endpoints.UserSettings;
 /// <param name="NotifyOnTimeslotStart">Whether to notify on timeslot start.</param>
 /// <param name="SecondsToNotifyBeforeTimeslotStart">The number of seconds to notify before a timeslot starts.</param>
 public record UpdateUserSettingsRequest(
-    [property: Required] string UserId,
     bool? EnableNotifications,
     bool? NotifyOnEventPublish,
     bool? NotifyOnEventStart,
@@ -29,7 +27,6 @@ public class UpdateUserSettingsRequestValidator : Validator<UpdateUserSettingsRe
 {
     public UpdateUserSettingsRequestValidator(IIdService idService)
     {
-        RuleFor(x => x.UserId).NotEmpty().ValidSqid(idService.User);
         When(
             x => x.SecondsToNotifyBeforeTimeslotStart.HasValue,
             () => RuleFor(x => x.SecondsToNotifyBeforeTimeslotStart!.Value).InclusiveBetween(0, 60)

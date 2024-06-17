@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
@@ -9,7 +10,7 @@ using Settings = MinigolfFriday.Domain.Models.UserSettings;
 namespace MinigolfFriday.Host.Endpoints.UserSettings;
 
 /// <param name="Settings">The settings of the user.</param>
-public record GetUserSettingsResponse(Settings Settings);
+public record GetUserSettingsResponse([property: Required] Settings Settings);
 
 public class GetUserSettingsEndpoint(
     DatabaseContext databaseContext,

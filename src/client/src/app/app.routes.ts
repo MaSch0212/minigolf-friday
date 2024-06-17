@@ -112,10 +112,10 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'settings',
+    path: 'user-settings',
     loadComponent: () =>
-      import('./components/settings/settings.component').then(
-        ({ SettingsComponent }) => SettingsComponent
+      import('./components/user-settings/user-settings.component').then(
+        ({ UserSettingsComponent }) => UserSettingsComponent
       ),
   },
   {
