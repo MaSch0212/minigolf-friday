@@ -237,11 +237,16 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("nvarchar(32)")
                         .HasColumnName("login_token");
 
+                    b.Property<long?>("UserSettingsId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LoginToken")
                         .IsUnique()
                         .HasFilter("[login_token] IS NOT NULL");
+
+                    b.HasIndex("UserSettingsId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -289,6 +294,34 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("user_push_subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserSettingsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("EnableNotifications")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NotifyOnEventPublish")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NotifyOnEventStart")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NotifyOnTimeslotStart")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("SecondsToNotifyBeforeTimeslotStart")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSettingsEntity");
                 });
 
             modelBuilder.Entity("event_instances_to_users", b =>
@@ -429,6 +462,15 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.Navigation("FallbackEventTimeslot");
 
                     b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.Data.Entities.UserSettingsEntity", "UserSettings")
+                        .WithMany()
+                        .HasForeignKey("UserSettingsId");
+
+                    b.Navigation("UserSettings");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
