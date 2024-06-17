@@ -1,14 +1,121 @@
-@if (isLoading()) {
-  <p-progressSpinner class="m-8"></p-progressSpinner>
-} @else if (hasFailed()) {
-  <p-messages severity="error">
-    <ng-template pTemplate>
-      <span class="i-[mdi--close-circle-outline] mr-2"></span>
-      <span>{{ translations.users_error_load() }} {{ translations.shared_tryAgainLater() }}</span>
-    </ng-template>
-  </p-messages>
-} @else {
-  <div class="flex h-full w-full max-w-[40rem] flex-col gap-1">
-    <a> settings works </a>
-  </div>
-}
+<div class="flex h-full w-full max-w-[40rem] flex-col gap-4">
+  <h1 class="m-0">{{ translations.nav_settings() }}</h1>
+
+  <p-card [header]="translations.settings_general_title()">
+    <div class="flex flex-col gap-4">
+      <p-floatLabel>
+        <p-dropdown
+          [options]="languageOptions()"
+          [ngModel]="currentLanguageOption()"
+          (ngModelChange)="changeLanguage($event)"
+          inputId="language"
+        >
+          <ng-template let-option pTemplate="item">
+            <div class="flex items-center gap-2">
+              <span [ngClass]="option.icon"></span>
+              <span>{{ option.label }}</span>
+            </div>
+          </ng-template>
+        </p-dropdown>
+        <label for="language">{{ translations.settings_general_language() }}</label>
+      </p-floatLabel>
+
+      <p-floatLabel>
+        <p-dropdown
+          [options]="themeOptions()"
+          [ngModel]="currentThemeOption()"
+          (ngModelChange)="changeTheme($event)"
+          inputId="theme"
+        >
+          <ng-template let-option pTemplate="item">
+            <div class="flex items-center gap-2">
+              <span [ngClass]="option.icon"></span>
+              <span>{{ option.label }}</span>
+            </div>
+          </ng-template>
+        </p-dropdown>
+        <label for="theme">{{ translations.settings_general_theme() }}</label>
+      </p-floatLabel>
+    </div>
+  </p-card>
+
+  @if (isLoading()) {
+    <p-progressSpinner class="m-8 self-center"></p-progressSpinner>
+  } @else if (hasFailed()) {
+    <p-messages severity="error">
+      <ng-template pTemplate>
+        <span class="i-[mdi--close-circle-outline] mr-2"></span>
+        <span
+          >{{ translations.settings_error_load() }} {{ translations.shared_tryAgainLater() }}</span
+        >
+      </ng-template>
+    </p-messages>
+  } @else {
+    @if (settings(); as settings) {
+      <p-card [header]="translations.settings_notifications_title()">
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-row items-center gap-4">
+            <div class="grow">
+              {{ translations.settings_notifications_enabledOnAllDevices() }}
+            </div>
+            <div class="relative -my-4">
+              <p-inputSwitch
+                class="flex"
+                [disabled]="isUpdating()"
+                [ngModel]="settings.enableNotifications"
+                (ngModelChange)="updateUserSettings({ enableNotifications: $event })"
+                [resetNgModel]="resetNgModel"
+              />
+              <app-fading-message
+                class="pointer-events-none absolute top-1/2 -translate-x-[calc(100%+8px)] -translate-y-1/2 truncate rounded bg-green-100 px-4 py-2 text-green-900 dark:bg-green-900 dark:text-green-200"
+                [showTrigger]="settingsSaveStates.enabledOnAllDevices | async"
+              >
+                <span class="i-[mdi--check]"></span>
+                {{ translations.shared_saved() }}
+              </app-fading-message>
+            </div>
+          </div>
+
+          <div class="flex flex-row items-center gap-4">
+            <div class="grow">
+              {{ translations.settings_notifications_eanbled() }}
+            </div>
+            <div class="relative -my-4">
+              <p-inputSwitch
+                class="flex"
+                [disabled]="
+                  !settings.enableNotifications ||
+                  !notificationsPossible ||
+                  isUpdatingPushSubscription()
+                "
+                [ngModel]="settings.enableNotifications ? notificationsEnabled() : false"
+                (ngModelChange)="toggleNotifications($event)"
+                [resetNgModel]="resetNgModel"
+              />
+              <app-fading-message
+                class="pointer-events-none absolute top-1/2 -translate-x-[calc(100%+8px)] -translate-y-1/2 truncate rounded bg-green-100 px-4 py-2 text-green-900 dark:bg-green-900 dark:text-green-200"
+                [showTrigger]="settingsSaveStates.eanbled | async"
+              >
+                <span class="i-[mdi--check]"></span>
+                {{ translations.shared_saved() }}
+              </app-fading-message>
+            </div>
+          </div>
+
+          @if (notificationsEnabled()) {
+            <!-- TODO: Add notify options -->
+          }
+        </div>
+      </p-card>
+    }
+  }
+
+  <p-button
+    class="self-center"
+    [label]="translations.settings_signOut()"
+    icon="i-[mdi--logout]"
+    [text]="true"
+    [severity]="'danger'"
+    (onClick)="logout()"
+  />
+</div>

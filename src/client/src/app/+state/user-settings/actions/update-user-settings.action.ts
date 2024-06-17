@@ -30,7 +30,7 @@ export const updateUserSettingsReducers: Reducers<UserSettingsFeatureState> = [
   handleHttpAction(
     'update',
     updateUserSettingsAction,
-    (s, p) => !!s.settings && isEmptyObject(p, { ignoreUndefinedProperties: true })
+    (s, p) => !!s.settings && !isEmptyObject(p, { ignoreUndefinedProperties: true })
   ),
 ];
 

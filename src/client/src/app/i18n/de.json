@@ -12,6 +12,10 @@
       "unknown": "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut."
     }
   },
+  "setup": {
+    "enableNotifications": "Benachrichtigungen aktivieren",
+    "enableNotificationsDescription": "Möchten Sie Benachrichtigungen erhalten? Sie können diese Einstellung später ändern und die Benachrichtigungen jederzeit deaktivieren."
+  },
   "nav": {
     "home": "Startseite",
     "manage": "Verwalten",
@@ -23,15 +27,31 @@
     "settings": "Einstellungen"
   },
   "settings": {
-    "theme": "Thema",
-    "language": "Sprache",
-    "useSystemTheme": "Systemthema verwenden",
-    "useSystemLanguage": "Systemsprache verwenden",
-    "darkTheme": "Dunkel",
-    "lightTheme": "Hell",
+    "general": {
+      "title": "Allgemein",
+      "theme": "Thema",
+      "language": "Sprache",
+      "useSystemTheme": "Systemthema verwenden",
+      "useSystemLanguage": "Systemsprache verwenden",
+      "darkTheme": "Dunkel",
+      "lightTheme": "Hell"
+    },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "enabledOnAllDevices": "Auf allen Geräten aktiviert",
+      "eanbled": "Auf diesem Gerät aktiviert",
+      "notify": {
+        "title": "Benachrichtigen, wenn...",
+        "eventPublish": "eine Veranstaltung veröffentlicht wird",
+        "eventStart": "eine Veranstaltung startet bei der ich angemeldet bin",
+        "eventUpdated": "eine Veranstaltung aktualisiert wird bei der ich angemeldet bin",
+        "timeslotStart": "ein Zeitslot startet bei dem ich angemeldet bin"
+      }
+    },
     "signOut": "Abmelden",
-    "enableNotifications": "Benachrichtigungen aktivieren",
-    "enableNotificationsDescription": "Möchten Sie Benachrichtigungen erhalten? Sie können diese Einstellung später ändern und die Benachrichtigungen jederzeit deaktivieren."
+    "error": {
+      "load": "Fehler beim Laden der Einstellungen."
+    }
   },
   "events": {
     "notFound": "Diese Veranstaltung existiert nicht.",
