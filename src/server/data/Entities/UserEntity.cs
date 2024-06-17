@@ -8,6 +8,7 @@ public class UserEntity
     public long Id { get; set; }
     public required string? LoginToken { get; set; }
     public required string? Alias { get; set; }
+    public long? SettingsId { get; set; }
 
     public List<RoleEntity> Roles { get; set; } = [];
     public List<UserEntity> Avoid { get; set; } = [];
@@ -15,7 +16,7 @@ public class UserEntity
 
     public List<EventInstanceEntity> EventInstances { get; set; } = [];
     public List<UserPushSubscriptionEntity> PushSubscriptions { get; set; } = [];
-    public UserSettingsEntity? UserSettings { get; set; } = null;
+    public UserSettingsEntity? Settings { get; set; }
 
     public static void Configure(EntityTypeBuilder<UserEntity> builder)
     {
@@ -24,6 +25,7 @@ public class UserEntity
         builder.Property(x => x.Id).HasColumnName("id").IsRequired().ValueGeneratedOnAdd();
         builder.Property(x => x.LoginToken).HasColumnName("login_token").HasMaxLength(32);
         builder.Property(x => x.Alias).HasColumnName("alias").HasMaxLength(150);
+        builder.Property(x => x.SettingsId).HasColumnName("settings_id");
 
         builder
             .HasMany(x => x.Roles)
@@ -51,6 +53,8 @@ public class UserEntity
                 l => l.HasOne(typeof(UserEntity)).WithMany().HasForeignKey("preferred_user_id"),
                 r => r.HasOne(typeof(UserEntity)).WithMany().HasForeignKey("user_id")
             );
+
+        builder.HasOne(x => x.Settings).WithMany(x => x.Users).HasForeignKey(x => x.SettingsId);
 
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.LoginToken).IsUnique();

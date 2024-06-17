@@ -10,8 +10,11 @@ public class UserSettingsEntity
     public bool EnableNotifications { get; set; }
     public bool NotifyOnEventPublish { get; set; }
     public bool NotifyOnEventStart { get; set; }
+    public bool NotifyOnEventUpdated { get; set; }
     public bool NotifyOnTimeslotStart { get; set; }
-    public long SecondsToNotifyBeforeTimeslotStart { get; set; }
+    public int SecondsToNotifyBeforeTimeslotStart { get; set; }
+
+    public List<UserEntity> Users { get; set; } = [];
 
     public static void Configure(EntityTypeBuilder<UserSettingsEntity> builder)
     {
@@ -21,9 +24,12 @@ public class UserSettingsEntity
         builder.Property(x => x.EnableNotifications).HasColumnName("enable_notifications");
         builder.Property(x => x.NotifyOnEventPublish).HasColumnName("notify_on_event_publish");
         builder.Property(x => x.NotifyOnEventStart).HasColumnName("notify_on_event_start");
+        builder.Property(x => x.NotifyOnEventUpdated).HasColumnName("notify_on_event_updated");
         builder.Property(x => x.NotifyOnTimeslotStart).HasColumnName("notify_on_timeslot_start");
         builder
             .Property(x => x.SecondsToNotifyBeforeTimeslotStart)
             .HasColumnName("seconds_to_notify_before_timeslot_start");
+
+        builder.HasKey(x => x.Id);
     }
 }

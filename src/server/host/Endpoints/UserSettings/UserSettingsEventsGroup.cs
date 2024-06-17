@@ -7,7 +7,7 @@ public class UserSettingsGroup : Group
     public UserSettingsGroup()
     {
         Configure(
-            "usersettings",
+            "user-settings",
             x =>
             {
                 x.Description(x => x.WithTags("UserSettings"));

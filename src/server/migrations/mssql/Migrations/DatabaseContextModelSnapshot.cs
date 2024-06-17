@@ -237,8 +237,9 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("nvarchar(32)")
                         .HasColumnName("login_token");
 
-                    b.Property<long?>("UserSettingsId")
-                        .HasColumnType("bigint");
+                    b.Property<long?>("SettingsId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("settings_id");
 
                     b.HasKey("Id");
 
@@ -246,7 +247,7 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .IsUnique()
                         .HasFilter("[login_token] IS NOT NULL");
 
-                    b.HasIndex("UserSettingsId");
+                    b.HasIndex("SettingsId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -317,12 +318,16 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("notify_on_event_start");
 
+                    b.Property<bool>("NotifyOnEventUpdated")
+                        .HasColumnType("bit")
+                        .HasColumnName("notify_on_event_updated");
+
                     b.Property<bool>("NotifyOnTimeslotStart")
                         .HasColumnType("bit")
                         .HasColumnName("notify_on_timeslot_start");
 
-                    b.Property<long>("SecondsToNotifyBeforeTimeslotStart")
-                        .HasColumnType("bigint")
+                    b.Property<int>("SecondsToNotifyBeforeTimeslotStart")
+                        .HasColumnType("int")
                         .HasColumnName("seconds_to_notify_before_timeslot_start");
 
                     b.HasKey("Id");
@@ -472,11 +477,11 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
                 {
-                    b.HasOne("MinigolfFriday.Data.Entities.UserSettingsEntity", "UserSettings")
-                        .WithMany()
-                        .HasForeignKey("UserSettingsId");
+                    b.HasOne("MinigolfFriday.Data.Entities.UserSettingsEntity", "Settings")
+                        .WithMany("Users")
+                        .HasForeignKey("SettingsId");
 
-                    b.Navigation("UserSettings");
+                    b.Navigation("Settings");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
@@ -587,6 +592,11 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
                 {
                     b.Navigation("PushSubscriptions");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserSettingsEntity", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

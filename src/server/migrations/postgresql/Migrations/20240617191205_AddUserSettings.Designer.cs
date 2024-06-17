@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MinigolfFriday.Migrations.PostgreSql.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240617183846_AddUserSettings")]
+    [Migration("20240617191205_AddUserSettings")]
     partial class AddUserSettings
     {
         /// <inheritdoc />
@@ -240,15 +240,16 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                         .HasColumnType("character varying(32)")
                         .HasColumnName("login_token");
 
-                    b.Property<long?>("UserSettingsId")
-                        .HasColumnType("bigint");
+                    b.Property<long?>("SettingsId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("settings_id");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LoginToken")
                         .IsUnique();
 
-                    b.HasIndex("UserSettingsId");
+                    b.HasIndex("SettingsId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -319,12 +320,16 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("notify_on_event_start");
 
+                    b.Property<bool>("NotifyOnEventUpdated")
+                        .HasColumnType("boolean")
+                        .HasColumnName("notify_on_event_updated");
+
                     b.Property<bool>("NotifyOnTimeslotStart")
                         .HasColumnType("boolean")
                         .HasColumnName("notify_on_timeslot_start");
 
-                    b.Property<long>("SecondsToNotifyBeforeTimeslotStart")
-                        .HasColumnType("bigint")
+                    b.Property<int>("SecondsToNotifyBeforeTimeslotStart")
+                        .HasColumnType("integer")
                         .HasColumnName("seconds_to_notify_before_timeslot_start");
 
                     b.HasKey("Id");
@@ -474,11 +479,11 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
                 {
-                    b.HasOne("MinigolfFriday.Data.Entities.UserSettingsEntity", "UserSettings")
-                        .WithMany()
-                        .HasForeignKey("UserSettingsId");
+                    b.HasOne("MinigolfFriday.Data.Entities.UserSettingsEntity", "Settings")
+                        .WithMany("Users")
+                        .HasForeignKey("SettingsId");
 
-                    b.Navigation("UserSettings");
+                    b.Navigation("Settings");
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
@@ -589,6 +594,11 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
                 {
                     b.Navigation("PushSubscriptions");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserSettingsEntity", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

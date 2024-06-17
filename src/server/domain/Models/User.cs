@@ -13,8 +13,7 @@ public record User(
     [property: Required] string Id,
     [property: Required] string Alias,
     [property: Required] Role[] Roles,
-    [property: Required] PlayerPreferences PlayerPreferences,
-    UserSettings? UserSettings
+    [property: Required] PlayerPreferences PlayerPreferences
 );
 
 /// <summary>
