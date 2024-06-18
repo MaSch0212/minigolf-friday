@@ -1,7 +1,9 @@
 namespace MinigolfFriday.Host.Utilities;
 
-public static class GroupCodeGenerator
+public class GroupCodeGenerator
 {
+    private List<string> _availableWords = [.. WORDS];
+
     #region words
     private static readonly string[] WORDS =
     [ // Generated with ChatGPT
@@ -198,11 +200,13 @@ public static class GroupCodeGenerator
     ];
     #endregion
 
-    public static string Generate()
+    public string Generate()
     {
         var random = Random.Shared;
-        var word1 = WORDS[random.Next(WORDS.Length)];
+        var wordIndex = random.Next(_availableWords.Count);
+        var word = _availableWords[wordIndex];
+        _availableWords.RemoveAt(wordIndex);
         var number = DateTime.Today.Day;
-        return $"{word1}{number}";
+        return $"{word}{number}";
     }
 }
