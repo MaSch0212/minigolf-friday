@@ -12,6 +12,9 @@ This exaple hosts the application on port 8080 and uses the `/path/to/your/data`
 docker run -d \
     -e IDS__SEED=<RandomSeed> \
     -e AUTHENTICATION__JWT__SECRET=<RandomSecret> \
+    -e WEBPUSH__SUBJECT=mailto:<YourEmail> \
+    -e WEBPUSH__PUBLICKEY=<VapidPublicKey> \
+    -e WEBPUSH__PRIVATEKEY=<VapidPrivateKey> \
     -e ADMIN__LOGINTOKEN=<AdminPassword> \
     -v /path/to/your/data:/app/data \
     -p 8080:80 \
@@ -57,8 +60,8 @@ docker run -d \
 1. Create VAPID keys for the push notifications (run all command in the root directory).
    - Run `npx web-push generate-vapid-keys`
    - Run `dotnet user-secrets set WebPush:Subject mailto:<YourEmail> -p src/server/host`
-   - Run `dotnet user-secrets set WebPush:PublicKey mailto:<PublicKey> -p src/server/host`
-   - Run `dotnet user-secrets set WebPush:PrivateKey mailto:<PrivateKey> -p src/server/host`
+   - Run `dotnet user-secrets set WebPush:PublicKey <PublicKey> -p src/server/host`
+   - Run `dotnet user-secrets set WebPush:PrivateKey <PrivateKey> -p src/server/host`
 2. Run `pnpm install` in the root directory to install all dependencies.
 3. Run `dotnet dev-certs https --trust` to trust the development certificate.
 
