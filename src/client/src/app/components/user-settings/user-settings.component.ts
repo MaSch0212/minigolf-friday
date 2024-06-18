@@ -79,16 +79,19 @@ export class UserSettingsComponent {
 
   private readonly _loadActionState = selectSignal(selectUserSettingsActionState('load'));
   private readonly _updateActionState = selectSignal(selectUserSettingsActionState('update'));
-  private readonly _notificationsGranted = signal(Notification.permission === 'granted');
+  private readonly _notificationsGranted = signal(
+    'Notification' in window ? Notification.permission === 'granted' : false
+  );
 
+  protected readonly notificationsPossible = 'Notification' in window && this._swPush.isEnabled;
   protected readonly translations = this._translateService.translations;
   protected readonly resetNgModel = new Subject<void>();
   protected readonly settings = selectSignal(selectUserSettings);
-  protected readonly notificationsEnabled = chainSignals(
-    toSignal(this._swPush.subscription.pipe(map(x => !!x))),
-    hasPushSub => computed(() => hasPushSub() && this._notificationsGranted())
-  );
-  protected readonly notificationsPossible = this._swPush.isEnabled;
+  protected readonly notificationsEnabled = this.notificationsPossible
+    ? chainSignals(toSignal(this._swPush.subscription.pipe(map(x => !!x))), hasPushSub =>
+        computed(() => hasPushSub() && this._notificationsGranted())
+      )
+    : signal(false);
 
   protected readonly languageOptions = computed<LanguageOption[]>(() => [
     {
@@ -172,9 +175,11 @@ export class UserSettingsComponent {
   }
 
   protected toggleNotifications(enabled: boolean) {
+    if (!this.notificationsPossible) return;
     this.isUpdatingPushSubscription.set(true);
     if (enabled) {
       Notification.requestPermission().then(permission => {
+        this._notificationsGranted.set(permission === 'granted');
         if (permission === 'granted') {
           this._wellKnownService.wellKnown$.pipe(first()).subscribe(({ vapidPublicKey }) => {
             this._swPush.requestSubscription({ serverPublicKey: vapidPublicKey }).finally(() => {
@@ -182,6 +187,7 @@ export class UserSettingsComponent {
             });
           });
         } else {
+          this.resetNgModel.next();
           this.isUpdatingPushSubscription.set(false);
         }
       });
