@@ -40,6 +40,12 @@
       "title": "Benachrichtigungen",
       "enabledOnAllDevices": "Auf allen Geräten aktiviert",
       "eanbled": "Auf diesem Gerät aktiviert",
+      "errors": {
+        "notGranted": {
+          "title": "Erlaubnis über Benachrichtigungen nicht erteilt",
+          "description": "Um Benachrichtigungen erhalten zu können, musst du dies in den Systemeinstellungen aktivieren, oder die App erneut installieren."
+        }
+      },
       "notify": {
         "title": "Benachrichtigen, wenn...",
         "eventPublish": "eine Veranstaltung veröffentlicht wird",
@@ -121,7 +127,7 @@
     },
     "commitDialog": {
       "title": "Veranstaltung freigeben",
-      "text": "Möchtest du die Veranstlaung {{date}} wirklich freigeben? Die Zeitfenster können nicht mehr angepasst werden und die Spieler werden über ein neues Event benachrichtig"
+      "text": "Möchtest du die Veranstlaung {{date}} wirklich freigeben? Die Zeitfenster können nicht mehr angepasst werden und die Spieler werden über ein neues Event benachrichtigt"
     },
     "error": {
       "load": "Fehler beim Laden der Veranstaltungen.",
