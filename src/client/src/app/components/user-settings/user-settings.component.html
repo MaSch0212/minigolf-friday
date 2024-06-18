@@ -92,7 +92,7 @@
             </div>
           </div>
 
-          @if (notificationsEnabled()) {
+          @if (settings.enableNotifications && notificationsEnabled()) {
             <h3 class="m-0">{{ translations.settings_notifications_notify_title() }}</h3>
             <div class="flex flex-col gap-4 pl-4">
               <div class="flex flex-row items-center gap-4">

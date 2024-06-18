@@ -2,10 +2,6 @@
 
 @import 'primeng/resources/primeng.css' layer(primeng);
 
-* {
-  @apply transition-colors;
-}
-
 @mixin classStartsWith($prefixes...) {
   $selector: '';
   @for $i from 1 through length($prefixes) {
