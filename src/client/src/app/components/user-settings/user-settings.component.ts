@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SwPush } from '@angular/service-worker';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -76,6 +77,7 @@ export class UserSettingsComponent {
   private readonly _wellKnownService = inject(WellKnownService);
   private readonly _actions$ = inject(Actions);
   private readonly _swPush = inject(SwPush);
+  private readonly _messageService = inject(MessageService);
 
   private readonly _loadActionState = selectSignal(selectUserSettingsActionState('load'));
   private readonly _updateActionState = selectSignal(selectUserSettingsActionState('update'));
@@ -189,6 +191,12 @@ export class UserSettingsComponent {
         } else {
           this.resetNgModel.next();
           this.isUpdatingPushSubscription.set(false);
+          this._messageService.add({
+            severity: 'error',
+            summary: this.translations.settings_notifications_errors_notGranted_title(),
+            detail: this.translations.settings_notifications_errors_notGranted_description(),
+            sticky: true,
+          });
         }
       });
     } else {
