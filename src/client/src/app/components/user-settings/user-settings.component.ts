@@ -83,14 +83,15 @@ export class UserSettingsComponent {
     'Notification' in window ? Notification.permission === 'granted' : false
   );
 
+  protected readonly notificationsPossible = 'Notification' in window && this._swPush.isEnabled;
   protected readonly translations = this._translateService.translations;
   protected readonly resetNgModel = new Subject<void>();
   protected readonly settings = selectSignal(selectUserSettings);
-  protected readonly notificationsEnabled = chainSignals(
-    toSignal(this._swPush.subscription.pipe(map(x => !!x))),
-    hasPushSub => computed(() => hasPushSub() && this._notificationsGranted())
-  );
-  protected readonly notificationsPossible = 'Notification' in window && this._swPush.isEnabled;
+  protected readonly notificationsEnabled = this.notificationsPossible
+    ? chainSignals(toSignal(this._swPush.subscription.pipe(map(x => !!x))), hasPushSub =>
+        computed(() => hasPushSub() && this._notificationsGranted())
+      )
+    : signal(false);
 
   protected readonly languageOptions = computed<LanguageOption[]>(() => [
     {
@@ -174,7 +175,7 @@ export class UserSettingsComponent {
   }
 
   protected toggleNotifications(enabled: boolean) {
-    if (!this._swPush.isEnabled) return;
+    if (!this.notificationsPossible) return;
     this.isUpdatingPushSubscription.set(true);
     if (enabled) {
       Notification.requestPermission().then(permission => {
