@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { SwPush } from '@angular/service-worker';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -15,7 +14,7 @@ import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { filter, first, map, Subject } from 'rxjs';
 
-import { FadingMessageComponent } from '../+common/fading-message.component';
+import { SavedFadingMessageComponent } from '../+common/saved-fading-message.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
 import {
   loadUserSettingsAction,
@@ -44,6 +43,11 @@ type ThemeOption = {
   icon: string;
 };
 
+type NotifyTimeslotStartOption = {
+  label: string;
+  value: number | null;
+};
+
 @Component({
   selector: 'app-user-settings',
   standalone: true,
@@ -52,13 +56,13 @@ type ThemeOption = {
     CardModule,
     CommonModule,
     DropdownModule,
-    FadingMessageComponent,
     FormsModule,
     FloatLabelModule,
     InputSwitchModule,
     MessagesModule,
     ProgressSpinnerModule,
     ResetNgModelDirective,
+    SavedFadingMessageComponent,
   ],
   templateUrl: './user-settings.component.html',
   styleUrl: './user-settings.component.scss',
@@ -66,7 +70,6 @@ type ThemeOption = {
 })
 export class UserSettingsComponent {
   private readonly _store = inject(Store);
-  private readonly _messageService = inject(MessageService);
   private readonly _translateService = inject(TranslateService);
   private readonly _themeService = inject(ThemeService);
   private readonly _authService = inject(AuthService);
@@ -127,6 +130,10 @@ export class UserSettingsComponent {
   ]);
   protected readonly currentThemeOption = computed(() =>
     this.themeOptions().find(x => this._themeService.isTheme(x.theme))
+  );
+
+  protected readonly notifyTimeslotStartOptions = computed(() =>
+    [undefined, 0, 1, 2, 5, 10, 15, 20, 30, 45, 60].map(x => this.createNotifyTimeslotOption(x))
   );
 
   protected readonly isUpdatingPushSubscription = signal(false);
@@ -199,5 +206,15 @@ export class UserSettingsComponent {
       filter(x => x.props[name] !== undefined),
       map(x => x.type === updateUserSettingsAction.success.type)
     );
+  }
+
+  private createNotifyTimeslotOption(minutes?: number): NotifyTimeslotStartOption {
+    return {
+      label:
+        minutes === undefined
+          ? this.translations.shared_none()
+          : `${minutes} ${minutes === 1 ? this.translations.shared_minute() : this.translations.shared_minutes()}`,
+      value: minutes === undefined ? null : minutes * 60,
+    };
   }
 }

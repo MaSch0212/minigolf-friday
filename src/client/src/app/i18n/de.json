@@ -228,7 +228,10 @@
     "copyToClipboard": "In die Zwischenablage kopieren",
     "saved": "Gespeichert",
     "update": "Aktualisieren",
-    "commit": "Freigeben"
+    "commit": "Freigeben",
+    "minute": "Minute",
+    "minutes": "Minuten",
+    "none": "Keine"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

@@ -29,7 +29,8 @@ public class UpdateUserSettingsRequestValidator : Validator<UpdateUserSettingsRe
     {
         When(
             x => x.SecondsToNotifyBeforeTimeslotStart.HasValue,
-            () => RuleFor(x => x.SecondsToNotifyBeforeTimeslotStart!.Value).InclusiveBetween(0, 60)
+            () =>
+                RuleFor(x => x.SecondsToNotifyBeforeTimeslotStart!.Value).InclusiveBetween(0, 3600)
         );
     }
 }

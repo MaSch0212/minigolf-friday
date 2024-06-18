@@ -228,7 +228,10 @@
     "copyToClipboard": "Copy to clipboard",
     "saved": "Saved",
     "update": "Update",
-    "commit": "Commit"
+    "commit": "Commit",
+    "minute": "Minute",
+    "minutes": "Minutes",
+    "none": "None"
   },
   "validation": {
     "required": "Cannot be blank.",

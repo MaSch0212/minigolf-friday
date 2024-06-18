@@ -66,13 +66,9 @@
                 (ngModelChange)="updateUserSettings({ enableNotifications: $event })"
                 [resetNgModel]="resetNgModel"
               />
-              <app-fading-message
-                class="pointer-events-none absolute top-1/2 -translate-x-[calc(100%+8px)] -translate-y-1/2 truncate rounded bg-green-100 px-4 py-2 text-green-900 dark:bg-green-900 dark:text-green-200"
+              <app-saved-fading-message
                 [showTrigger]="settingsSaveStates.enabledOnAllDevices | async"
-              >
-                <span class="i-[mdi--check]"></span>
-                {{ translations.shared_saved() }}
-              </app-fading-message>
+              />
             </div>
           </div>
 
@@ -92,18 +88,95 @@
                 (ngModelChange)="toggleNotifications($event)"
                 [resetNgModel]="resetNgModel"
               />
-              <app-fading-message
-                class="pointer-events-none absolute top-1/2 -translate-x-[calc(100%+8px)] -translate-y-1/2 truncate rounded bg-green-100 px-4 py-2 text-green-900 dark:bg-green-900 dark:text-green-200"
-                [showTrigger]="settingsSaveStates.eanbled | async"
-              >
-                <span class="i-[mdi--check]"></span>
-                {{ translations.shared_saved() }}
-              </app-fading-message>
+              <app-saved-fading-message [showTrigger]="settingsSaveStates.eanbled | async" />
             </div>
           </div>
 
           @if (notificationsEnabled()) {
-            <!-- TODO: Add notify options -->
+            <h3 class="m-0">{{ translations.settings_notifications_notify_title() }}</h3>
+            <div class="flex flex-col gap-4 pl-4">
+              <div class="flex flex-row items-center gap-4">
+                <div class="grow">
+                  {{ translations.settings_notifications_notify_eventPublish() }}
+                </div>
+                <div class="relative -my-4">
+                  <p-inputSwitch
+                    class="flex"
+                    [disabled]="isUpdating()"
+                    [ngModel]="settings.notifyOnEventPublish"
+                    (ngModelChange)="updateUserSettings({ notifyOnEventPublish: $event })"
+                    [resetNgModel]="resetNgModel"
+                  />
+                  <app-saved-fading-message
+                    [showTrigger]="settingsSaveStates.notifyEventPublish | async"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row items-center gap-4">
+                <div class="grow">
+                  {{ translations.settings_notifications_notify_eventStart() }}
+                </div>
+                <div class="relative -my-4">
+                  <p-inputSwitch
+                    class="flex"
+                    [disabled]="isUpdating()"
+                    [ngModel]="settings.notifyOnEventStart"
+                    (ngModelChange)="updateUserSettings({ notifyOnEventStart: $event })"
+                    [resetNgModel]="resetNgModel"
+                  />
+                  <app-saved-fading-message
+                    [showTrigger]="settingsSaveStates.notifyEventStart | async"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row items-center gap-4">
+                <div class="grow">
+                  {{ translations.settings_notifications_notify_eventUpdated() }}
+                </div>
+                <div class="relative -my-4">
+                  <p-inputSwitch
+                    class="flex"
+                    [disabled]="isUpdating()"
+                    [ngModel]="settings.notifyOnEventUpdated"
+                    (ngModelChange)="updateUserSettings({ notifyOnEventUpdated: $event })"
+                    [resetNgModel]="resetNgModel"
+                  />
+                  <app-saved-fading-message
+                    [showTrigger]="settingsSaveStates.notifyEventUpdate | async"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-row items-center gap-4">
+                <div class="grow">
+                  {{ translations.settings_notifications_notify_timeslotStart() }}
+                </div>
+                <div class="relative">
+                  <p-dropdown
+                    appendTo="body"
+                    [options]="notifyTimeslotStartOptions()"
+                    [disabled]="isUpdating()"
+                    [ngModel]="
+                      settings.notifyOnTimeslotStart
+                        ? settings.secondsToNotifyBeforeTimeslotStart
+                        : null
+                    "
+                    (onChange)="
+                      updateUserSettings({
+                        notifyOnTimeslotStart: $event.value !== null,
+                        secondsToNotifyBeforeTimeslotStart: $event.value ?? 600,
+                      })
+                    "
+                    [resetNgModel]="resetNgModel"
+                  />
+                  <app-saved-fading-message
+                    [showTrigger]="settingsSaveStates.notifyTimeslotStart | async"
+                  />
+                </div>
+              </div>
+            </div>
           }
         </div>
       </p-card>
