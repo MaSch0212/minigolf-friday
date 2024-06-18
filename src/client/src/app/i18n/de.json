@@ -63,7 +63,7 @@
     "timeslots": "Zeitslots",
     "playerAmount": "{{amount}} Spieler",
     "noEvents": "Keine Veranstaltungen verfügbar.",
-    "noTimeslots": "Keine Zeitslots verfügbar.",
+    "noTimeslots": "Keine Zeitslots erstellt.",
     "deleteEvent": "Veranstaltung löschen",
     "deleteTimeslot": "Zeitslot löschen",
     "start": "Veranstaltung starten",
@@ -75,7 +75,7 @@
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
-      "noPreconfigurations": "Keine vordefinierten Gruppen verfügbar.",
+      "noPreconfigurations": "Keine vordefinierten Gruppen erstellt.",
       "preconfigNoPlayers": "Keine Spieler",
       "registeredPlayers": "Angemeldete Spieler",
       "noPlayers": "Bis jetzt hat sich noch kein Spieler für diesen Zeitslot angemeldet.",

@@ -46,7 +46,7 @@ docker run -d \
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/) (minimum version: 18.17.1)
-  - Enable corepack: `corepack enable`
+  - Enable corepack by running `corepack enable` in a terminal.
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) or [Docker Engine](https://docs.docker.com/engine/install/)
 - [Visual Studio Code](https://code.visualstudio.com/) (optional)
