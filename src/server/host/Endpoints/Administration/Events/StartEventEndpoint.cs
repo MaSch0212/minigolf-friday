@@ -113,6 +113,10 @@ public class StartEventEndpoint(
             .SelectMany(x => x.Instances)
             .SelectMany(x => x.Players)
             .SelectMany(x => x.PushSubscriptions)
+            .Where(x =>
+                x.User.Settings == null
+                || (x.User.Settings.EnableNotifications && x.User.Settings.NotifyOnEventStart)
+            )
             .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
             .ToListAsync(ct);
         await webPushService.SendAsync(
