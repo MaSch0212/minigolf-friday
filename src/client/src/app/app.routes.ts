@@ -112,6 +112,13 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'user-settings',
+    loadComponent: () =>
+      import('./components/user-settings/user-settings.component').then(
+        ({ UserSettingsComponent }) => UserSettingsComponent
+      ),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login.component').then(({ LoginComponent }) => LoginComponent),

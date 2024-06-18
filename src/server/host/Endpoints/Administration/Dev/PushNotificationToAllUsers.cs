@@ -23,9 +23,10 @@ public class PushNotificationToAllUsersEndpoint(
     public override async Task HandleAsync(CancellationToken ct)
     {
         var pushSubscription = await databaseContext
-            .UserPushSubscriptions.Select(
-                userPushSubscriptionMapper.MapUserPushSubscriptionExpression
+            .UserPushSubscriptions.Where(x =>
+                x.User.Settings == null || x.User.Settings.EnableNotifications
             )
+            .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
             .ToListAsync(ct);
         await webPushService.SendAsync(
             pushSubscription,

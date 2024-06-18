@@ -77,9 +77,11 @@ public class UpdateEventEndpoint(
         await SendAsync(null, cancellation: ct);
 
         var pushSubscriptions = await databaseContext
-            .UserPushSubscriptions.Select(
-                userPushSubscriptionMapper.MapUserPushSubscriptionExpression
+            .UserPushSubscriptions.Where(x =>
+                x.User.Settings == null
+                || (x.User.Settings.EnableNotifications && x.User.Settings.NotifyOnEventPublish)
             )
+            .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
             .ToListAsync(ct);
         await webPushService.SendAsync(
             pushSubscriptions,

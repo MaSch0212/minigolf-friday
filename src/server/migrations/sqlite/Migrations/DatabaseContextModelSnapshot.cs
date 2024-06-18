@@ -218,10 +218,16 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("login_token");
 
+                    b.Property<long?>("SettingsId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("settings_id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LoginToken")
                         .IsUnique();
+
+                    b.HasIndex("SettingsId");
 
                     b.ToTable("users", (string)null);
                 });
@@ -267,6 +273,42 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("user_push_subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserSettingsEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
+
+                    b.Property<bool>("EnableNotifications")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("enable_notifications");
+
+                    b.Property<bool>("NotifyOnEventPublish")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_event_publish");
+
+                    b.Property<bool>("NotifyOnEventStart")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_event_start");
+
+                    b.Property<bool>("NotifyOnEventUpdated")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_event_updated");
+
+                    b.Property<bool>("NotifyOnTimeslotStart")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("notify_on_timeslot_start");
+
+                    b.Property<int>("SecondsToNotifyBeforeTimeslotStart")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("seconds_to_notify_before_timeslot_start");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("user_settings", (string)null);
                 });
 
             modelBuilder.Entity("event_instances_to_users", b =>
@@ -409,6 +451,15 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                     b.Navigation("Player");
                 });
 
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.Data.Entities.UserSettingsEntity", "Settings")
+                        .WithMany("Users")
+                        .HasForeignKey("SettingsId");
+
+                    b.Navigation("Settings");
+                });
+
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserPushSubscriptionEntity", b =>
                 {
                     b.HasOne("MinigolfFriday.Data.Entities.UserEntity", "User")
@@ -517,6 +568,11 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.UserEntity", b =>
                 {
                     b.Navigation("PushSubscriptions");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.UserSettingsEntity", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

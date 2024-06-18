@@ -95,7 +95,7 @@
                       appendTo="body"
                       [disabled]="!canRegister() || isChanginRegistration()"
                       [ngModel]="timeslot.chosenFallbackTimeslotId"
-                      (ngModelChange)="setFallbackTimeslot(timeslot, $event)"
+                      (onChange)="setFallbackTimeslot(timeslot, $event.value)"
                       [resetNgModel]="resetNgModel"
                       [options]="timeslotsWithoutFallback()"
                       [optionValue]="'id'"

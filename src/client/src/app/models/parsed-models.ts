@@ -9,6 +9,7 @@ import {
   ApiPlayerPreferences,
   ApiRole,
   ApiUser,
+  ApiUserSettings,
 } from '../api/models';
 import { throwExp } from '../utils/common.utils';
 import { parseTime, Time } from '../utils/date.utils';
@@ -53,6 +54,8 @@ export type PlayerEventTimeslot = ChangePropertyTypes<
     time: Time;
   }
 >;
+
+export type UserSettings = ApiUserSettings;
 
 export function parseEvent(event: ApiEvent): Event {
   return {

@@ -18,29 +18,6 @@ export class ThemeService {
     () => this._theme() ?? (this.isDarkColorSchemePrefered() ? 'dark' : 'light')
   );
 
-  public readonly themeItems = computed(() => [
-    {
-      label: `${this._translations.settings_useSystemTheme()} (${this.getThemeDisplay(
-        this.isDarkColorSchemePrefered() ? 'dark' : 'light'
-      )})`,
-      icon: this.isTheme(null) ? 'i-[mdi--check]' : 'i-[mdi--theme-light-dark]',
-      command: () => this.setTheme(null),
-    },
-    {
-      separator: true,
-    },
-    {
-      label: this._translations.settings_darkTheme(),
-      icon: this.isTheme('dark') ? 'i-[mdi--check]' : 'i-[mdi--weather-night]',
-      command: () => this.setTheme('dark'),
-    },
-    {
-      label: this._translations.settings_lightTheme(),
-      icon: this.isTheme('light') ? 'i-[mdi--check]' : 'i-[mdi--weather-sunny]',
-      command: () => this.setTheme('light'),
-    },
-  ]);
-
   constructor() {
     effect(() => {
       const theme = this.theme();
@@ -66,12 +43,13 @@ export class ThemeService {
     return theme === 'light' || theme === 'dark' ? theme : null;
   }
 
-  private getThemeDisplay(theme: string) {
+  public getThemeDisplay(theme: Theme | null) {
+    theme ??= this.isDarkColorSchemePrefered() ? 'dark' : 'light';
     switch (theme) {
       case 'dark':
-        return this._translations.settings_darkTheme();
+        return this._translations.settings_general_darkTheme();
       case 'light':
-        return this._translations.settings_lightTheme();
+        return this._translations.settings_general_lightTheme();
       default:
         throw new Error(`Unknown theme: ${theme}`);
     }

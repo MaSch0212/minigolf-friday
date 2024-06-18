@@ -12,6 +12,10 @@
       "unknown": "An unknown error occurred. Please try again later."
     }
   },
+  "setup": {
+    "enableNotifications": "Enable notifications",
+    "enableNotificationsDescription": "Do you want to receive notifications? You can later change this setting and can disable notifications at any time."
+  },
   "nav": {
     "home": "Home",
     "manage": "Manage",
@@ -23,15 +27,31 @@
     "settings": "Settings"
   },
   "settings": {
-    "theme": "Theme",
-    "language": "Language",
-    "useSystemTheme": "Use system theme",
-    "useSystemLanguage": "Use system language",
-    "darkTheme": "Dark",
-    "lightTheme": "Light",
+    "general": {
+      "title": "General",
+      "theme": "Theme",
+      "language": "Language",
+      "useSystemTheme": "Use system theme",
+      "useSystemLanguage": "Use system language",
+      "darkTheme": "Dark",
+      "lightTheme": "Light"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "enabledOnAllDevices": "Enabled on all devices",
+      "eanbled": "Enabled on this device",
+      "notify": {
+        "title": "Notify me when...",
+        "eventPublish": "an event is published",
+        "eventStart": "an event I am registered for starts",
+        "eventUpdated": "an event I am registered for is updated",
+        "timeslotStart": "a timeslot I am registered for starts"
+      }
+    },
     "signOut": "Sign out",
-    "enableNotifications": "Enable notifications",
-    "enableNotificationsDescription": "Do you want to receive notifications? You can later change this setting and can disable notifications at any time."
+    "error": {
+      "load": "Failed to load settings."
+    }
   },
   "events": {
     "notFound": "This event does not exist.",
@@ -208,7 +228,10 @@
     "copyToClipboard": "Copy to clipboard",
     "saved": "Saved",
     "update": "Update",
-    "commit": "Commit"
+    "commit": "Commit",
+    "minute": "Minute",
+    "minutes": "Minutes",
+    "none": "None"
   },
   "validation": {
     "required": "Cannot be blank.",

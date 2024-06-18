@@ -3,10 +3,28 @@ export function notNullish<T>(value: T): value is NonNullable<T> {
 }
 
 export type RemoveUndefinedProperties<T extends object> = {
-  [K in keyof T as undefined extends T[K] ? never : keyof T]: T[K];
-} & { [K in keyof T as undefined extends T[K] ? keyof T : never]?: T[K] };
+  [K in keyof T as undefined extends T[K] ? never : K]: T[K];
+} & { [K in keyof T as undefined extends T[K] ? K : never]?: T[K] };
 export function removeUndefinedProperties<T extends object>(obj: T): RemoveUndefinedProperties<T> {
   return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined)) as any;
+}
+
+export function isEmptyObject(
+  obj: object,
+  options: { ignoreUndefinedProperties: true }
+): obj is Record<string, undefined>;
+export function isEmptyObject(
+  obj: object,
+  options?: { ignoreUndefinedProperties: boolean }
+): obj is Record<string, never>;
+export function isEmptyObject(
+  obj: object,
+  options?: { ignoreUndefinedProperties: boolean }
+): boolean {
+  return (
+    Object.keys(obj).length === 0 ||
+    (!!options?.ignoreUndefinedProperties && Object.values(obj).every(value => value === undefined))
+  );
 }
 
 export function throwExp(message: string): never {
