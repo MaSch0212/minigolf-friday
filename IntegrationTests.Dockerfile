@@ -3,8 +3,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 ARG CONFIGURATION=Release
 
 # Install the ICU package
-RUN apk update \
-    && apk add --no-cache icu-libs
+RUN apk update
+RUN apk add --no-cache icu-libs
+RUN apk add --no-cache icu-data-full
 
 WORKDIR /app
 EXPOSE 80
