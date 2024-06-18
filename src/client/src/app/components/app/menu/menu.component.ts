@@ -93,28 +93,6 @@ export class MenuComponent {
       label: this.translations.nav_settings(),
       icon: 'i-[mdi--cog]',
       routerLink: '/user-settings',
-      // items: [
-      //   {
-      //     label: this.translations.settings_theme(),
-      //     icon: 'i-[mdi--theme-light-dark]',
-      //     items: this._themeService.themeItems(),
-      //   },
-      //   {
-      //     label: this.translations.settings_language(),
-      //     icon: 'i-[mdi--translate]',
-      //     items: this._translateService.languageItems(),
-      //   },
-      //   {
-      //     separator: true,
-      //     visible: this.isLoggedIn(),
-      //   },
-      //   {
-      //     label: this.translations.settings_signOut(),
-      //     icon: 'i-[mdi--logout]',
-      //     command: () => this._authService.signOut(),
-      //     visible: this.isLoggedIn(),
-      //   },
-      // ],
     },
   ]);
 
