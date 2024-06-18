@@ -185,10 +185,12 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             );
         }
 
+        var Generator = new GroupCodeGenerator();
+
         return groups
             .Select(x => new EventInstance(
                 "",
-                GroupCodeGenerator.Generate(),
+                Generator.Generate(),
                 x.Select(y => idService.User.Encode(y.Id)).ToArray()
             ))
             .ToList();
