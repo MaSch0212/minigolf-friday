@@ -202,7 +202,7 @@ public static class GroupCodeGenerator
     {
         var random = Random.Shared;
         var word1 = WORDS[random.Next(WORDS.Length)];
-        var number = random.Next(1, 100);
+        var number = DateTime.Today.Day;
         return $"{word1}{number}";
     }
 }
