@@ -1,4 +1,5 @@
 import {
+  computed,
   effect,
   EventEmitter,
   inject,
@@ -7,8 +8,9 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { defer, EMPTY, EmptyError, firstValueFrom } from 'rxjs';
+import { defer, EMPTY, EmptyError, filter, firstValueFrom, map, pairwise, startWith } from 'rxjs';
 
 import { AuthService } from './auth.service';
 import { AuthTokenInfo } from './storage';
@@ -22,6 +24,7 @@ import {
   PlayerEventChangedRealtimeEvent,
   PlayerEventRegistrationChangedRealtimeEvent,
   UserSettingsChangedRealtimeEvent,
+  PlayerEventTimeslotRegistrationChanged,
 } from '../models/realtime-events';
 import { SignalrRetryPolicy } from '../signalr-retry-policy';
 import { retryWithPolicy } from '../utils/rxjs.utils';
@@ -35,11 +38,12 @@ const EVENT_PRECONFIGURATION_CHANGED = 'eventPreconfigurationChanged';
 const PLAYER_EVENT_CHANGED = 'playerEventChanged';
 const PLAYER_EVENT_REGISTRATION_CHANGED = 'playerEventRegistrationChanged';
 const USER_SETTINGS_CHANGED = 'userSettingsChanged';
+const PLAYER_EVENT_TIMESLOT_REGISTRATION_CHANGED = 'playerEventTimeslotRegistrationChanged';
 
 @Injectable({ providedIn: 'root' })
 export class RealtimeEventsService implements OnDestroy {
   private readonly _authService = inject(AuthService);
-  private readonly _isConnected = signal<boolean>(false);
+  private readonly _isConnected = signal<boolean | null>(null);
   private _hubConnection?: HubConnection;
 
   public readonly userChanged = new EventEmitter<UserChangedRealtimeEvent>();
@@ -53,11 +57,20 @@ export class RealtimeEventsService implements OnDestroy {
   public readonly playerEventRegistrationChanged =
     new EventEmitter<PlayerEventRegistrationChangedRealtimeEvent>();
   public readonly userSettingsChanged = new EventEmitter<UserSettingsChangedRealtimeEvent>();
-  public readonly isConnected = this._isConnected.asReadonly();
+  public readonly playerEventTimeslotRegistrationChanged =
+    new EventEmitter<PlayerEventTimeslotRegistrationChanged>();
+  public readonly isConnected = computed(() => !!this._isConnected());
+  public readonly onReconnected$ = toObservable(this._isConnected).pipe(
+    startWith(null),
+    pairwise(),
+    filter(([p, c]) => p === false && c === true),
+    map((): void => {})
+  );
 
   constructor() {
     effect(() => {
-      untracked(() => this.onLoginChanged(this._authService.token()));
+      const tokenInfo = this._authService.token();
+      untracked(() => this.onLoginChanged(tokenInfo));
     });
   }
 
@@ -103,6 +116,11 @@ export class RealtimeEventsService implements OnDestroy {
     this.on(connection, PLAYER_EVENT_CHANGED, this.playerEventChanged);
     this.on(connection, PLAYER_EVENT_REGISTRATION_CHANGED, this.playerEventRegistrationChanged);
     this.on(connection, USER_SETTINGS_CHANGED, this.userSettingsChanged);
+    this.on(
+      connection,
+      PLAYER_EVENT_TIMESLOT_REGISTRATION_CHANGED,
+      this.playerEventTimeslotRegistrationChanged
+    );
 
     connection.onreconnecting(() => this._isConnected.set(false));
     connection.onreconnected(() => this._isConnected.set(true));

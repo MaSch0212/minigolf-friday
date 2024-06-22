@@ -158,5 +158,25 @@ public class UpdatePlayerEventRegistrationsEndpoint(
             ),
             ct
         );
+        var changeEvents = registrations
+            .Where(x => !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslotId))
+            .Select(x => new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
+                idService.Event.Encode(eventId),
+                idService.EventTimeslot.Encode(x.EventTimeslotId),
+                idService.User.Encode(userId),
+                false
+            ))
+            .Concat(
+                targetRegistrations
+                    .Where(x => !registrations.Any(y => y.EventTimeslotId == x.TimeslotId))
+                    .Select(x => new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
+                        idService.Event.Encode(eventId),
+                        idService.EventTimeslot.Encode(x.TimeslotId),
+                        idService.User.Encode(userId),
+                        true
+                    ))
+            );
+        foreach (var changeEvent in changeEvents)
+            await realtimeEventsService.SendEventAsync(changeEvent, ct);
     }
 }

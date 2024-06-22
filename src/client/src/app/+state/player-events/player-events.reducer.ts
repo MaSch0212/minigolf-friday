@@ -4,7 +4,7 @@ import { produce } from 'immer';
 import { loadPlayerEventReducers } from './actions/load-player-event.action';
 import { loadPlayerEventsReducers } from './actions/load-player-events.action';
 import { playerEventRemovedReducers } from './actions/player-event-removed.action';
-import { resetPlayerEventsReducers } from './actions/reset-player-events.action';
+import { resetPlayerEventsActionStateReducers } from './actions/reset-player-events-action-state.action';
 import { updateEventRegistrationReducers } from './actions/update-event-registration.action';
 import {
   PlayerEventsFeatureState,
@@ -26,7 +26,7 @@ export const playerEventsReducer = createReducer<PlayerEventsFeatureState>(
   ...loadPlayerEventsReducers,
   ...loadPlayerEventReducers,
   ...playerEventRemovedReducers,
-  ...resetPlayerEventsReducers,
+  ...resetPlayerEventsActionStateReducers,
   ...updateEventRegistrationReducers,
 
   on(addEventAction.success, (state, { response }) =>

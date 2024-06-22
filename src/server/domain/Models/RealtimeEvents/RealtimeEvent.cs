@@ -108,4 +108,18 @@ public static class RealtimeEvent
     {
         public static string MethodName => "UserSettingsChanged";
     }
+
+    /// <summary>Event that is triggered when a player event timeslot registration changed.</summary>
+    public record PlayerEventTimeslotRegistrationChanged(
+        string EventId,
+        string EventTimeslotId,
+        string UserId,
+        bool IsRegistered
+    ) : IGroupRealtimeEvent
+    {
+        public static string MethodName => "PlayerEventTimeslotRegistrationChanged";
+
+        [JsonIgnore]
+        public RealtimeEventGroup Group => RealtimeEventGroup.All;
+    }
 }

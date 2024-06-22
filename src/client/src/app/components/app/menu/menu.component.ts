@@ -9,12 +9,11 @@ import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
 import { TooltipModule } from 'primeng/tooltip';
-import { fromEvent } from 'rxjs';
+import { fromEvent, merge, startWith } from 'rxjs';
 
 import { selectAppTitle } from '../../../+state/app';
 import { AuthService } from '../../../services/auth.service';
 import { RealtimeEventsService } from '../../../services/realtime-events.service';
-import { ThemeService } from '../../../services/theme.service';
 import { TranslateService, TranslationKey } from '../../../services/translate.service';
 import { chainSignals } from '../../../utils/signal.utils';
 
@@ -36,11 +35,9 @@ import { chainSignals } from '../../../utils/signal.utils';
 export class MenuComponent {
   private readonly _store = inject(Store);
   private readonly _translateService = inject(TranslateService);
-  private readonly _themeService = inject(ThemeService);
   private readonly _authService = inject(AuthService);
   private readonly _swUpdate = inject(SwUpdate);
-
-  protected readonly _reService = inject(RealtimeEventsService);
+  private readonly _realtimeEventsService = inject(RealtimeEventsService);
 
   private readonly _versionInfo = toSignal(this._swUpdate.versionUpdates);
 
@@ -101,8 +98,8 @@ export class MenuComponent {
 
   constructor() {
     if (this._swUpdate.isEnabled) {
-      fromEvent(document, 'visibilitychange')
-        .pipe(takeUntilDestroyed())
+      merge(fromEvent(document, 'visibilitychange'), this._realtimeEventsService.onReconnected$)
+        .pipe(startWith(null), takeUntilDestroyed())
         .subscribe(() => {
           if (!document.hidden) {
             console.info('Checking for updates...');

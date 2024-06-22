@@ -34,3 +34,9 @@ export type PlayerEventRegistrationChangedRealtimeEvent = {
   eventId: string;
 };
 export type UserSettingsChangedRealtimeEvent = {};
+export type PlayerEventTimeslotRegistrationChanged = {
+  eventId: string;
+  eventTimeslotId: string;
+  userId: string;
+  isRegistered: boolean;
+};

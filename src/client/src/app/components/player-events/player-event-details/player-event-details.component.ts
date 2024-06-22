@@ -25,11 +25,11 @@ import { filter, map, Subject, timer } from 'rxjs';
 import { FadingMessageComponent } from '../../+common/fading-message.component';
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import {
-  loadPlayerEventAction,
   updateEventRegistrationAction,
   selectPlayerEvent,
   selectPlayerEventsActionState,
 } from '../../../+state/player-events';
+import { keepPlayerEventLoaded } from '../../../+state/player-events/player-events.utils';
 import { ApiEventTimeslotRegistration } from '../../../api/models';
 import { ResetNgModelDirective } from '../../../directives/reset-ng-model.directive';
 import { PlayerEventTimeslot } from '../../../models/parsed-models';
@@ -142,14 +142,7 @@ export class PlayerEventDetailsComponent {
   );
 
   constructor() {
-    effect(
-      () => {
-        if (!this.event()) {
-          this._store.dispatch(loadPlayerEventAction({ eventId: this.eventId() }));
-        }
-      },
-      { allowSignalWrites: true }
-    );
+    keepPlayerEventLoaded(this.eventId);
 
     effect(
       () => {

@@ -12,7 +12,7 @@ import { USERS_ACTION_SCOPE } from '../consts';
 import { selectUsersActionState } from '../users.selectors';
 import { UsersFeatureState, userEntityAdapter } from '../users.state';
 
-export const loadUsersAction = createHttpAction<{ reload?: boolean }, User[]>()(
+export const loadUsersAction = createHttpAction<{ reload?: boolean; silent?: boolean }, User[]>()(
   USERS_ACTION_SCOPE,
   'Load Users'
 );
@@ -22,13 +22,14 @@ export const loadUsersReducers: Reducers<UsersFeatureState> = [
     userEntityAdapter.upsertMany(response, state)
   ),
   handleHttpAction('load', loadUsersAction, {
+    condition: (s, p) => !p.silent,
     startCondition: (s, p) => s.actionStates.load.state === 'none' || p.reload === true,
   }),
 ];
 
 export const loadUsersEffects: Effects = {
   loadUsers$: createFunctionalEffect.dispatching((api = inject(UserAdministrationService)) =>
-    onHttpAction(loadUsersAction, selectUsersActionState('load')).pipe(
+    onHttpAction(loadUsersAction, selectUsersActionState('load'), p => !!p.props.silent).pipe(
       switchMap(({ props }) => toHttpAction(getUsers(api, props), loadUsersAction, props))
     )
   ),

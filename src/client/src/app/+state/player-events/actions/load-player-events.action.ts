@@ -18,10 +18,10 @@ import {
 import { PlayerEventsFeatureState, playerEventEntityAdapter } from '../player-events.state';
 
 type _Response = { events: PlayerEvent[]; continuationToken: string | null };
-export const loadPlayerEventsAction = createHttpAction<{ reload?: boolean }, _Response>()(
-  PLAYER_EVENTS_ACTION_SCOPE,
-  'Load Player Events'
-);
+export const loadPlayerEventsAction = createHttpAction<
+  { reload?: boolean; silent?: boolean },
+  _Response
+>()(PLAYER_EVENTS_ACTION_SCOPE, 'Load Player Events');
 
 export const loadPlayerEventsReducers: Reducers<PlayerEventsFeatureState> = [
   on(loadPlayerEventsAction.success, (state, { props, response }) =>
@@ -32,13 +32,17 @@ export const loadPlayerEventsReducers: Reducers<PlayerEventsFeatureState> = [
       })
     )
   ),
-  handleHttpAction('load', loadPlayerEventsAction),
+  handleHttpAction('load', loadPlayerEventsAction, { condition: (s, p) => !p.silent }),
 ];
 
 export const loadPlayerEventsEffects: Effects = {
   loadPlayerEvents$: createFunctionalEffect.dispatching(
     (store = inject(Store), api = inject(EventsService)) =>
-      onHttpAction(loadPlayerEventsAction, selectPlayerEventsActionState('load')).pipe(
+      onHttpAction(
+        loadPlayerEventsAction,
+        selectPlayerEventsActionState('load'),
+        p => !!p.props.silent
+      ).pipe(
         withLatestFrom(store.select(selectPlayerEventsContinuationToken)),
         switchMap(([{ props }, continuationToken]) =>
           toHttpAction(

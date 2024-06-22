@@ -14,9 +14,11 @@ public class RealtimeEventsService(IHubContext<RealtimeEventsHub> hubContext)
     {
         if (@event is IGroupRealtimeEvent groupEvent)
         {
-            await hubContext
-                .Clients.Group(FastEnum.GetName(groupEvent.Group)!)
-                .SendAsync(T.MethodName, groupEvent, ct);
+            var group =
+                groupEvent.Group == RealtimeEventGroup.All
+                    ? hubContext.Clients.All
+                    : hubContext.Clients.Group(FastEnum.GetName(groupEvent.Group)!);
+            await group.SendAsync(T.MethodName, groupEvent, ct);
         }
         else if (@event is IUserRealtimeEvent userEvent)
         {

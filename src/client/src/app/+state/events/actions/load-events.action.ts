@@ -15,10 +15,10 @@ import { selectEventsActionState, selectEventsContinuationToken } from '../event
 import { EventsFeatureState, eventEntityAdapter } from '../events.state';
 
 type _Response = { events: Event[]; continuationToken: string | null };
-export const loadEventsAction = createHttpAction<{ reload?: boolean }, _Response>()(
-  EVENTS_ACTION_SCOPE,
-  'Load Events'
-);
+export const loadEventsAction = createHttpAction<
+  { reload?: boolean; silent?: boolean },
+  _Response
+>()(EVENTS_ACTION_SCOPE, 'Load Events');
 
 export const loadEventsReducers: Reducers<EventsFeatureState> = [
   on(loadEventsAction.success, (state, { props, response }) =>
@@ -29,13 +29,13 @@ export const loadEventsReducers: Reducers<EventsFeatureState> = [
       })
     )
   ),
-  handleHttpAction('load', loadEventsAction),
+  handleHttpAction('load', loadEventsAction, { condition: (s, p) => !p.silent }),
 ];
 
 export const loadEventsEffects: Effects = {
   loadEvents$: createFunctionalEffect.dispatching(
     (store = inject(Store), api = inject(EventAdministrationService)) =>
-      onHttpAction(loadEventsAction, selectEventsActionState('load')).pipe(
+      onHttpAction(loadEventsAction, selectEventsActionState('load'), p => !!p.props.silent).pipe(
         withLatestFrom(store.select(selectEventsContinuationToken)),
         switchMap(([{ props }, continuationToken]) =>
           toHttpAction(getEvents(api, props, continuationToken), loadEventsAction, props)
