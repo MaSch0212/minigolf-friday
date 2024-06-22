@@ -34,14 +34,12 @@ export const addPlayerToEventPreconfigurationReducers: Reducers<EventsFeatureSta
         )
       : state;
   }),
-  handleHttpAction(
-    'addPlayerToPreconfig',
-    addPlayerToEventPreconfigurationAction,
-    (s, p) =>
+  handleHttpAction('addPlayerToPreconfig', addPlayerToEventPreconfigurationAction, {
+    startCondition: (s, p) =>
       s.entities[p.eventId]?.timeslots.some(
         x => x.id === p.timeslotId && x.preconfigurations.some(y => y.id === p.preconfigId)
-      ) === true
-  ),
+      ) === true,
+  }),
 ];
 
 export const addPlayerToEventPreconfigurationEffects: Effects = {

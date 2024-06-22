@@ -2,10 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
@@ -39,6 +41,7 @@ public class CreateEventTimeslotRequestValidator : Validator<CreateEventTimeslot
 /// <summary>Create an event timeslot.</summary>
 public class CreateEventTimeslotEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IEventMapper eventMapper
 ) : Endpoint<CreateEventTimeslotRequest, CreateEventTimeslotResponse>
@@ -56,7 +59,7 @@ public class CreateEventTimeslotEndpoint(
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var eventInfo = await databaseContext
             .Events.Where(x => x.Id == eventId)
-            .Select(x => new { Started = x.StartedAt != null })
+            .Select(x => new { Started = x.StartedAt != null, x.Staged })
             .FirstOrDefaultAsync(ct);
 
         if (eventInfo == null)
@@ -99,5 +102,24 @@ public class CreateEventTimeslotEndpoint(
         databaseContext.EventTimeslots.Add(timeslot);
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(new(eventMapper.Map(timeslot)), 201, ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventTimeslotChanged(
+                idService.Event.Encode(eventId),
+                idService.EventTimeslot.Encode(timeslot.Id),
+                RealtimeEventChangeType.Created
+            ),
+            ct
+        );
+        if (!eventInfo.Staged)
+        {
+            await realtimeEventsService.SendEventAsync(
+                new RealtimeEvent.PlayerEventChanged(
+                    idService.Event.Encode(eventId),
+                    RealtimeEventChangeType.Updated
+                ),
+                ct
+            );
+        }
     }
 }

@@ -10,13 +10,13 @@ import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { USER_SETTINGS_ACTION_SCOPE } from '../consts';
-import { selectUserSettingsActionState } from '../users.selectors';
-import { UserSettingsFeatureState } from '../users.state';
+import { selectUserSettingsActionState } from '../user-settings.selectors';
+import { UserSettingsFeatureState } from '../user-settings.state';
 
-export const loadUserSettingsAction = createHttpAction<{ reload?: boolean }, UserSettings>()(
-  USER_SETTINGS_ACTION_SCOPE,
-  'Load'
-);
+export const loadUserSettingsAction = createHttpAction<
+  { reload?: boolean; silent?: boolean },
+  UserSettings
+>()(USER_SETTINGS_ACTION_SCOPE, 'Load');
 
 export const loadUserSettingsReducers: Reducers<UserSettingsFeatureState> = [
   on(
@@ -25,12 +25,19 @@ export const loadUserSettingsReducers: Reducers<UserSettingsFeatureState> = [
       draft.settings = response;
     })
   ),
-  handleHttpAction('load', loadUserSettingsAction, (s, p) => !s.settings || !!p.reload),
+  handleHttpAction('load', loadUserSettingsAction, {
+    condition: (s, p) => !p.silent,
+    startCondition: (s, p) => !s.settings || !!p.reload,
+  }),
 ];
 
 export const loadUserSettingsEffects: Effects = {
   loadUserSettings$: createFunctionalEffect.dispatching((api = inject(UserSettingsService)) =>
-    onHttpAction(loadUserSettingsAction, selectUserSettingsActionState('load')).pipe(
+    onHttpAction(
+      loadUserSettingsAction,
+      selectUserSettingsActionState('load'),
+      p => !!p.props.silent
+    ).pipe(
       switchMap(({ props }) =>
         toHttpAction(loadUserSettings(api, props), loadUserSettingsAction, props)
       )

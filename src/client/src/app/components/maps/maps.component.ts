@@ -13,12 +13,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MapDialogComponent } from './map-dialog/map-dialog.component';
 import { MapItemComponent } from './map-item/map-item.component';
 import { hasActionFailed, isActionBusy } from '../../+state/action-state';
-import {
-  loadMapsAction,
-  mapSelectors,
-  removeMapAction,
-  selectMapsActionState,
-} from '../../+state/maps';
+import { mapSelectors, removeMapAction, selectMapsActionState } from '../../+state/maps';
+import { keepMapsLoaded } from '../../+state/maps/maps.utils';
 import { interpolate } from '../../directives/interpolate.pipe';
 import { MinigolfMap } from '../../models/parsed-models';
 import { TranslateService } from '../../services/translate.service';
@@ -64,7 +60,7 @@ export class MapsComponent {
   protected readonly hasFailed = computed(() => hasActionFailed(this._actionState()));
 
   constructor() {
-    this._store.dispatch(loadMapsAction({ reload: false }));
+    keepMapsLoaded();
 
     const action$ = inject(Actions);
     action$

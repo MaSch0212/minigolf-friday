@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -28,6 +29,7 @@ public class RemovePlayersFromPreconfigurationRequestValidator
 /// <summary>Remove players from an event instance preconfiguration.</summary>
 public class RemovePlayersFromPreconfigurationEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService
 ) : Endpoint<RemovePlayersFromPreconfigurationRequest>
 {
@@ -58,7 +60,8 @@ public class RemovePlayersFromPreconfigurationEndpoint(
             .Select(x => new
             {
                 Started = x.EventTimeSlot.Event.StartedAt != null,
-                x.EventTimeSlot.EventId
+                x.EventTimeSlot.EventId,
+                TimeslotId = x.EventTimeSlot.Id
             })
             .FirstOrDefaultAsync(ct);
 
@@ -90,5 +93,15 @@ public class RemovePlayersFromPreconfigurationEndpoint(
             entity.Players.Remove(databaseContext.UserById(idService.User.DecodeSingle(playerId)));
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventPreconfigurationChanged(
+                idService.Event.Encode(preconfigInfo.EventId),
+                idService.EventTimeslot.Encode(preconfigInfo.TimeslotId),
+                idService.Preconfiguration.Encode(preconfigId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
     }
 }

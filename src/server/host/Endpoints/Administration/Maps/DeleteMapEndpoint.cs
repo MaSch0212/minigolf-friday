@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -20,8 +21,11 @@ public class DeleteMapRequestValidator : Validator<DeleteMapRequest>
 }
 
 /// <summary>Delete a map.</summary>
-public class DeleteMapEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<DeleteMapRequest>
+public class DeleteMapEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<DeleteMapRequest>
 {
     public override void Configure()
     {
@@ -51,5 +55,13 @@ public class DeleteMapEndpoint(DatabaseContext databaseContext, IIdService idSer
 
         await databaseContext.SaveChangesAsync(ct);
         await SendOkAsync(ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.MapChanged(
+                idService.Map.Encode(mapId),
+                RealtimeEventChangeType.Deleted
+            ),
+            ct
+        );
     }
 }

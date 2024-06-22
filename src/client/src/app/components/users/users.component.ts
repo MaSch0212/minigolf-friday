@@ -12,7 +12,7 @@ import { UserDialogComponent } from './user-dialog/user-dialog.component';
 import { UserItemComponent } from './user-item/user-item.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
 import {
-  loadUsersAction,
+  keepUsersLoaded,
   removeUserAction,
   selectUsersActionState,
   userSelectors,
@@ -59,7 +59,7 @@ export class UsersComponent {
   protected readonly hasFailed = computed(() => hasActionFailed(this._actionState()));
 
   constructor() {
-    this._store.dispatch(loadUsersAction({ reload: false }));
+    keepUsersLoaded();
   }
 
   protected deleteUser(user: User) {

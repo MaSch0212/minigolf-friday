@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
@@ -20,6 +20,7 @@ import {
   loadEventsAction,
   selectEventsActionState,
 } from '../../+state/events';
+import { keepEventsLoaded } from '../../+state/events/events.utils';
 import { TranslateService } from '../../services/translate.service';
 import { selectSignal } from '../../utils/ngrx.utils';
 
@@ -42,7 +43,7 @@ import { selectSignal } from '../../utils/ngrx.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DatePipe],
 })
-export class EventsComponent implements OnInit {
+export class EventsComponent {
   private readonly _store = inject(Store);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
@@ -68,18 +69,14 @@ export class EventsComponent implements OnInit {
   );
 
   constructor() {
+    keepEventsLoaded();
+
     const actions$ = inject(Actions);
     actions$
       .pipe(takeUntilDestroyed(), ofType(addEventAction.success))
       .subscribe(({ response }) =>
         this._router.navigate([response.id], { relativeTo: this._activatedRoute })
       );
-  }
-
-  public ngOnInit(): void {
-    if (this.actionState().state === 'none') {
-      this._store.dispatch(loadEventsAction({ reload: false }));
-    }
   }
 
   protected loadNextPage(): void {

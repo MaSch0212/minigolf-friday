@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -40,6 +41,7 @@ public class UpdatePlayerEventRegistrationsRequestValidator
 
 public class UpdatePlayerEventRegistrationsEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IJwtService jwtService
 ) : Endpoint<UpdatePlayerEventRegistrationsRequest>
@@ -148,5 +150,33 @@ public class UpdatePlayerEventRegistrationsEndpoint(
         }
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.PlayerEventRegistrationChanged(
+                idService.User.Encode(userId),
+                idService.Event.Encode(eventId)
+            ),
+            ct
+        );
+        var changeEvents = registrations
+            .Where(x => !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslotId))
+            .Select(x => new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
+                idService.Event.Encode(eventId),
+                idService.EventTimeslot.Encode(x.EventTimeslotId),
+                idService.User.Encode(userId),
+                false
+            ))
+            .Concat(
+                targetRegistrations
+                    .Where(x => !registrations.Any(y => y.EventTimeslotId == x.TimeslotId))
+                    .Select(x => new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
+                        idService.Event.Encode(eventId),
+                        idService.EventTimeslot.Encode(x.TimeslotId),
+                        idService.User.Encode(userId),
+                        true
+                    ))
+            );
+        foreach (var changeEvent in changeEvents)
+            await realtimeEventsService.SendEventAsync(changeEvent, ct);
     }
 }

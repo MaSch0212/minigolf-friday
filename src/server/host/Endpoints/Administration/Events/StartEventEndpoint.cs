@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models.Push;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
@@ -24,6 +25,7 @@ public class StartEventRequestValidator : Validator<StartEventRequest>
 /// <summary>Starts an event.</summary>
 public class StartEventEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IUserPushSubscriptionMapper userPushSubscriptionMapper,
     IWebPushService webPushService
@@ -106,6 +108,22 @@ public class StartEventEndpoint(
         await databaseContext
             .Events.Where(x => x.Id == eventId)
             .ExecuteUpdateAsync(x => x.SetProperty(x => x.StartedAt, now), ct);
+        await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventChanged(
+                idService.Event.Encode(eventId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.PlayerEventChanged(
+                idService.Event.Encode(eventId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
 
         var pushSubscription = await databaseContext
             .Events.Where(x => x.Id == eventId)
@@ -124,7 +142,5 @@ public class StartEventEndpoint(
             new PushNotificationData.EventStarted(idService.Event.Encode(eventId)),
             ct
         );
-
-        await SendAsync(null, cancellation: ct);
     }
 }

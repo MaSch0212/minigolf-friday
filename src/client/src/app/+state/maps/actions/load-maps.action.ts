@@ -12,10 +12,10 @@ import { MAPS_ACTION_SCOPE } from '../consts';
 import { selectMapsActionState } from '../maps.selectors';
 import { mapsEntityAdapter, MapsFeatureState } from '../maps.state';
 
-export const loadMapsAction = createHttpAction<{ reload?: boolean }, MinigolfMap[]>()(
-  MAPS_ACTION_SCOPE,
-  'Load Maps'
-);
+export const loadMapsAction = createHttpAction<
+  { reload?: boolean; silent?: boolean },
+  MinigolfMap[]
+>()(MAPS_ACTION_SCOPE, 'Load Maps');
 
 export const loadMapsReducers: Reducers<MapsFeatureState> = [
   on(loadMapsAction.success, (state, { props, response }) =>
@@ -24,12 +24,12 @@ export const loadMapsReducers: Reducers<MapsFeatureState> = [
       props.reload ? mapsEntityAdapter.removeAll(state) : state
     )
   ),
-  handleHttpAction('load', loadMapsAction),
+  handleHttpAction('load', loadMapsAction, { condition: (s, p) => !p.silent }),
 ];
 
 export const loadMapsEffects: Effects = {
   loadMaps$: createFunctionalEffect.dispatching((api = inject(MapAdministrationService)) =>
-    onHttpAction(loadMapsAction, selectMapsActionState('load')).pipe(
+    onHttpAction(loadMapsAction, selectMapsActionState('load'), p => !!p.props.silent).pipe(
       switchMap(({ props }) => toHttpAction(getMaps(api, props), loadMapsAction, props))
     )
   ),

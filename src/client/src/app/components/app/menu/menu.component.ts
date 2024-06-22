@@ -9,11 +9,11 @@ import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
 import { TooltipModule } from 'primeng/tooltip';
-import { fromEvent } from 'rxjs';
+import { filter, fromEvent, map, merge } from 'rxjs';
 
 import { selectAppTitle } from '../../../+state/app';
 import { AuthService } from '../../../services/auth.service';
-import { ThemeService } from '../../../services/theme.service';
+import { RealtimeEventsService } from '../../../services/realtime-events.service';
 import { TranslateService, TranslationKey } from '../../../services/translate.service';
 import { chainSignals } from '../../../utils/signal.utils';
 
@@ -35,11 +35,9 @@ import { chainSignals } from '../../../utils/signal.utils';
 export class MenuComponent {
   private readonly _store = inject(Store);
   private readonly _translateService = inject(TranslateService);
-  private readonly _themeService = inject(ThemeService);
   private readonly _authService = inject(AuthService);
   private readonly _swUpdate = inject(SwUpdate);
-
-  private readonly _versionInfo = toSignal(this._swUpdate.versionUpdates);
+  private readonly _realtimeEventsService = inject(RealtimeEventsService);
 
   protected readonly translations = this._translateService.translations;
   protected readonly title = chainSignals(this._store.selectSignal(selectAppTitle), title =>
@@ -51,8 +49,12 @@ export class MenuComponent {
   protected readonly isAdmin = computed(
     () => this._authService.user()?.roles.includes('admin') ?? false
   );
-  protected readonly newVersionAvailable = computed(
-    () => this._versionInfo()?.type === 'VERSION_READY'
+  protected readonly newVersionAvailable = toSignal(
+    this._swUpdate.versionUpdates.pipe(
+      filter(x => x.type === 'VERSION_READY'),
+      map(() => true)
+    ),
+    { initialValue: false }
   );
 
   protected readonly menuItems = computed<MenuItem[]>(() => [
@@ -97,14 +99,16 @@ export class MenuComponent {
   ]);
 
   constructor() {
-    fromEvent(document, 'visibilitychange')
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        if (!document.hidden) {
-          console.info('Checking for updates...');
-          this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
-        }
-      });
+    if (this._swUpdate.isEnabled) {
+      merge(fromEvent(document, 'visibilitychange'), this._realtimeEventsService.onReconnected$)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => {
+          if (!document.hidden) {
+            console.info('Checking for updates...');
+            this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
+          }
+        });
+    }
   }
 
   protected updateApp() {

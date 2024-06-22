@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -18,7 +18,6 @@ import { map } from 'rxjs';
 import { isActionBusy, hasActionFailed } from '../../../+state/action-state';
 import {
   addPlayerToEventPreconfigurationAction,
-  loadEventAction,
   removeEventPreconfigAction,
   removeEventTimeslotAction,
   removePlayerFromPreconfigAction,
@@ -27,8 +26,15 @@ import {
   selectEventsActionState,
 } from '../../../+state/events';
 import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
-import { loadMapsAction, mapSelectors } from '../../../+state/maps';
-import { loadUsersAction, selectUsersActionState, userSelectors } from '../../../+state/users';
+import { keepEventLoaded } from '../../../+state/events/events.utils';
+import { mapSelectors } from '../../../+state/maps';
+import { keepMapsLoaded } from '../../../+state/maps/maps.utils';
+import {
+  keepUsersLoaded,
+  loadUsersAction,
+  selectUsersActionState,
+  userSelectors,
+} from '../../../+state/users';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
@@ -121,12 +127,9 @@ export class EventTimeslotComponent {
   constructor() {
     const actions$ = inject(Actions);
 
-    this._store.dispatch(loadMapsAction({ reload: false }));
-    this._store.dispatch(loadUsersAction({ reload: false }));
-
-    effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
-      allowSignalWrites: true,
-    });
+    keepMapsLoaded();
+    keepUsersLoaded();
+    keepEventLoaded(this.eventId);
 
     errorToastEffect(
       this.translations.events_error_addPlayerToPreconfig,

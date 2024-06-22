@@ -5,6 +5,7 @@ using MaSch.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -59,8 +60,11 @@ public class UpdateUserRequestValidator : Validator<UpdateUserRequest>
 }
 
 /// <summary>Update a user.</summary>
-public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<UpdateUserRequest>
+public class UpdateUserEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<UpdateUserRequest>
 {
     public override void Configure()
     {
@@ -130,5 +134,13 @@ public class UpdateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
         ThrowIfAnyErrors();
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(
+                idService.User.Encode(userId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
     }
 }

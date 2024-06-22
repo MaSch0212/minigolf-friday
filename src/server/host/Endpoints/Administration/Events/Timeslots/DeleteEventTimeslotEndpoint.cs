@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -20,8 +21,11 @@ public class DeleteEventTimeslotRequestValidator : Validator<DeleteEventTimeslot
 }
 
 /// <summary>Delete an event timeslot.</summary>
-public class DeleteEventTimeslotEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<DeleteEventTimeslotRequest>
+public class DeleteEventTimeslotEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<DeleteEventTimeslotRequest>
 {
     public override void Configure()
     {
@@ -38,7 +42,12 @@ public class DeleteEventTimeslotEndpoint(DatabaseContext databaseContext, IIdSer
         var timeslotId = idService.EventTimeslot.DecodeSingle(req.TimeslotId);
         var timeslotQuery = databaseContext.EventTimeslots.Where(x => x.Id == timeslotId);
         var timeslotInfo = await timeslotQuery
-            .Select(x => new { EventStarted = x.Event.StartedAt != null, x.EventId })
+            .Select(x => new
+            {
+                EventStarted = x.Event.StartedAt != null,
+                x.EventId,
+                x.Event.Staged
+            })
             .FirstOrDefaultAsync(ct);
 
         if (timeslotInfo == null)
@@ -61,5 +70,24 @@ public class DeleteEventTimeslotEndpoint(DatabaseContext databaseContext, IIdSer
 
         await timeslotQuery.ExecuteDeleteAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventTimeslotChanged(
+                idService.Event.Encode(timeslotInfo.EventId),
+                idService.EventTimeslot.Encode(timeslotId),
+                RealtimeEventChangeType.Deleted
+            ),
+            ct
+        );
+        if (!timeslotInfo.Staged)
+        {
+            await realtimeEventsService.SendEventAsync(
+                new RealtimeEvent.PlayerEventChanged(
+                    idService.Event.Encode(timeslotInfo.EventId),
+                    RealtimeEventChangeType.Updated
+                ),
+                ct
+            );
+        }
     }
 }

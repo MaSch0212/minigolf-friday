@@ -6,6 +6,7 @@ using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Models.Push;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
@@ -24,13 +25,13 @@ public class UpdateEventRequestValidator : Validator<UpdateEventRequest>
     public UpdateEventRequestValidator(IIdService idService)
     {
         RuleFor(x => x.EventId).NotEmpty().ValidSqid(idService.Event);
-        RuleFor(x => x.Commit);
     }
 }
 
 /// <summary>Update a new event.</summary>
 public class UpdateEventEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IUserPushSubscriptionMapper userPushSubscriptionMapper,
     IWebPushService webPushService
@@ -75,6 +76,21 @@ public class UpdateEventEndpoint(
 
         await updateBuilder.ExecuteAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventChanged(
+                idService.Event.Encode(eventId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.PlayerEventChanged(
+                idService.Event.Encode(eventId),
+                RealtimeEventChangeType.Created
+            ),
+            ct
+        );
 
         var pushSubscriptions = await databaseContext
             .UserPushSubscriptions.Where(x =>

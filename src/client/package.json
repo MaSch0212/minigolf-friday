@@ -31,6 +31,7 @@
     "@angular/pwa": "^18.0.3",
     "@angular/router": "^18.0.2",
     "@angular/service-worker": "^18.0.2",
+    "@microsoft/signalr": "^8.0.0",
     "@ngneers/easy-ngrx-distinct-selector": "^0.1.1",
     "@ngrx/effects": "18.0.0-rc.0",
     "@ngrx/entity": "18.0.0-rc.0",

@@ -1,5 +1,5 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
@@ -16,15 +16,16 @@ import { filter, map, timer } from 'rxjs';
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import {
   buildEventInstancesAction,
-  loadEventAction,
   removeEventAction,
   selectEvent,
   selectEventsActionState,
   startEventAction,
   commitEventAction,
 } from '../../../+state/events';
-import { loadMapsAction, mapSelectors } from '../../../+state/maps';
-import { loadUsersAction, userSelectors } from '../../../+state/users';
+import { keepEventLoaded } from '../../../+state/events/events.utils';
+import { mapSelectors } from '../../../+state/maps';
+import { keepMapsLoaded } from '../../../+state/maps/maps.utils';
+import { keepUsersLoaded, userSelectors } from '../../../+state/users';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy } from '../../../utils/common.utils';
@@ -109,12 +110,9 @@ export class EventDetailsComponent {
   );
 
   constructor() {
-    this._store.dispatch(loadMapsAction({ reload: false }));
-    this._store.dispatch(loadUsersAction({ reload: false }));
-
-    effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
-      allowSignalWrites: true,
-    });
+    keepMapsLoaded();
+    keepUsersLoaded();
+    keepEventLoaded(this.eventId);
 
     errorToastEffect(this.translations.events_error_delete, selectEventsActionState('remove'));
     errorToastEffect(this.translations.events_error_start, this.startActionState);

@@ -12,25 +12,24 @@ import { EVENTS_ACTION_SCOPE } from '../consts';
 import { selectEventsActionState } from '../events.selectors';
 import { EventsFeatureState, eventEntityAdapter } from '../events.state';
 
-export const loadEventAction = createHttpAction<{ eventId: string; reload?: boolean }, Event>()(
-  EVENTS_ACTION_SCOPE,
-  'Load Event'
-);
+export const loadEventAction = createHttpAction<
+  { eventId: string; reload?: boolean; silent?: boolean },
+  Event
+>()(EVENTS_ACTION_SCOPE, 'Load Event');
 
 export const loadEventReducers: Reducers<EventsFeatureState> = [
   on(loadEventAction.success, (state, { response }) =>
     eventEntityAdapter.upsertOne(response, state)
   ),
-  handleHttpAction(
-    'loadOne',
-    loadEventAction,
-    (s, p) => !s.entities[p.eventId] || p.reload === true
-  ),
+  handleHttpAction('loadOne', loadEventAction, {
+    condition: (s, p) => p.silent !== true,
+    startCondition: (s, p) => !s.entities[p.eventId] || p.reload === true,
+  }),
 ];
 
 export const loadEventEffects: Effects = {
   loadEvent$: createFunctionalEffect.dispatching((api = inject(EventAdministrationService)) =>
-    onHttpAction(loadEventAction, selectEventsActionState('loadOne')).pipe(
+    onHttpAction(loadEventAction, selectEventsActionState('loadOne'), p => !!p.props.silent).pipe(
       switchMap(({ props }) => toHttpAction(getEvent(api, props), loadEventAction, props))
     )
   ),

@@ -8,11 +8,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { map, timer } from 'rxjs';
 
 import { hasActionFailed, isActionBusy } from '../../+state/action-state';
-import {
-  loadPlayerEventsAction,
-  playerEventSelectors,
-  selectPlayerEventsActionState,
-} from '../../+state/player-events';
+import { playerEventSelectors, selectPlayerEventsActionState } from '../../+state/player-events';
+import { keepPlayerEventsLoaded } from '../../+state/player-events/player-events.utils';
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
 import { PlayerEvent } from '../../models/parsed-models';
 import { AuthService } from '../../services/auth.service';
@@ -57,7 +54,7 @@ export class PlayerEventsComponent {
   protected readonly hasLoadFailed = computed(() => hasActionFailed(this.loadActionState()));
 
   constructor() {
-    this._store.dispatch(loadPlayerEventsAction({ reload: false }));
+    keepPlayerEventsLoaded();
   }
 
   protected getRegisteredTimeslotsCount(event: PlayerEvent) {

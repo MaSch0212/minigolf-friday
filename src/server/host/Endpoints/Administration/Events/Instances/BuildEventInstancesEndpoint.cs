@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -27,6 +28,7 @@ public class BuildEventInstancesRequestValidator : Validator<BuildEventInstances
 
 /// <summary>Build event instances.</summary>
 public class BuildEventInstancesEndpoint(
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IEventInstanceService eventInstanceService
 ) : Endpoint<BuildEventInstancesRequest, BuildEventInstancesResponse>
@@ -54,5 +56,23 @@ public class BuildEventInstancesEndpoint(
             await eventInstanceService.PersistEventInstancesAsync(instances, ct);
 
         await SendAsync(new(instances, persist), cancellation: ct);
+
+        if (persist)
+        {
+            await realtimeEventsService.SendEventAsync(
+                new RealtimeEvent.EventInstancesChanged(idService.Event.Encode(eventId)),
+                ct
+            );
+            if (!@event.Staged)
+            {
+                await realtimeEventsService.SendEventAsync(
+                    new RealtimeEvent.PlayerEventChanged(
+                        idService.Event.Encode(eventId),
+                        RealtimeEventChangeType.Updated
+                    ),
+                    ct
+                );
+            }
+        }
     }
 }
