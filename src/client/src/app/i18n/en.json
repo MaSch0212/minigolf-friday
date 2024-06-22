@@ -40,6 +40,12 @@
       "title": "Notifications",
       "enabledOnAllDevices": "Enabled on all devices",
       "eanbled": "Enabled on this device",
+      "errors": {
+        "notGranted": {
+          "title": "Notification permission not granted",
+          "description": "To receive notifications, you must activate this in the system settings or reinstall the app."
+        }
+      },
       "notify": {
         "title": "Notify me when...",
         "eventPublish": "an event is published",
