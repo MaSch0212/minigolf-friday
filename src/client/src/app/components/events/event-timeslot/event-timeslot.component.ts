@@ -27,7 +27,8 @@ import {
   selectEventsActionState,
 } from '../../../+state/events';
 import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
-import { loadMapsAction, mapSelectors } from '../../../+state/maps';
+import { mapSelectors } from '../../../+state/maps';
+import { keepMapsLoaded } from '../../../+state/maps/maps.utils';
 import {
   keepUsersLoaded,
   loadUsersAction,
@@ -126,7 +127,7 @@ export class EventTimeslotComponent {
   constructor() {
     const actions$ = inject(Actions);
 
-    this._store.dispatch(loadMapsAction({ reload: false }));
+    keepMapsLoaded();
     keepUsersLoaded();
 
     effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {

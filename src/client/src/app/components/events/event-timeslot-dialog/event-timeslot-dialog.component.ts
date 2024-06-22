@@ -23,7 +23,8 @@ import {
   selectEventsActionState,
   updateEventTimeslotAction,
 } from '../../../+state/events';
-import { loadMapsAction, mapSelectors } from '../../../+state/maps';
+import { mapSelectors } from '../../../+state/maps';
+import { keepMapsLoaded } from '../../../+state/maps/maps.utils';
 import { ErrorTextDirective } from '../../../directives/error-text.directive';
 import { Event, EventTimeslot } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
@@ -124,7 +125,7 @@ export class EventTimeslotDialogComponent {
   }
 
   public open() {
-    this._store.dispatch(loadMapsAction({ reload: false }));
+    keepMapsLoaded();
 
     this.visible.set(true);
   }

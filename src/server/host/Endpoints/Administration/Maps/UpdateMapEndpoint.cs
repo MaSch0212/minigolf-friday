@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -24,8 +25,11 @@ public class UpdateMapRequestValidator : Validator<UpdateMapRequest>
 }
 
 /// <summary>Update a map.</summary>
-public class UpdateMapEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<UpdateMapRequest>
+public class UpdateMapEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<UpdateMapRequest>
 {
     public override void Configure()
     {
@@ -47,6 +51,13 @@ public class UpdateMapEndpoint(DatabaseContext databaseContext, IIdService idSer
 
         map.Name = req.Name ?? map.Name;
         await databaseContext.SaveChangesAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.MapChanged(
+                idService.Map.Encode(mapId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
         await SendOkAsync(ct);
     }
 }

@@ -4,6 +4,7 @@ using FluentValidation;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Services;
 
 namespace MinigolfFriday.Host.Endpoints.Administration.Maps;
@@ -23,8 +24,11 @@ public class CreateMapRequestValidator : Validator<CreateMapRequest>
 }
 
 /// <summary>Create a new map.</summary>
-public class CreateMapEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<CreateMapRequest, CreateMapResponse>
+public class CreateMapEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<CreateMapRequest, CreateMapResponse>
 {
     public override void Configure()
     {
@@ -38,6 +42,13 @@ public class CreateMapEndpoint(DatabaseContext databaseContext, IIdService idSer
         var map = new MinigolfMapEntity { Name = req.Name };
         databaseContext.Maps.Add(map);
         await databaseContext.SaveChangesAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.MapChanged(
+                idService.Map.Encode(map.Id),
+                RealtimeEventChangeType.Created
+            ),
+            ct
+        );
         await SendAsync(new(new(idService.Map.Encode(map.Id), req.Name)), 201, ct);
     }
 }

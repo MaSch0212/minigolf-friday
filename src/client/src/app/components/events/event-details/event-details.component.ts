@@ -23,7 +23,8 @@ import {
   startEventAction,
   commitEventAction,
 } from '../../../+state/events';
-import { loadMapsAction, mapSelectors } from '../../../+state/maps';
+import { mapSelectors } from '../../../+state/maps';
+import { keepMapsLoaded } from '../../../+state/maps/maps.utils';
 import { keepUsersLoaded, userSelectors } from '../../../+state/users';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { TranslateService } from '../../../services/translate.service';
@@ -109,7 +110,7 @@ export class EventDetailsComponent {
   );
 
   constructor() {
-    this._store.dispatch(loadMapsAction({ reload: false }));
+    keepMapsLoaded();
     keepUsersLoaded();
 
     effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
