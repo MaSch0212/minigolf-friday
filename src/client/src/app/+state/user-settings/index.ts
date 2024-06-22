@@ -1,4 +1,4 @@
-export * from './users.actions';
-export { provideUserSettingsState } from './users.feature';
-export * from './users.selectors';
-export { UserSettingsFeatureState } from './users.state';
+export * from './user-settings.actions';
+export { provideUserSettingsState } from './user-settings.feature';
+export * from './user-settings.selectors';
+export { UserSettingsFeatureState } from './user-settings.state';

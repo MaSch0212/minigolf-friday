@@ -21,11 +21,9 @@ export const loadPlayerEventReducers: Reducers<PlayerEventsFeatureState> = [
   on(loadPlayerEventAction.success, (state, { response }) =>
     playerEventEntityAdapter.upsertOne(response, state)
   ),
-  handleHttpAction(
-    'loadOne',
-    loadPlayerEventAction,
-    (s, p) => !s.entities[p.eventId] || p.reload === true
-  ),
+  handleHttpAction('loadOne', loadPlayerEventAction, {
+    startCondition: (s, p) => !s.entities[p.eventId] || p.reload === true,
+  }),
 ];
 
 export const loadPlayerEventEffects: Effects = {

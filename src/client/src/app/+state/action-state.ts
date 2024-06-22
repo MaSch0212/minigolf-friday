@@ -103,7 +103,10 @@ export function handleHttpAction<
 >(
   actionStateName: TActionStateName,
   action: TAction,
-  startCondition: (state: TInferredState, props: TProps) => boolean = () => true
+  options?: {
+    condition?: (state: TInferredState, props: TProps) => boolean;
+    startCondition?: (state: TInferredState, props: TProps) => boolean;
+  }
 ): ReducerTypes<
   TInferredState,
   [TAction, TAction['starting'], TAction['success'], TAction['error']]
@@ -114,11 +117,15 @@ export function handleHttpAction<
     action.success,
     action.error,
     produce((draft, props) => {
+      if (options?.condition && !options.condition(draft as TInferredState, props.props)) {
+        return;
+      }
+
       const actionStates = (draft as TState).actionStates;
       if (props.type === action.type) {
         if (
           !isActionBusy(actionStates[actionStateName as string]) &&
-          startCondition(draft as TInferredState, props.props)
+          (!options?.startCondition || options.startCondition(draft as TInferredState, props.props))
         ) {
           actionStates[actionStateName as string] = startingActionState;
         }
@@ -135,13 +142,16 @@ export function handleHttpAction<
 
 export function onHttpAction<T extends HttpActionCreator<string, string, any, any>>(
   action: T,
-  actionStateSelector?: Selector<object, ActionState>
+  actionStateSelector?: Selector<object, ActionState>,
+  disableFilterCondition?: (p: ReturnType<T>) => boolean
 ) {
   if (actionStateSelector) {
     return inject(Actions).pipe(
       ofType(action),
       withLatestFrom(inject(Store).select(actionStateSelector)),
-      filter(([, actionState]) => actionState.state === 'starting'),
+      filter(
+        ([p, actionState]) => !!disableFilterCondition?.(p) || actionState.state === 'starting'
+      ),
       map(([props]) => props)
     );
   }

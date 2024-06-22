@@ -2,7 +2,7 @@ import { createDistinctSelector } from '@ngneers/easy-ngrx-distinct-selector';
 import { createFeatureSelector } from '@ngrx/store';
 
 import { USER_SETTINGS_FEATURE_NAME } from './consts';
-import { UserSettingsFeatureState } from './users.state';
+import { UserSettingsFeatureState } from './user-settings.state';
 
 export const selectUserSettingsFeature = createFeatureSelector<UserSettingsFeatureState>(
   USER_SETTINGS_FEATURE_NAME

@@ -21,11 +21,9 @@ export const loadUsersReducers: Reducers<UsersFeatureState> = [
   on(loadUsersAction.success, (state, { response }) =>
     userEntityAdapter.upsertMany(response, state)
   ),
-  handleHttpAction(
-    'load',
-    loadUsersAction,
-    (s, p) => s.actionStates.load.state === 'none' || p.reload === true
-  ),
+  handleHttpAction('load', loadUsersAction, {
+    startCondition: (s, p) => s.actionStates.load.state === 'none' || p.reload === true,
+  }),
 ];
 
 export const loadUsersEffects: Effects = {

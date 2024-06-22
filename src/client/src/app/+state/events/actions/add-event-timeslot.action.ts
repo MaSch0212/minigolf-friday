@@ -35,7 +35,9 @@ export const addEventTimeslotReducers: Reducers<EventsFeatureState> = [
       state
     );
   }),
-  handleHttpAction('addTimeslot', addEventTimeslotAction, (s, p) => !!s.entities[p.eventId]),
+  handleHttpAction('addTimeslot', addEventTimeslotAction, {
+    startCondition: (s, p) => !!s.entities[p.eventId],
+  }),
 ];
 
 export const addEventTimeslotEffects: Effects = {

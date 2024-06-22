@@ -5,13 +5,14 @@ import { switchMap } from 'rxjs';
 
 import { UserSettingsService } from '../../../api/services';
 import { UserSettings } from '../../../models/parsed-models';
+import { RealtimeEventsService } from '../../../services/realtime-events.service';
 import { isEmptyObject, removeUndefinedProperties } from '../../../utils/common.utils';
 import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
 import { Effects, Reducers } from '../../utils';
 import { USER_SETTINGS_ACTION_SCOPE } from '../consts';
-import { selectUserSettingsActionState } from '../users.selectors';
-import { UserSettingsFeatureState } from '../users.state';
+import { selectUserSettingsActionState } from '../user-settings.selectors';
+import { UserSettingsFeatureState } from '../user-settings.state';
 
 export const updateUserSettingsAction = createHttpAction<Partial<UserSettings>>()(
   USER_SETTINGS_ACTION_SCOPE,
@@ -27,20 +28,26 @@ export const updateUserSettingsReducers: Reducers<UserSettingsFeatureState> = [
       }
     })
   ),
-  handleHttpAction(
-    'update',
-    updateUserSettingsAction,
-    (s, p) => !!s.settings && !isEmptyObject(p, { ignoreUndefinedProperties: true })
-  ),
+  handleHttpAction('update', updateUserSettingsAction, {
+    startCondition: (s, p) =>
+      !!s.settings && !isEmptyObject(p, { ignoreUndefinedProperties: true }),
+  }),
 ];
 
 export const updateUserSettingsEffects: Effects = {
-  updateUserSettings$: createFunctionalEffect.dispatching((api = inject(UserSettingsService)) =>
-    onHttpAction(updateUserSettingsAction, selectUserSettingsActionState('update')).pipe(
-      switchMap(({ props }) =>
-        toHttpAction(updateUserSettings(api, props), updateUserSettingsAction, props)
+  updateUserSettings$: createFunctionalEffect.dispatching(
+    (api = inject(UserSettingsService), events = inject(RealtimeEventsService)) =>
+      onHttpAction(updateUserSettingsAction, selectUserSettingsActionState('update')).pipe(
+        switchMap(({ props }) =>
+          toHttpAction(
+            updateUserSettings(api, props),
+            updateUserSettingsAction,
+            props
+            // , () =>
+            //     events.skipEvent('userSettingsChanged')
+          )
+        )
       )
-    )
   ),
 };
 

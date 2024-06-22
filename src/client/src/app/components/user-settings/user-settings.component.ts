@@ -17,11 +17,11 @@ import { filter, first, map, Subject } from 'rxjs';
 import { SavedFadingMessageComponent } from '../+common/saved-fading-message.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
 import {
-  loadUserSettingsAction,
   selectUserSettings,
   selectUserSettingsActionState,
   updateUserSettingsAction,
 } from '../../+state/user-settings';
+import { keepUserSettingsLoaded } from '../../+state/user-settings/user-settings.utils';
 import { ResetNgModelDirective } from '../../directives/reset-ng-model.directive';
 import { UserSettings } from '../../models/parsed-models';
 import { AuthService } from '../../services/auth.service';
@@ -153,7 +153,7 @@ export class UserSettingsComponent {
   };
 
   constructor() {
-    this._store.dispatch(loadUserSettingsAction({ reload: false }));
+    keepUserSettingsLoaded();
 
     this._actions$
       .pipe(takeUntilDestroyed(), ofType(updateUserSettingsAction.error))

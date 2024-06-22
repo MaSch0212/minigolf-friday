@@ -26,6 +26,16 @@ import {
 import { SignalrRetryPolicy } from '../signalr-retry-policy';
 import { retryWithPolicy } from '../utils/rxjs.utils';
 
+const USER_CHANGED = 'userChanged';
+const MAP_CHANGED = 'mapChanged';
+const EVENT_CHANGED = 'eventChanged';
+const EVENT_TIMESLOT_CHANGED = 'eventTimeslotChanged';
+const EVENT_INSTANCES_CHANGED = 'eventInstancesChanged';
+const EVENT_PRECONFIGURATION_CHANGED = 'eventPreconfigurationChanged';
+const PLAYER_EVENT_CHANGED = 'playerEventChanged';
+const PLAYER_EVENT_REGISTRATION_CHANGED = 'playerEventRegistrationChanged';
+const USER_SETTINGS_CHANGED = 'userSettingsChanged';
+
 @Injectable({ providedIn: 'root' })
 export class RealtimeEventsService implements OnDestroy {
   private readonly _authService = inject(AuthService);
@@ -84,33 +94,15 @@ export class RealtimeEventsService implements OnDestroy {
       )
       .build();
 
-    connection.on('userChanged', (event: UserChangedRealtimeEvent) => this.userChanged.emit(event));
-    connection.on('mapChanged', (event: MapChangedRealtimeEvent) => this.mapChanged.emit(event));
-    connection.on('eventChanged', (event: EventChangedRealtimeEvent) =>
-      this.eventChanged.emit(event)
-    );
-    connection.on('eventTimeslotChanged', (event: EventTimeslotChangedRealtimeEvent) =>
-      this.eventTimeslotChanged.emit(event)
-    );
-    connection.on('eventInstancesChanged', (event: EventInstancesChangedRealtimeEvent) =>
-      this.eventInstancesChanged.emit(event)
-    );
-    connection.on(
-      'eventPreconfigurationChanged',
-      (event: EventPreconfigurationChangedRealtimeEvent) =>
-        this.eventPreconfigurationChanged.emit(event)
-    );
-    connection.on('playerEventChanged', (event: PlayerEventChangedRealtimeEvent) =>
-      this.playerEventChanged.emit(event)
-    );
-    connection.on(
-      'playerEventRegistrationChanged',
-      (event: PlayerEventRegistrationChangedRealtimeEvent) =>
-        this.playerEventRegistrationChanged.emit(event)
-    );
-    connection.on('userSettingsChanged', (event: UserSettingsChangedRealtimeEvent) =>
-      this.userSettingsChanged.emit(event)
-    );
+    this.on(connection, USER_CHANGED, this.userChanged);
+    this.on(connection, MAP_CHANGED, this.mapChanged);
+    this.on(connection, EVENT_CHANGED, this.eventChanged);
+    this.on(connection, EVENT_TIMESLOT_CHANGED, this.eventTimeslotChanged);
+    this.on(connection, EVENT_INSTANCES_CHANGED, this.eventInstancesChanged);
+    this.on(connection, EVENT_PRECONFIGURATION_CHANGED, this.eventPreconfigurationChanged);
+    this.on(connection, PLAYER_EVENT_CHANGED, this.playerEventChanged);
+    this.on(connection, PLAYER_EVENT_REGISTRATION_CHANGED, this.playerEventRegistrationChanged);
+    this.on(connection, USER_SETTINGS_CHANGED, this.userSettingsChanged);
 
     connection.onreconnecting(() => this._isConnected.set(false));
     connection.onreconnected(() => this._isConnected.set(true));
@@ -136,6 +128,10 @@ export class RealtimeEventsService implements OnDestroy {
         throw ex;
       }
     }
+  }
+
+  private on<T>(connection: HubConnection, name: string, eventEmitter: EventEmitter<T>) {
+    connection.on(name, (event: T) => eventEmitter.emit(event));
   }
 
   private async disconnect() {

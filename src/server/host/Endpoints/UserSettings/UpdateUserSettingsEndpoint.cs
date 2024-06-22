@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -35,8 +36,12 @@ public class UpdateUserSettingsRequestValidator : Validator<UpdateUserSettingsRe
     }
 }
 
-public class UpdateUserSettingsEndpoint(DatabaseContext databaseContext, IJwtService jwtService)
-    : Endpoint<UpdateUserSettingsRequest>
+public class UpdateUserSettingsEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IJwtService jwtService,
+    IIdService idService
+) : Endpoint<UpdateUserSettingsRequest>
 {
     public override void Configure()
     {
@@ -88,6 +93,10 @@ public class UpdateUserSettingsEndpoint(DatabaseContext databaseContext, IJwtSer
         }
 
         await databaseContext.SaveChangesAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserSettingsChanged(idService.User.Encode(userId)),
+            ct
+        );
         await SendOkAsync(ct);
     }
 }
