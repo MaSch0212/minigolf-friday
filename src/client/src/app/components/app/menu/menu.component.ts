@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
 import { TooltipModule } from 'primeng/tooltip';
-import { fromEvent, merge, startWith } from 'rxjs';
+import { filter, fromEvent, map, merge } from 'rxjs';
 
 import { selectAppTitle } from '../../../+state/app';
 import { AuthService } from '../../../services/auth.service';
@@ -39,8 +39,6 @@ export class MenuComponent {
   private readonly _swUpdate = inject(SwUpdate);
   private readonly _realtimeEventsService = inject(RealtimeEventsService);
 
-  private readonly _versionInfo = toSignal(this._swUpdate.versionUpdates);
-
   protected readonly translations = this._translateService.translations;
   protected readonly title = chainSignals(this._store.selectSignal(selectAppTitle), title =>
     computed(() =>
@@ -51,8 +49,12 @@ export class MenuComponent {
   protected readonly isAdmin = computed(
     () => this._authService.user()?.roles.includes('admin') ?? false
   );
-  protected readonly newVersionAvailable = computed(
-    () => this._versionInfo()?.type === 'VERSION_READY'
+  protected readonly newVersionAvailable = toSignal(
+    this._swUpdate.versionUpdates.pipe(
+      filter(x => x.type === 'VERSION_READY'),
+      map(() => true)
+    ),
+    { initialValue: false }
   );
 
   protected readonly menuItems = computed<MenuItem[]>(() => [
@@ -99,7 +101,7 @@ export class MenuComponent {
   constructor() {
     if (this._swUpdate.isEnabled) {
       merge(fromEvent(document, 'visibilitychange'), this._realtimeEventsService.onReconnected$)
-        .pipe(startWith(null), takeUntilDestroyed())
+        .pipe(takeUntilDestroyed())
         .subscribe(() => {
           if (!document.hidden) {
             console.info('Checking for updates...');

@@ -52,14 +52,24 @@
                 "inject": false
               }
             ],
-            "scripts": []
+            "scripts": [],
+            "externalDependencies": ["http", "https", "url", "util", "net"],
+            "allowedCommonJsDependencies": [
+              "copy-to-clipboard",
+              "tough-cookie",
+              "node-fetch",
+              "fetch-cookie",
+              "abort-controller",
+              "ws",
+              "eventsource"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "600kb",
+                  "maximumWarning": "800kb",
                   "maximumError": "1mb"
                 },
                 {
