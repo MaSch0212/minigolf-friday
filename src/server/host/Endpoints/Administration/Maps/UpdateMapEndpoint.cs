@@ -51,6 +51,8 @@ public class UpdateMapEndpoint(
 
         map.Name = req.Name ?? map.Name;
         await databaseContext.SaveChangesAsync(ct);
+        await SendOkAsync(ct);
+
         await realtimeEventsService.SendEventAsync(
             new RealtimeEvent.MapChanged(
                 idService.Map.Encode(mapId),
@@ -58,6 +60,5 @@ public class UpdateMapEndpoint(
             ),
             ct
         );
-        await SendOkAsync(ct);
     }
 }

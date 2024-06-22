@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -28,6 +29,7 @@ public class AddPlayersToPreconfigurationRequestValidator
 /// <summary>Add players to an event instance preconfiguration.</summary>
 public class AddPlayersToPreconfigurationEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService
 ) : Endpoint<AddPlayersToPreconfigurationRequest>
 {
@@ -54,7 +56,8 @@ public class AddPlayersToPreconfigurationEndpoint(
             .Select(x => new
             {
                 Started = x.EventTimeSlot.Event.StartedAt != null,
-                x.EventTimeSlot.EventId
+                x.EventTimeSlot.EventId,
+                TimeslotId = x.EventTimeSlot.Id
             })
             .FirstOrDefaultAsync(ct);
 
@@ -86,5 +89,15 @@ public class AddPlayersToPreconfigurationEndpoint(
         );
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventPreconfigurationChanged(
+                idService.Event.Encode(preconfigInfo.EventId),
+                idService.EventTimeslot.Encode(preconfigInfo.TimeslotId),
+                idService.Preconfiguration.Encode(preconfigId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
     }
 }

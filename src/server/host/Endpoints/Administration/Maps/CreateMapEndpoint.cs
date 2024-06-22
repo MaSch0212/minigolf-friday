@@ -42,6 +42,8 @@ public class CreateMapEndpoint(
         var map = new MinigolfMapEntity { Name = req.Name };
         databaseContext.Maps.Add(map);
         await databaseContext.SaveChangesAsync(ct);
+        await SendAsync(new(new(idService.Map.Encode(map.Id), req.Name)), 201, ct);
+
         await realtimeEventsService.SendEventAsync(
             new RealtimeEvent.MapChanged(
                 idService.Map.Encode(map.Id),
@@ -49,6 +51,5 @@ public class CreateMapEndpoint(
             ),
             ct
         );
-        await SendAsync(new(new(idService.Map.Encode(map.Id), req.Name)), 201, ct);
     }
 }

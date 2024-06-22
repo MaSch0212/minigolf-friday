@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -20,8 +21,11 @@ public class DeleteEventRequestValidator : Validator<DeleteEventRequest>
 }
 
 /// <summary>Delete an event.</summary>
-public class DeleteEventEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<DeleteEventRequest>
+public class DeleteEventEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<DeleteEventRequest>
 {
     public override void Configure()
     {
@@ -35,7 +39,7 @@ public class DeleteEventEndpoint(DatabaseContext databaseContext, IIdService idS
         var eventId = idService.Event.DecodeSingle(req.EventId);
         var info = await databaseContext
             .Events.Where(x => x.Id == eventId)
-            .Select(x => new { Started = x.StartedAt != null })
+            .Select(x => new { Started = x.StartedAt != null, x.Staged })
             .FirstOrDefaultAsync(ct);
 
         if (info == null)
@@ -54,5 +58,23 @@ public class DeleteEventEndpoint(DatabaseContext databaseContext, IIdService idS
 
         await databaseContext.Events.Where(x => x.Id == eventId).ExecuteDeleteAsync(ct);
         await SendOkAsync(ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventChanged(
+                idService.Event.Encode(eventId),
+                RealtimeEventChangeType.Deleted
+            ),
+            ct
+        );
+        if (!info.Staged)
+        {
+            await realtimeEventsService.SendEventAsync(
+                new RealtimeEvent.PlayerEventChanged(
+                    idService.Event.Encode(eventId),
+                    RealtimeEventChangeType.Deleted
+                ),
+                ct
+            );
+        }
     }
 }

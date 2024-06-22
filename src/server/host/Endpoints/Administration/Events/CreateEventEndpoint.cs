@@ -6,6 +6,7 @@ using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Models.Push;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
 
@@ -31,8 +32,12 @@ public class CreateEventRequestValidator : Validator<CreateEventRequest>
 }
 
 /// <summary>Create a new event.</summary>
-public class CreateEventEndpoint(DatabaseContext databaseContext, IEventMapper eventMapper)
-    : Endpoint<CreateEventRequest, CreateEventResponse>
+public class CreateEventEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IEventMapper eventMapper,
+    IIdService idService
+) : Endpoint<CreateEventRequest, CreateEventResponse>
 {
     public override void Configure()
     {
@@ -51,7 +56,14 @@ public class CreateEventEndpoint(DatabaseContext databaseContext, IEventMapper e
         };
         databaseContext.Events.Add(entity);
         await databaseContext.SaveChangesAsync(ct);
-
         await SendAsync(new(eventMapper.Map(entity)), 201, ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventChanged(
+                idService.Event.Encode(entity.Id),
+                RealtimeEventChangeType.Created
+            ),
+            ct
+        );
     }
 }

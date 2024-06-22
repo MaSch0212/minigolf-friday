@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
@@ -30,6 +31,7 @@ public class CreatePreconfigurationRequestValidator : Validator<CreatePreconfigu
 /// <summary>Create a new event instance preconfiguration for a given event timeslot.</summary>
 public class CreatePreconfigurationEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IEventMapper eventMapper,
     IIdService idService
 ) : Endpoint<CreatePreconfigurationRequest, CreatePreconfigurationResponse>
@@ -78,5 +80,15 @@ public class CreatePreconfigurationEndpoint(
         databaseContext.EventInstancePreconfigurations.Add(preconfig);
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(new(eventMapper.Map(preconfig)), 201, ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventPreconfigurationChanged(
+                idService.Event.Encode(timeslotInfo.EventId),
+                idService.EventTimeslot.Encode(timeslotId),
+                idService.Preconfiguration.Encode(preconfig.Id),
+                RealtimeEventChangeType.Created
+            ),
+            ct
+        );
     }
 }

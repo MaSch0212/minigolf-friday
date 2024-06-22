@@ -93,10 +93,11 @@ public class UpdateUserSettingsEndpoint(
         }
 
         await databaseContext.SaveChangesAsync(ct);
+        await SendOkAsync(ct);
+
         await realtimeEventsService.SendEventAsync(
             new RealtimeEvent.UserSettingsChanged(idService.User.Encode(userId)),
             ct
         );
-        await SendOkAsync(ct);
     }
 }

@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -20,8 +21,11 @@ public class DeletePreconfigurationRequestValidator : Validator<DeletePreconfigu
 }
 
 /// <summary>Delete an event instance preconfiguration.</summary>
-public class DeletePreconfigurationEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<DeletePreconfigurationRequest>
+public class DeletePreconfigurationEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<DeletePreconfigurationRequest>
 {
     public override void Configure()
     {
@@ -43,7 +47,8 @@ public class DeletePreconfigurationEndpoint(DatabaseContext databaseContext, IId
             .Select(x => new
             {
                 Started = x.EventTimeSlot.Event.StartedAt != null,
-                x.EventTimeSlot.EventId
+                x.EventTimeSlot.EventId,
+                TimeslotId = x.EventTimeSlot.Id
             })
             .FirstOrDefaultAsync(ct);
 
@@ -71,5 +76,15 @@ public class DeletePreconfigurationEndpoint(DatabaseContext databaseContext, IId
 
         await preconfigQuery.ExecuteDeleteAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.EventPreconfigurationChanged(
+                idService.Event.Encode(preconfigInfo.EventId),
+                idService.EventTimeslot.Encode(preconfigInfo.TimeslotId),
+                idService.Preconfiguration.Encode(preconfigId),
+                RealtimeEventChangeType.Deleted
+            ),
+            ct
+        );
     }
 }

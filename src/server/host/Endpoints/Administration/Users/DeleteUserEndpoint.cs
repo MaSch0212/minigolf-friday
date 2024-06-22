@@ -79,10 +79,11 @@ public class DeleteUserEndpoint(
         }
 
         await databaseContext.SaveChangesAsync(ct);
+        await SendAsync(null, cancellation: ct);
+
         await realtimeEventsService.SendEventAsync(
             new RealtimeEvent.UserChanged(req.UserId, RealtimeEventChangeType.Deleted),
             ct
         );
-        await SendAsync(null, cancellation: ct);
     }
 }

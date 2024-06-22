@@ -73,6 +73,7 @@ public static class RealtimeEvent
     /// <summary>Event that is triggered when a preconfiguration of an event timeslot changed.</summary>
     public record EventPreconfigurationChanged(
         string EventId,
+        string EventTimeslotId,
         string EventPreconfigurationId,
         RealtimeEventChangeType ChangeType
     ) : IGroupRealtimeEvent
@@ -96,8 +97,7 @@ public static class RealtimeEvent
     /// <summary>Event that is triggered when registrations of a player for an event changed.</summary>
     public record PlayerEventRegistrationChanged(
         [property: JsonIgnore] string UserId,
-        string EventId,
-        RealtimeEventChangeType ChangeType
+        string EventId
     ) : IUserRealtimeEvent
     {
         public static string MethodName => "PlayerEventRegistrationChanged";

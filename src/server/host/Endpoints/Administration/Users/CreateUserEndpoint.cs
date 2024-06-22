@@ -81,19 +81,20 @@ public class CreateUserEndpoint(
         };
         databaseContext.Users.Add(user);
         await databaseContext.SaveChangesAsync(ct);
-        await realtimeEventsService.SendEventAsync(
-            new RealtimeEvent.UserChanged(
-                idService.User.Encode(user.Id),
-                RealtimeEventChangeType.Created
-            ),
-            ct
-        );
         await SendAsync(
             new(
                 new(idService.User.Encode(user.Id), req.Alias, req.Roles, req.PlayerPreferences),
                 user.LoginToken
             ),
             201,
+            ct
+        );
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(
+                idService.User.Encode(user.Id),
+                RealtimeEventChangeType.Created
+            ),
             ct
         );
     }

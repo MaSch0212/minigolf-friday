@@ -133,6 +133,8 @@ public class UpdateUserEndpoint(
 
         ThrowIfAnyErrors();
         await databaseContext.SaveChangesAsync(ct);
+        await SendAsync(null, cancellation: ct);
+
         await realtimeEventsService.SendEventAsync(
             new RealtimeEvent.UserChanged(
                 idService.User.Encode(userId),
@@ -140,6 +142,5 @@ public class UpdateUserEndpoint(
             ),
             ct
         );
-        await SendAsync(null, cancellation: ct);
     }
 }

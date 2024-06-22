@@ -54,6 +54,8 @@ public class DeleteMapEndpoint(
             databaseContext.Maps.Remove(info.Map);
 
         await databaseContext.SaveChangesAsync(ct);
+        await SendOkAsync(ct);
+
         await realtimeEventsService.SendEventAsync(
             new RealtimeEvent.MapChanged(
                 idService.Map.Encode(mapId),
@@ -61,6 +63,5 @@ public class DeleteMapEndpoint(
             ),
             ct
         );
-        await SendOkAsync(ct);
     }
 }

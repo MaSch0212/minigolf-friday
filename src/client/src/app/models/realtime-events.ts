@@ -22,6 +22,7 @@ export type EventInstancesChangedRealtimeEvent = {
 };
 export type EventPreconfigurationChangedRealtimeEvent = {
   eventId: string;
+  eventTimeslotId: string;
   eventPreconfigurationId: string;
   changeType: RealtimeEventChangeType;
 };
@@ -31,6 +32,5 @@ export type PlayerEventChangedRealtimeEvent = {
 };
 export type PlayerEventRegistrationChangedRealtimeEvent = {
   eventId: string;
-  changeType: RealtimeEventChangeType;
 };
 export type UserSettingsChangedRealtimeEvent = {};

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -40,6 +41,7 @@ public class UpdatePlayerEventRegistrationsRequestValidator
 
 public class UpdatePlayerEventRegistrationsEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IJwtService jwtService
 ) : Endpoint<UpdatePlayerEventRegistrationsRequest>
@@ -148,5 +150,13 @@ public class UpdatePlayerEventRegistrationsEndpoint(
         }
         await databaseContext.SaveChangesAsync(ct);
         await SendAsync(null, cancellation: ct);
+
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.PlayerEventRegistrationChanged(
+                idService.User.Encode(userId),
+                idService.Event.Encode(eventId)
+            ),
+            ct
+        );
     }
 }
