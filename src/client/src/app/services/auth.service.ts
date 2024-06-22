@@ -19,6 +19,7 @@ import {
   setAuthTokenInfo,
   setLoginToken,
 } from './storage';
+import { WebPushService } from './web-push.service';
 import { AuthenticationService } from '../api/services';
 import { environment } from '../environments/environment';
 import { assertBody } from '../utils/http.utils';
@@ -29,6 +30,7 @@ export type SignInResult = 'success' | 'invalid-token' | 'error';
 export class AuthService implements OnDestroy {
   private readonly _api = inject(AuthenticationService);
   private readonly _router = inject(Router);
+  private readonly _webPushService = inject(WebPushService);
 
   private readonly _token = signal<AuthTokenInfo | null | undefined>(undefined);
 
@@ -111,6 +113,7 @@ export class AuthService implements OnDestroy {
   public async signOut() {
     if (!environment.authenticationRequired) return;
 
+    await this._webPushService.disable(true);
     setLoginToken(null);
     this._token.set(null);
 
