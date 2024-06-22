@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { on } from '@ngrx/store';
-import { switchMap } from 'rxjs';
+import { mergeMap } from 'rxjs';
 
 import { EventsService } from '../../../api/services';
 import { parsePlayerEvent, PlayerEvent } from '../../../models/parsed-models';
@@ -13,7 +13,7 @@ import { selectPlayerEventsActionState } from '../player-events.selectors';
 import { PlayerEventsFeatureState, playerEventEntityAdapter } from '../player-events.state';
 
 export const loadPlayerEventAction = createHttpAction<
-  { eventId: string; reload?: boolean },
+  { eventId: string; reload?: boolean; silent?: boolean },
   PlayerEvent
 >()(PLAYER_EVENTS_ACTION_SCOPE, 'Load Player Event');
 
@@ -22,14 +22,19 @@ export const loadPlayerEventReducers: Reducers<PlayerEventsFeatureState> = [
     playerEventEntityAdapter.upsertOne(response, state)
   ),
   handleHttpAction('loadOne', loadPlayerEventAction, {
+    condition: (s, p) => p.silent !== true,
     startCondition: (s, p) => !s.entities[p.eventId] || p.reload === true,
   }),
 ];
 
 export const loadPlayerEventEffects: Effects = {
   loadPlayerEvent$: createFunctionalEffect.dispatching((api = inject(EventsService)) =>
-    onHttpAction(loadPlayerEventAction, selectPlayerEventsActionState('loadOne')).pipe(
-      switchMap(({ props }) =>
+    onHttpAction(
+      loadPlayerEventAction,
+      selectPlayerEventsActionState('loadOne'),
+      p => !!p.props.silent
+    ).pipe(
+      mergeMap(({ props }) =>
         toHttpAction(getPlayerEvent(api, props), loadPlayerEventAction, props)
       )
     )

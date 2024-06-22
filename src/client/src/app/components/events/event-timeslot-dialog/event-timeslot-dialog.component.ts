@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  Injector,
   input,
   signal,
   untracked,
@@ -57,6 +58,7 @@ import { hasTouchScreen } from '../../../utils/user-agent.utils';
 export class EventTimeslotDialogComponent {
   private readonly _store = inject(Store);
   private readonly _formBuilder = inject(FormBuilder);
+  private readonly _injector = inject(Injector);
 
   public readonly event = input.required<Event>();
   public readonly timeslot = input<EventTimeslot | null>(null);
@@ -125,7 +127,7 @@ export class EventTimeslotDialogComponent {
   }
 
   public open() {
-    keepMapsLoaded();
+    keepMapsLoaded({ injector: this._injector, enabled: this.visible });
 
     this.visible.set(true);
   }
