@@ -25,6 +25,9 @@ public class UnsubscribeFromNotificationsEndpoint(DatabaseContext databaseContex
     {
         Delete("");
         Group<NotificationsGroup>();
+        Description(x =>
+            x.ClearDefaultAccepts().Accepts<UnsubscribeFromNotificationsRequest>("application/json")
+        );
     }
 
     public override async Task HandleAsync(
