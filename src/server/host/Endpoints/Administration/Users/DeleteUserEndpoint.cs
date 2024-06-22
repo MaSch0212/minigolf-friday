@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -22,6 +23,7 @@ public class DeleteUserEndpointRequestValidator : Validator<DeleteUserEndpointRe
 /// <summary>Delete a user.</summary>
 public class DeleteUserEndpoint(
     DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
     IIdService idService,
     IJwtService jwtService
 ) : Endpoint<DeleteUserEndpointRequest>
@@ -77,6 +79,10 @@ public class DeleteUserEndpoint(
         }
 
         await databaseContext.SaveChangesAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(req.UserId, RealtimeEventChangeType.Deleted),
+            ct
+        );
         await SendAsync(null, cancellation: ct);
     }
 }

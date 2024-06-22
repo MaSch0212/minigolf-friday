@@ -24,7 +24,7 @@ import {
   commitEventAction,
 } from '../../../+state/events';
 import { loadMapsAction, mapSelectors } from '../../../+state/maps';
-import { loadUsersAction, userSelectors } from '../../../+state/users';
+import { keepUsersLoaded, userSelectors } from '../../../+state/users';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy } from '../../../utils/common.utils';
@@ -110,7 +110,7 @@ export class EventDetailsComponent {
 
   constructor() {
     this._store.dispatch(loadMapsAction({ reload: false }));
-    this._store.dispatch(loadUsersAction({ reload: false }));
+    keepUsersLoaded();
 
     effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
       allowSignalWrites: true,

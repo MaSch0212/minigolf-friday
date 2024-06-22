@@ -4,6 +4,7 @@ using FluentValidation;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Services;
 using MinigolfFriday.Host.Utilities;
 
@@ -47,8 +48,11 @@ public class CreateUserRequestValidator : Validator<CreateUserRequest>
 }
 
 /// <summary>Create a new user.</summary>
-public class CreateUserEndpoint(DatabaseContext databaseContext, IIdService idService)
-    : Endpoint<CreateUserRequest, CreateUserResponse>
+public class CreateUserEndpoint(
+    DatabaseContext databaseContext,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<CreateUserRequest, CreateUserResponse>
 {
     public override void Configure()
     {
@@ -77,6 +81,13 @@ public class CreateUserEndpoint(DatabaseContext databaseContext, IIdService idSe
         };
         databaseContext.Users.Add(user);
         await databaseContext.SaveChangesAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(
+                idService.User.Encode(user.Id),
+                RealtimeEventChangeType.Created
+            ),
+            ct
+        );
         await SendAsync(
             new(
                 new(idService.User.Encode(user.Id), req.Alias, req.Roles, req.PlayerPreferences),

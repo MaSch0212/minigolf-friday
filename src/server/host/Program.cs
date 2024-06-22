@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Extensions;
 using MinigolfFriday.Domain.Options;
+using MinigolfFriday.Host.Hubs;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Middlewares;
 using MinigolfFriday.Host.Options;
@@ -36,8 +37,9 @@ builder.Services.AddSingleton<IIdService, IdService>();
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IEventInstanceService, EventInstanceService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IRealtimeEventsService, RealtimeEventsService>();
 builder.Services.AddScoped<IWebPushService, WebPushService>();
 
 builder.Services.AddScoped<IEventMapper, EventMapper>();
@@ -55,6 +57,11 @@ builder.Services.AddFastEndpoints(o =>
         endpointTypes = endpointTypes.Where(x => !x.FullName!.Contains(".Dev."));
     o.SourceGeneratorDiscoveredTypes.AddRange(endpointTypes);
 });
+builder
+    .Services.AddSignalR()
+    .AddJsonProtocol(options =>
+        configureJsonSerializerOptions.Configure(options.PayloadSerializerOptions)
+    );
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.SwaggerDocument(c =>
 {
@@ -101,6 +108,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHealthChecks("/healthz");
+app.MapHub<RealtimeEventsHub>("/hubs/realtime-events");
 app.UseFastEndpoints(new ConfigureFastEndpointsConfig(configureJsonSerializerOptions).Configure)
     .UseSwaggerGen();
 

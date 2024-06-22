@@ -135,14 +135,17 @@ export function handleHttpAction<
 
 export function onHttpAction<T extends HttpActionCreator<string, string, any, any>>(
   action: T,
-  actionStateSelector: Selector<object, ActionState>
+  actionStateSelector?: Selector<object, ActionState>
 ) {
-  return inject(Actions).pipe(
-    ofType(action),
-    withLatestFrom(inject(Store).select(actionStateSelector)),
-    filter(([, actionState]) => actionState.state === 'starting'),
-    map(([props]) => props)
-  );
+  if (actionStateSelector) {
+    return inject(Actions).pipe(
+      ofType(action),
+      withLatestFrom(inject(Store).select(actionStateSelector)),
+      filter(([, actionState]) => actionState.state === 'starting'),
+      map(([props]) => props)
+    );
+  }
+  return inject(Actions).pipe(ofType(action));
 }
 
 export function mapToHttpAction<

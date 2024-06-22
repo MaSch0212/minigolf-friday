@@ -28,7 +28,12 @@ import {
 } from '../../../+state/events';
 import { addEventPreconfigAction } from '../../../+state/events/actions/add-event-preconfig.action';
 import { loadMapsAction, mapSelectors } from '../../../+state/maps';
-import { loadUsersAction, selectUsersActionState, userSelectors } from '../../../+state/users';
+import {
+  keepUsersLoaded,
+  loadUsersAction,
+  selectUsersActionState,
+  userSelectors,
+} from '../../../+state/users';
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
@@ -122,7 +127,7 @@ export class EventTimeslotComponent {
     const actions$ = inject(Actions);
 
     this._store.dispatch(loadMapsAction({ reload: false }));
-    this._store.dispatch(loadUsersAction({ reload: false }));
+    keepUsersLoaded();
 
     effect(() => this._store.dispatch(loadEventAction({ eventId: this.eventId(), reload: true })), {
       allowSignalWrites: true,

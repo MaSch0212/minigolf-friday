@@ -13,6 +13,7 @@ import { fromEvent } from 'rxjs';
 
 import { selectAppTitle } from '../../../+state/app';
 import { AuthService } from '../../../services/auth.service';
+import { RealtimeEventsService } from '../../../services/realtime-events.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TranslateService, TranslationKey } from '../../../services/translate.service';
 import { chainSignals } from '../../../utils/signal.utils';
@@ -38,6 +39,8 @@ export class MenuComponent {
   private readonly _themeService = inject(ThemeService);
   private readonly _authService = inject(AuthService);
   private readonly _swUpdate = inject(SwUpdate);
+
+  protected readonly _reService = inject(RealtimeEventsService);
 
   private readonly _versionInfo = toSignal(this._swUpdate.versionUpdates);
 
@@ -97,14 +100,16 @@ export class MenuComponent {
   ]);
 
   constructor() {
-    fromEvent(document, 'visibilitychange')
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        if (!document.hidden) {
-          console.info('Checking for updates...');
-          this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
-        }
-      });
+    if (this._swUpdate.isEnabled) {
+      fromEvent(document, 'visibilitychange')
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => {
+          if (!document.hidden) {
+            console.info('Checking for updates...');
+            this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
+          }
+        });
+    }
   }
 
   protected updateApp() {
