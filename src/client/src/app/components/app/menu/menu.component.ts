@@ -8,6 +8,7 @@ import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { TooltipModule } from 'primeng/tooltip';
 import { filter, fromEvent, map, merge } from 'rxjs';
 
@@ -20,7 +21,14 @@ import { chainSignals } from '../../../utils/signal.utils';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [ButtonModule, CommonModule, MenubarModule, MenuModule, TooltipModule],
+  imports: [
+    ButtonModule,
+    CommonModule,
+    MenubarModule,
+    MenuModule,
+    TooltipModule,
+    OverlayPanelModule,
+  ],
   templateUrl: './menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
@@ -56,13 +64,13 @@ export class MenuComponent {
     ),
     { initialValue: false }
   );
+  protected readonly isServerConnected = this._realtimeEventsService.isConnected;
 
-  protected readonly menuItems = computed<MenuItem[]>(() => [
+  protected readonly adminMenuItems = computed<MenuItem[]>(() => [
     {
       label: this.translations.nav_home(),
       icon: 'i-[mdi--home]',
       routerLink: '/home',
-      visible: this.isLoggedIn(),
     },
     {
       label: this.translations.nav_manage(),
@@ -84,18 +92,11 @@ export class MenuComponent {
           routerLink: '/manage/events',
         },
       ],
-      visible: this.isAdmin(),
-    },
-    {
-      separator: true,
-      visible: !this.isAdmin(),
-      state: { grow: true },
     },
     {
       label: this.translations.nav_settings(),
       icon: 'i-[mdi--cog]',
       routerLink: '/user-settings',
-      visible: this.isLoggedIn(),
     },
   ]);
 

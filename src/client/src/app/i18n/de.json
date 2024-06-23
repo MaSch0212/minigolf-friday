@@ -24,7 +24,8 @@
     "eventTimeslot": "Zeitslot",
     "maps": "Bahnen",
     "users": "Benutzer",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "offline": "Die Verbindung zum Server wurde unterbrochen. Die Verbindung wird automatisch wiederhergestellt, sobald sie wieder verfügbar ist."
   },
   "settings": {
     "general": {

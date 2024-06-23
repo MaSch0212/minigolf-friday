@@ -1,12 +1,28 @@
 @if (isAdmin()) {
-  <p-menubar class="relative block" [model]="menuItems()" [autoDisplay]="false">
+  <p-menubar class="relative block" [model]="adminMenuItems()" [autoDisplay]="false">
     <ng-template pTemplate="end">
-      <div class="flex flex-row flex-wrap items-baseline justify-end gap-x-4">
-        @if (title()) {
-          <span class="font-semibold">{{ title() }}</span>
-          <span class="ml-8 text-xs">{{ translations.title() }}</span>
-        } @else {
-          <span class="font-semibold">{{ translations.title() }}</span>
+      <div class="flex flex-row gap-4">
+        <div class="flex flex-row flex-wrap items-baseline justify-end gap-x-4 text-end">
+          @if (title()) {
+            <span class="font-semibold">{{ title() }}</span>
+            <span class="ml-8 text-xs">{{ translations.title() }}</span>
+          } @else {
+            <span class="font-semibold">{{ translations.title() }}</span>
+          }
+        </div>
+        @if (!isServerConnected()) {
+          <p-button
+            [icon]="'i-[mdi--wifi-off]'"
+            [rounded]="true"
+            [text]="true"
+            [severity]="'danger'"
+            class="-my-8 self-center"
+            styleClass="text-[1.5rem]"
+            (onClick)="offlinePanel.toggle($event)"
+          />
+          <p-overlayPanel #offlinePanel [dismissable]="true">
+            <span>{{ translations.nav_offline() }}</span>
+          </p-overlayPanel>
         }
       </div>
       <ng-container *ngTemplateOutlet="updateButtonTemplate"></ng-container>
@@ -14,11 +30,36 @@
   </p-menubar>
 } @else {
   <div class="relative flex flex-row gap-2">
-    @for (item of menuItems(); track index; let index = $index) {
-      <ng-container
-        *ngTemplateOutlet="menuItemTemplate; context: { $implicit: item, index }"
-      ></ng-container>
+    <p-button
+      [icon]="'i-[mdi--home]'"
+      [pTooltip]="translations.nav_home()"
+      [rounded]="true"
+      [text]="true"
+      styleClass="h-14 w-14 p-4 text-[1.5rem]"
+      [routerLink]="'/home'"
+    />
+    <div class="grow"></div>
+    @if (!isServerConnected()) {
+      <p-button
+        [icon]="'i-[mdi--wifi-off]'"
+        [rounded]="true"
+        [text]="true"
+        [severity]="'danger'"
+        styleClass="h-14 w-14 p-4 text-[1.5rem]"
+        (onClick)="offlinePanel.toggle($event)"
+      />
+      <p-overlayPanel #offlinePanel [dismissable]="true">
+        <span>{{ translations.nav_offline() }}</span>
+      </p-overlayPanel>
     }
+    <p-button
+      [icon]="'i-[mdi--cog]'"
+      [pTooltip]="translations.nav_settings()"
+      [rounded]="true"
+      [text]="true"
+      styleClass="h-14 w-14 p-4 text-[1.5rem]"
+      [routerLink]="'/user-settings'"
+    />
     <ng-container *ngTemplateOutlet="updateButtonTemplate"></ng-container>
   </div>
 }
@@ -37,47 +78,5 @@
         />
       </div>
     </div>
-  }
-</ng-template>
-
-<ng-template #menuItemTemplate let-item let-index="index">
-  @if (item.visible !== false) {
-    @if (item.separator) {
-      @if (item.state?.['grow']) {
-        <div class="grow"></div>
-      } @else {
-        <div class="mx-4 my-auto h-8 w-[1px] bg-surface-d"></div>
-      }
-    } @else if (item.items) {
-      @if (item.state?.['expand'] === true) {
-        @for (subItem of item.items; track index; let index = $index) {
-          <ng-container
-            *ngTemplateOutlet="menuItemTemplate; context: { $implicit: subItem, index }"
-          ></ng-container>
-        }
-      } @else {
-        <div>
-          <p-button
-            [icon]="item.icon"
-            [pTooltip]="item.label"
-            [rounded]="true"
-            [text]="true"
-            styleClass="h-14 w-14 p-4 text-[1.5rem]"
-            (onClick)="menu.toggle($event)"
-          />
-          <p-menu #menu [model]="item.items" [popup]="true" />
-        </div>
-      }
-    } @else {
-      <p-button
-        [icon]="item.icon"
-        [pTooltip]="item.label"
-        [rounded]="true"
-        [text]="true"
-        styleClass="h-14 w-14 p-4 text-[1.5rem]"
-        [routerLink]="item.routerLink"
-        (onClick)="item.command?.({ originalEvent: $event, item, index })"
-      />
-    }
   }
 </ng-template>
