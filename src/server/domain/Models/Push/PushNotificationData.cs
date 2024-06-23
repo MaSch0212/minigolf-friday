@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MinigolfFriday.Domain.Models.Push;
 
@@ -10,6 +12,13 @@ public interface IPushNotificationData
     string GetTitle(string lang);
     string GetBody(string lang);
 }
+
+public record NotificationTimeslotInfo(
+    TimeOnly Time,
+    string GroupCode,
+    string MapName,
+    int PlayerCount
+);
 
 public static class PushNotificationData
 {
@@ -42,7 +51,10 @@ public static class PushNotificationData
             };
     }
 
-    public record EventStarted(string EventId) : IPushNotificationData
+    public record EventStarted(
+        string EventId,
+        [property: JsonIgnore] NotificationTimeslotInfo[] Timeslots
+    ) : IPushNotificationData
     {
         public string Type => "event-started";
 
@@ -56,15 +68,43 @@ public static class PushNotificationData
                 _ => "The rooms have been assigned!",
             };
 
-        public string GetBody(string lang) =>
-            NormalizeLang(lang) switch
+        public string GetBody(string lang)
+        {
+            lang = NormalizeLang(lang);
+            var builder = new StringBuilder();
+            foreach (var timeslot in Timeslots)
             {
-                "de" => "Schaue nach in welchen Räumen du spielst.",
-                _ => "Check which rooms you are playing in.",
-            };
+                builder.Append(
+                    lang switch
+                    {
+                        "de"
+                            => string.Create(
+                                DeCulture,
+                                $"um {timeslot.Time:t} Uhr spielst du in \"{timeslot.GroupCode.ToUpper(DeCulture)}\" auf \"{timeslot.MapName}\" in einem Spiel mit {timeslot.PlayerCount} Spielern.\n"
+                            ),
+                        _
+                            => string.Create(
+                                EnCulture,
+                                $"at {timeslot.Time:t} you play in \"{timeslot.GroupCode.ToUpper(EnCulture)}\" on \"{timeslot.MapName}\" in a game with {timeslot.PlayerCount} players.\n"
+                            ),
+                    }
+                );
+            }
+            builder.Append(
+                lang switch
+                {
+                    "de" => "Viel Spaß!",
+                    _ => "Have fun!",
+                }
+            );
+            return builder.ToString();
+        }
     }
 
-    public record EventInstanceUpdated(string EventId) : IPushNotificationData
+    public record EventInstanceUpdated(
+        string EventId,
+        [property: JsonIgnore] NotificationTimeslotInfo[] Timeslots
+    ) : IPushNotificationData
     {
         public string Type => "event-instance-updated";
 
@@ -78,12 +118,37 @@ public static class PushNotificationData
                 _ => "Your room has changed!",
             };
 
-        public string GetBody(string lang) =>
-            NormalizeLang(lang) switch
+        public string GetBody(string lang)
+        {
+            lang = NormalizeLang(lang);
+            var builder = new StringBuilder();
+            foreach (var timeslot in Timeslots)
             {
-                "de" => "Schaue nach in welchen Räumen du jetzt spielst.",
-                _ => "Check which rooms you are playing in now.",
-            };
+                builder.Append(
+                    lang switch
+                    {
+                        "de"
+                            => string.Create(
+                                DeCulture,
+                                $"um {timeslot.Time:t} Uhr spielst du in \"{timeslot.GroupCode.ToUpper(DeCulture)}\" auf \"{timeslot.MapName}\" in einem Spiel mit {timeslot.PlayerCount} Spielern.\n"
+                            ),
+                        _
+                            => string.Create(
+                                EnCulture,
+                                $"at {timeslot.Time:t} you play in \"{timeslot.GroupCode.ToUpper(EnCulture)}\" on \"{timeslot.MapName}\" in a game with {timeslot.PlayerCount} players.\n"
+                            ),
+                    }
+                );
+            }
+            builder.Append(
+                lang switch
+                {
+                    "de" => "Viel Spaß!",
+                    _ => "Have fun!",
+                }
+            );
+            return builder.ToString();
+        }
     }
 
     public record EventTimeslotStarting(
