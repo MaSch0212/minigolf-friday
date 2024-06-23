@@ -10,12 +10,13 @@ import { MenuModule } from 'primeng/menu';
 import { MenubarModule } from 'primeng/menubar';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { TooltipModule } from 'primeng/tooltip';
-import { filter, fromEvent, map, merge } from 'rxjs';
+import { filter, map, merge } from 'rxjs';
 
 import { selectAppTitle } from '../../../+state/app';
 import { AuthService } from '../../../services/auth.service';
 import { RealtimeEventsService } from '../../../services/realtime-events.service';
 import { TranslateService, TranslationKey } from '../../../services/translate.service';
+import { onDocumentVisibilityChange$ } from '../../../utils/event.utils';
 import { chainSignals } from '../../../utils/signal.utils';
 
 @Component({
@@ -102,13 +103,14 @@ export class MenuComponent {
 
   constructor() {
     if (this._swUpdate.isEnabled) {
-      merge(fromEvent(document, 'visibilitychange'), this._realtimeEventsService.onReconnected$)
+      merge(
+        onDocumentVisibilityChange$().pipe(filter(isVisible => isVisible)),
+        this._realtimeEventsService.onReconnected$
+      )
         .pipe(takeUntilDestroyed())
         .subscribe(() => {
-          if (!document.hidden) {
-            console.info('Checking for updates...');
-            this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
-          }
+          console.info('Checking for updates...');
+          this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
         });
     }
   }
