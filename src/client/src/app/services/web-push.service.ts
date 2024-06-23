@@ -1,12 +1,4 @@
-import {
-  computed,
-  DestroyRef,
-  EventEmitter,
-  inject,
-  Injectable,
-  Injector,
-  signal,
-} from '@angular/core';
+import { computed, EventEmitter, inject, Injectable, signal } from '@angular/core';
 import { toObservable, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { SwPush } from '@angular/service-worker';
 import { combineLatest, filter, first, startWith, pairwise, firstValueFrom, map } from 'rxjs';
@@ -28,8 +20,6 @@ export class WebPushService {
   private readonly _swPush = inject(SwPush);
   private readonly _notificationsService = inject(NotificationsService);
   private readonly _wellKnownService = inject(WellKnownService);
-  private readonly _destroyRef = inject(DestroyRef);
-  private readonly _injector = inject(Injector);
 
   private readonly _subscription = toSignal(this._swPush.subscription);
 
@@ -43,14 +33,11 @@ export class WebPushService {
       )
     : signal(false);
 
-  public init(): void {
+  constructor() {
     if (!this.notificationsSupported) return;
 
     if (!getHasConfiguredPush()) {
-      combineLatest([
-        toObservable(this._authService.isAuthorized, { injector: this._injector }),
-        this._swPush.subscription,
-      ])
+      combineLatest([toObservable(this._authService.isAuthorized), this._swPush.subscription])
         .pipe(
           filter(
             ([isLoggedIn, subscription]) =>
@@ -60,21 +47,17 @@ export class WebPushService {
               !getHasConfiguredPush()
           ),
           first(),
-          takeUntilDestroyed(this._destroyRef)
+          takeUntilDestroyed()
         )
         .subscribe(() => this.onPromptNotification.emit());
     }
 
     combineLatest([
-      toObservable(this._authService.user, { injector: this._injector }),
-      toObservable(this._translateService.language, { injector: this._injector }),
+      toObservable(this._authService.user),
+      toObservable(this._translateService.language),
       this._swPush.subscription,
     ])
-      .pipe(
-        startWith([undefined, undefined, undefined]),
-        pairwise(),
-        takeUntilDestroyed(this._destroyRef)
-      )
+      .pipe(startWith([undefined, undefined, undefined]), pairwise(), takeUntilDestroyed())
       .subscribe(([[_oldUser, _oldLang, oldSub], [newUser, newLang, newSub]]) => {
         if (newSub && newLang && newUser && newUser.id !== 'admin') {
           this.registerSubscription(newLang, newSub);
@@ -84,7 +67,7 @@ export class WebPushService {
       });
 
     this._authService.onBeforeSignOut
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(() => this.disable(true));
   }
 
