@@ -60,8 +60,8 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => {
         const authService = inject(AuthService);
         const webPushService = inject(WebPushService);
-        return () => {
-          authService.init();
+        return async () => {
+          await authService.init();
           webPushService.init();
         };
       },
