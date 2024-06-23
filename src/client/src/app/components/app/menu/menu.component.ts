@@ -95,6 +95,7 @@ export class MenuComponent {
       label: this.translations.nav_settings(),
       icon: 'i-[mdi--cog]',
       routerLink: '/user-settings',
+      visible: this.isLoggedIn(),
     },
   ]);
 

@@ -1,8 +1,10 @@
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {
   ApplicationConfig,
   provideExperimentalZonelessChangeDetection,
   isDevMode,
+  APP_INITIALIZER,
+  inject,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -20,7 +22,9 @@ import { provideUsersState } from './+state/users';
 import { provideApi } from './api/services';
 import { routes } from './app.routes';
 import { environment } from './environments/environment';
-import { provideAuth } from './services/auth.service';
+import { AuthInterceptor } from './services/auth.interceptor';
+import { AuthService } from './services/auth.service';
+import { WebPushService } from './services/web-push.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,10 +45,26 @@ export const appConfig: ApplicationConfig = {
     providePlayerEventsState(),
     provideUserSettingsState(),
     environment.getProviders(),
-    provideAuth(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    {
+      provide: HTTP_INTERCEPTORS,
+      multi: true,
+      useClass: AuthInterceptor,
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: () => {
+        const authService = inject(AuthService);
+        const webPushService = inject(WebPushService);
+        return () => {
+          authService.init();
+          webPushService.init();
+        };
+      },
+    },
   ],
 };

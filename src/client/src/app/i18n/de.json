@@ -41,6 +41,7 @@
       "enabledOnAllDevices": "Auf allen Geräten aktiviert",
       "eanbled": "Auf diesem Gerät aktiviert",
       "errors": {
+        "notSupported": "Benachrichtigungen werden von diesem Browser nicht unterstützt.",
         "notGranted": {
           "title": "Erlaubnis über Benachrichtigungen nicht erteilt",
           "description": "Um Benachrichtigungen erhalten zu können, musst du dies in den Systemeinstellungen aktivieren, oder die App erneut installieren."

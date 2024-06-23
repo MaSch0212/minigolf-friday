@@ -72,24 +72,31 @@
             </div>
           </div>
 
-          <div class="flex flex-row items-center gap-4">
-            <div class="grow">
-              {{ translations.settings_notifications_eanbled() }}
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-row items-center gap-4">
+              <div class="grow">
+                {{ translations.settings_notifications_eanbled() }}
+              </div>
+              <div class="relative -my-4">
+                <p-inputSwitch
+                  class="flex"
+                  [disabled]="
+                    !settings.enableNotifications ||
+                    !notificationsPossible ||
+                    isUpdatingPushSubscription()
+                  "
+                  [ngModel]="settings.enableNotifications ? notificationsEnabled() : false"
+                  (ngModelChange)="toggleNotifications($event)"
+                  [resetNgModel]="resetNgModel"
+                />
+                <app-saved-fading-message [showTrigger]="settingsSaveStates.eanbled | async" />
+              </div>
             </div>
-            <div class="relative -my-4">
-              <p-inputSwitch
-                class="flex"
-                [disabled]="
-                  !settings.enableNotifications ||
-                  !notificationsPossible ||
-                  isUpdatingPushSubscription()
-                "
-                [ngModel]="settings.enableNotifications ? notificationsEnabled() : false"
-                (ngModelChange)="toggleNotifications($event)"
-                [resetNgModel]="resetNgModel"
-              />
-              <app-saved-fading-message [showTrigger]="settingsSaveStates.eanbled | async" />
-            </div>
+            @if (!notificationsPossible) {
+              <small class="self-end text-end text-danger">{{
+                translations.settings_notifications_errors_notSupported()
+              }}</small>
+            }
           </div>
 
           @if (settings.enableNotifications && notificationsEnabled()) {
@@ -131,7 +138,8 @@
                 </div>
               </div>
 
-              <div class="flex flex-row items-center gap-4">
+              <!-- TODO: Comment this in when event updated notifications are implemented -->
+              <!-- <div class="flex flex-row items-center gap-4">
                 <div class="grow">
                   {{ translations.settings_notifications_notify_eventUpdated() }}
                 </div>
@@ -147,9 +155,10 @@
                     [showTrigger]="settingsSaveStates.notifyEventUpdate | async"
                   />
                 </div>
-              </div>
+              </div> -->
 
-              <div class="flex flex-row items-center gap-4">
+              <!-- TODO: Comment this in when timeslot start notifications are implemented -->
+              <!-- <div class="flex flex-row items-center gap-4">
                 <div class="grow">
                   {{ translations.settings_notifications_notify_timeslotStart() }}
                 </div>
@@ -175,7 +184,7 @@
                     [showTrigger]="settingsSaveStates.notifyTimeslotStart | async"
                   />
                 </div>
-              </div>
+              </div> -->
             </div>
           }
         </div>

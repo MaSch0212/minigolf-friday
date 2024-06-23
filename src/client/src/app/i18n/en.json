@@ -41,6 +41,7 @@
       "enabledOnAllDevices": "Enabled on all devices",
       "eanbled": "Enabled on this device",
       "errors": {
+        "notSupported": "Notifications are not supported by this browser.",
         "notGranted": {
           "title": "Notification permission not granted",
           "description": "To receive notifications, you must activate this in the system settings or reinstall the app."

@@ -3,7 +3,7 @@ import { Router, RouterStateSnapshot } from '@angular/router';
 
 import { AuthService } from './auth.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthGuard {
   private readonly _router = inject(Router);
   private readonly _authService = inject(AuthService);

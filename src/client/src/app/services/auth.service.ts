@@ -1,6 +1,5 @@
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import {
-  APP_INITIALIZER,
+  EventEmitter,
   Injectable,
   OnDestroy,
   computed,
@@ -10,8 +9,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthGuard } from './auth.guard';
-import { AuthInterceptor } from './auth.interceptor';
 import {
   AuthTokenInfo,
   getAuthTokenInfo,
@@ -25,7 +22,7 @@ import { assertBody } from '../utils/http.utils';
 
 export type SignInResult = 'success' | 'invalid-token' | 'error';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
   private readonly _api = inject(AuthenticationService);
   private readonly _router = inject(Router);
@@ -34,9 +31,10 @@ export class AuthService implements OnDestroy {
 
   private _tokenRefreshTimeout?: any;
 
-  public token = this._token.asReadonly();
-  public user = computed(() => this.token()?.user);
-  public isAuthorized = computed(() => !!this._token());
+  public readonly token = this._token.asReadonly();
+  public readonly user = computed(() => this.token()?.user);
+  public readonly isAuthorized = computed(() => !!this._token());
+  public readonly onBeforeSignOut = new EventEmitter<void>();
 
   constructor() {
     effect(() => {
@@ -51,7 +49,7 @@ export class AuthService implements OnDestroy {
     });
   }
 
-  public async initialize() {
+  public async init() {
     if (this._token() !== undefined) {
       throw new Error('AuthService already initialized');
     }
@@ -111,6 +109,7 @@ export class AuthService implements OnDestroy {
   public async signOut() {
     if (!environment.authenticationRequired) return;
 
+    this.onBeforeSignOut.emit();
     setLoginToken(null);
     this._token.set(null);
 
@@ -139,22 +138,4 @@ export class AuthService implements OnDestroy {
     if (this._tokenRefreshTimeout) clearTimeout(this._tokenRefreshTimeout);
     this._tokenRefreshTimeout = undefined;
   }
-}
-
-export function provideAuth() {
-  return [
-    AuthService,
-    AuthGuard,
-    {
-      provide: HTTP_INTERCEPTORS,
-      multi: true,
-      useClass: AuthInterceptor,
-    },
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory: (authService: AuthService) => () => authService.initialize(),
-      deps: [AuthService],
-    },
-  ];
 }

@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { SwPush } from '@angular/service-worker';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { MessageService } from 'primeng/api';
@@ -13,7 +12,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { filter, first, map, Subject } from 'rxjs';
+import { filter, map, Subject } from 'rxjs';
 
 import { SavedFadingMessageComponent } from '../+common/saved-fading-message.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
@@ -28,9 +27,8 @@ import { UserSettings } from '../../models/parsed-models';
 import { AuthService } from '../../services/auth.service';
 import { Theme, ThemeService } from '../../services/theme.service';
 import { TranslateService } from '../../services/translate.service';
-import { WellKnownService } from '../../services/well-known.service';
+import { WebPushService } from '../../services/web-push.service';
 import { selectSignal } from '../../utils/ngrx.utils';
-import { chainSignals } from '../../utils/signal.utils';
 
 type LanguageOption = {
   lang: string | null;
@@ -74,26 +72,18 @@ export class UserSettingsComponent {
   private readonly _translateService = inject(TranslateService);
   private readonly _themeService = inject(ThemeService);
   private readonly _authService = inject(AuthService);
-  private readonly _wellKnownService = inject(WellKnownService);
   private readonly _actions$ = inject(Actions);
-  private readonly _swPush = inject(SwPush);
   private readonly _messageService = inject(MessageService);
+  private readonly _webPushService = inject(WebPushService);
 
   private readonly _loadActionState = selectSignal(selectUserSettingsActionState('load'));
   private readonly _updateActionState = selectSignal(selectUserSettingsActionState('update'));
-  private readonly _notificationsGranted = signal(
-    'Notification' in window ? Notification.permission === 'granted' : false
-  );
 
-  protected readonly notificationsPossible = 'Notification' in window && this._swPush.isEnabled;
+  protected readonly notificationsPossible = this._webPushService.notificationsSupported;
   protected readonly translations = this._translateService.translations;
   protected readonly resetNgModel = new Subject<void>();
   protected readonly settings = selectSignal(selectUserSettings);
-  protected readonly notificationsEnabled = this.notificationsPossible
-    ? chainSignals(toSignal(this._swPush.subscription.pipe(map(x => !!x))), hasPushSub =>
-        computed(() => hasPushSub() && this._notificationsGranted())
-      )
-    : signal(false);
+  protected readonly notificationsEnabled = this._webPushService.notificationsEnabled;
 
   protected readonly languageOptions = computed<LanguageOption[]>(() => [
     {
@@ -176,21 +166,14 @@ export class UserSettingsComponent {
     this._store.dispatch(updateUserSettingsAction(changes));
   }
 
-  protected toggleNotifications(enabled: boolean) {
+  protected async toggleNotifications(enabled: boolean) {
     if (!this.notificationsPossible) return;
     this.isUpdatingPushSubscription.set(true);
-    if (enabled) {
-      Notification.requestPermission().then(permission => {
-        this._notificationsGranted.set(permission === 'granted');
-        if (permission === 'granted') {
-          this._wellKnownService.wellKnown$.pipe(first()).subscribe(({ vapidPublicKey }) => {
-            this._swPush.requestSubscription({ serverPublicKey: vapidPublicKey }).finally(() => {
-              this.isUpdatingPushSubscription.set(false);
-            });
-          });
-        } else {
+    try {
+      if (enabled) {
+        const success = await this._webPushService.enable();
+        if (!success) {
           this.resetNgModel.next();
-          this.isUpdatingPushSubscription.set(false);
           this._messageService.add({
             severity: 'error',
             summary: this.translations.settings_notifications_errors_notGranted_title(),
@@ -198,11 +181,11 @@ export class UserSettingsComponent {
             sticky: true,
           });
         }
-      });
-    } else {
-      this._swPush.unsubscribe().finally(() => {
-        this.isUpdatingPushSubscription.set(false);
-      });
+      } else {
+        await this._webPushService.disable();
+      }
+    } finally {
+      this.isUpdatingPushSubscription.set(false);
     }
   }
 
