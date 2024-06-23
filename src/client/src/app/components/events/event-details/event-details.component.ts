@@ -85,13 +85,18 @@ export class EventDetailsComponent {
   protected readonly hasInstances = computed(() =>
     this.timeslots().some(x => x.instances.length > 0)
   );
+  protected readonly allTimeslotsHaveMaps = computed(
+    () =>
+      !this.event()
+        ?.timeslots.filter(x => x.instances.length > 0)
+        .some(x => x.mapId === null || x.mapId === undefined)
+  );
 
   protected readonly canBuildInstances = computed(() =>
     ifTruthy(this.event(), event => event.registrationDeadline.getTime() < this.now(), false)
   );
   protected readonly canStart = computed(
-    () =>
-      this.canBuildInstances() && this.event() && !this.event()?.startedAt && this.hasInstances()
+    () => this.canBuildInstances() && this.event() && !this.event()?.startedAt
   );
 
   protected readonly canCommit = computed(
@@ -103,10 +108,7 @@ export class EventDetailsComponent {
   );
 
   protected readonly allowToStart = computed(
-    () =>
-      !this.event()
-        ?.timeslots.filter(x => x.instances.length > 0)
-        .some(x => x.mapId === null || x.mapId === undefined)
+    () => this.hasInstances() && this.allTimeslotsHaveMaps()
   );
 
   constructor() {

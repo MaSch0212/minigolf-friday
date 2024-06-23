@@ -39,14 +39,25 @@
             <span>{{ event.registrationDeadline | date: 'medium' : undefined : locale() }}</span>
           </div>
           @if (canStart()) {
-            <p-button
-              class="self-center"
-              icon="i-[mdi--play]"
-              [label]="translations.events_start()"
-              (onClick)="startEvent()"
-              [loading]="isStartBusy()"
-              [disabled]="!allowToStart()"
-            />
+            <div class="flex flex-col gap-2">
+              <p-button
+                class="self-center"
+                icon="i-[mdi--play]"
+                [label]="translations.events_start()"
+                (onClick)="startEvent()"
+                [loading]="isStartBusy()"
+                [disabled]="!allowToStart()"
+              />
+              @if (!hasInstances()) {
+                <small class="text-warning text-center">{{
+                  translations.events_warning_notStartableNoInstances()
+                }}</small>
+              } @else if (!allTimeslotsHaveMaps()) {
+                <small class="text-warning text-center">{{
+                  translations.events_warning_notStartableMissingMap()
+                }}</small>
+              }
+            </div>
           }
           @if (canCommit()) {
             <p-button
