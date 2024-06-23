@@ -2,6 +2,7 @@ import { User } from '../models/parsed-models';
 
 const TOKEN_KEY = 'access_token_info';
 const LOGIN_TOKEN_KEY = 'login_token';
+const HAS_CONFIGURED_PUSH = 'has_configured_push';
 
 function getLocalStorage(key: string): string | null {
   return localStorage.getItem(key);
@@ -42,10 +43,10 @@ export function setLoginToken(token: string | null) {
   setLocalStorage(LOGIN_TOKEN_KEY, token);
 }
 
-export function getHasRejectedPush(): boolean {
-  const hasRejected = getLocalStorage('hasRejectedPush');
+export function getHasConfiguredPush(): boolean {
+  const hasRejected = getLocalStorage(HAS_CONFIGURED_PUSH);
   return hasRejected === 'true';
 }
-export function setHasRejectedPush(hasRejected: boolean) {
-  setLocalStorage('hasRejectedPush', hasRejected ? 'true' : 'false');
+export function setHasConfiguredPush(hasConfigured: boolean) {
+  setLocalStorage(HAS_CONFIGURED_PUSH, hasConfigured ? 'true' : 'false');
 }

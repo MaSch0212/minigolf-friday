@@ -1,10 +1,18 @@
-import { computed, DestroyRef, EventEmitter, inject, Injectable, signal } from '@angular/core';
+import {
+  computed,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  Injectable,
+  Injector,
+  signal,
+} from '@angular/core';
 import { toObservable, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { SwPush } from '@angular/service-worker';
 import { combineLatest, filter, first, startWith, pairwise, firstValueFrom, map } from 'rxjs';
 
 import { AuthService } from './auth.service';
-import { getHasRejectedPush, setHasRejectedPush } from './storage';
+import { getHasConfiguredPush, setHasConfiguredPush } from './storage';
 import { TranslateService } from './translate.service';
 import { WellKnownService } from './well-known.service';
 import { NotificationsService } from '../api/services';
@@ -21,6 +29,7 @@ export class WebPushService {
   private readonly _notificationsService = inject(NotificationsService);
   private readonly _wellKnownService = inject(WellKnownService);
   private readonly _destroyRef = inject(DestroyRef);
+  private readonly _injector = inject(Injector);
 
   private readonly _subscription = toSignal(this._swPush.subscription);
 
@@ -37,16 +46,18 @@ export class WebPushService {
   public init(): void {
     if (!this.notificationsSupported) return;
 
-    if (!getHasRejectedPush()) {
+    if (!getHasConfiguredPush()) {
       combineLatest([
-        toObservable(this._authService.isAuthorized),
+        toObservable(this._authService.isAuthorized, { injector: this._injector }),
         this._swPush.subscription,
-        toObservable(this.notificationsPermission),
       ])
         .pipe(
           filter(
-            ([isLoggedIn, subscription, permission]) =>
-              isLoggedIn && !subscription && permission !== 'denied'
+            ([isLoggedIn, subscription]) =>
+              isLoggedIn &&
+              !subscription &&
+              this.notificationsPermission() !== 'denied' &&
+              !getHasConfiguredPush()
           ),
           first(),
           takeUntilDestroyed(this._destroyRef)
@@ -55,8 +66,8 @@ export class WebPushService {
     }
 
     combineLatest([
-      toObservable(this._authService.user),
-      toObservable(this._translateService.language),
+      toObservable(this._authService.user, { injector: this._injector }),
+      toObservable(this._translateService.language, { injector: this._injector }),
       this._swPush.subscription,
     ])
       .pipe(
@@ -71,6 +82,10 @@ export class WebPushService {
           this.unregisterSubscription(oldSub);
         }
       });
+
+    this._authService.onBeforeSignOut
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(() => this.disable(true));
   }
 
   public async enable(): Promise<boolean> {
@@ -88,13 +103,15 @@ export class WebPushService {
       const subscription = this._subscription();
       if (subscription) {
         await this.registerSubscription(this._translateService.language(), subscription);
+        setHasConfiguredPush(true);
         return true;
       }
       const { vapidPublicKey } = await firstValueFrom(this._wellKnownService.wellKnown$);
       await this._swPush.requestSubscription({ serverPublicKey: vapidPublicKey });
+      setHasConfiguredPush(true);
       return true;
     } else {
-      setHasRejectedPush(true);
+      setHasConfiguredPush(true);
       return false;
     }
   }
@@ -109,6 +126,7 @@ export class WebPushService {
       await this.unregisterSubscription(subscription);
     } else {
       await this._swPush.unsubscribe();
+      setHasConfiguredPush(true);
     }
   }
 

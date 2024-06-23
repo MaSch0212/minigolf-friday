@@ -45,7 +45,6 @@ export class AppComponent {
     const primengConfig = inject(PrimeNGConfig);
     primengConfig.ripple = true;
 
-    this._webPushService.init();
     this._webPushService.onPromptNotification
       .pipe(takeUntilDestroyed())
       .subscribe(() => this._notificationPromptDialog().open());

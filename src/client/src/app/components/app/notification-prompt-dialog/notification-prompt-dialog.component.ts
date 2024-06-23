@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 
-import { setHasRejectedPush } from '../../../services/storage';
+import { setHasConfiguredPush } from '../../../services/storage';
 import { TranslateService } from '../../../services/translate.service';
 import { WebPushService } from '../../../services/web-push.service';
 
@@ -35,7 +35,7 @@ export class NotificationPromptDialogComponent {
   }
 
   protected onReject() {
-    setHasRejectedPush(true);
+    setHasConfiguredPush(true);
     this.visible.set(false);
   }
 }
