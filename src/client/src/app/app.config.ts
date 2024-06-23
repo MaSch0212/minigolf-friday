@@ -64,8 +64,8 @@ export const appConfig: ApplicationConfig = {
         inject(ThemeService);
 
         const authService = inject(AuthService);
-        return () => {
-          authService.init();
+        return async () => {
+          await authService.init();
         };
       },
     },
