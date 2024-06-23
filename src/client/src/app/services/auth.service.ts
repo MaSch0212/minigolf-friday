@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs';
 
 import {
   AuthTokenInfo,
@@ -20,6 +20,7 @@ import {
 } from './storage';
 import { AuthenticationService } from '../api/services';
 import { environment } from '../environments/environment';
+import { onDocumentVisibilityChange$ } from '../utils/event.utils';
 import { assertBody } from '../utils/http.utils';
 
 export type SignInResult = 'success' | 'invalid-token' | 'error';
@@ -50,12 +51,13 @@ export class AuthService implements OnDestroy {
       }
     });
 
-    fromEvent(document, 'visibilitychange')
-      .pipe(takeUntilDestroyed())
+    onDocumentVisibilityChange$()
+      .pipe(
+        takeUntilDestroyed(),
+        filter(isVisible => isVisible)
+      )
       .subscribe(() => {
-        if (!document.hidden) {
-          this.ensureTokenNotExpired();
-        }
+        this.ensureTokenNotExpired();
       });
   }
 
