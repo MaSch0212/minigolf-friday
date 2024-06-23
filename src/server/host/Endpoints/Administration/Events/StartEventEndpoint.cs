@@ -1,13 +1,17 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Data.Entities;
+using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Models.Push;
 using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Mappers;
 using MinigolfFriday.Host.Services;
+using WebPush;
 
 namespace MinigolfFriday.Host.Endpoints.Administration.Events;
 
@@ -125,22 +129,36 @@ public class StartEventEndpoint(
             ct
         );
 
-        var pushSubscription = await databaseContext
-            .Events.Where(x => x.Id == eventId)
-            .SelectMany(x => x.Timeslots)
-            .SelectMany(x => x.Instances)
-            .SelectMany(x => x.Players)
-            .SelectMany(x => x.PushSubscriptions)
-            .Where(x =>
-                x.User.Settings == null
-                || (x.User.Settings.EnableNotifications && x.User.Settings.NotifyOnEventStart)
-            )
-            .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
-            .ToListAsync(ct);
-        await webPushService.SendAsync(
-            pushSubscription,
-            new PushNotificationData.EventStarted(idService.Event.Encode(eventId)),
-            ct
-        );
+        var notifications = await databaseContext
+            .Users.Where(u => u.EventInstances.Any(i => i.EventTimeslot.EventId == eventId))
+            .Select(u => new
+            {
+                Subscriptions = u.PushSubscriptions.Select(x => new UserPushSubscription(
+                    x.Id,
+                    x.UserId,
+                    x.Lang,
+                    x.Endpoint,
+                    x.P256DH,
+                    x.Auth
+                )),
+                NotificationData = new PushNotificationData.EventStarted(
+                    idService.Event.Encode(eventId),
+                    u.EventInstances.Where(i => i.EventTimeslot.EventId == eventId)
+                        .Select(i => new NotificationTimeslotInfo(
+                            i.EventTimeslot.Time,
+                            i.GroupCode,
+                            i.EventTimeslot.Map!.Name,
+                            i.Players.Count
+                        ))
+                        .ToArray()
+                )
+            })
+            .ToArrayAsync(ct);
+        foreach (var notification in notifications)
+            await webPushService.SendAsync(
+                notification.Subscriptions,
+                notification.NotificationData,
+                ct
+            );
     }
 }
