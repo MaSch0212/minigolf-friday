@@ -24,6 +24,7 @@ import { routes } from './app.routes';
 import { environment } from './environments/environment';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { AuthService } from './services/auth.service';
+import { ThemeService } from './services/theme.service';
 import { WebPushService } from './services/web-push.service';
 
 export const appConfig: ApplicationConfig = {
@@ -58,11 +59,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: () => {
+        // Inject services that need to be initialized
+        inject(WebPushService);
+        inject(ThemeService);
+
         const authService = inject(AuthService);
-        const webPushService = inject(WebPushService);
         return async () => {
           await authService.init();
-          webPushService.init();
         };
       },
     },

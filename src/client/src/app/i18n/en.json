@@ -24,7 +24,8 @@
     "eventTimeslot": "Timeslot",
     "maps": "Maps",
     "users": "Users",
-    "settings": "Settings"
+    "settings": "Settings",
+    "offline": "The connection to the server has been lost. The connection will be restored automatically once it is available again."
   },
   "settings": {
     "general": {
@@ -129,6 +130,10 @@
     "commitDialog": {
       "title": "Commit event",
       "text": "Do you really want to release the event {{date}}? The time slots can no longer be adjusted and players will be notified of a new event"
+    },
+    "warning": {
+      "notStartableNoInstances": "The event cannot be started because the groups have not been built yet.",
+      "notStartableMissingMap": "The event cannot be started because not all played timeslots have a map assigned."
     },
     "error": {
       "load": "Failed to load events.",

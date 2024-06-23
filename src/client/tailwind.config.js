@@ -29,6 +29,7 @@ module.exports = {
       'text-color-secondary': 'var(--text-color-secondary)',
       primary: 'var(--primary-color)',
       danger: 'var(--danger-color)',
+      warning: 'var(--warning-color)',
       'primary-text': 'var(--primary-color-text)',
       'surface-0': 'var(--surface-0)',
       'surface-50': 'var(--surface-50)',

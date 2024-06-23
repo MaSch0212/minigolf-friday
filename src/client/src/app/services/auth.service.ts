@@ -7,7 +7,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { fromEvent } from 'rxjs';
 
 import {
   AuthTokenInfo,
@@ -47,6 +49,14 @@ export class AuthService implements OnDestroy {
         this.clearTokenRefreshTimeout();
       }
     });
+
+    fromEvent(document, 'visibilitychange')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        if (!document.hidden) {
+          this.ensureTokenNotExpired();
+        }
+      });
   }
 
   public async init() {
@@ -80,6 +90,15 @@ export class AuthService implements OnDestroy {
     }
 
     this._token.set(null);
+  }
+
+  public async ensureTokenNotExpired() {
+    const expiration = this._token()?.expiresAt;
+    if (!expiration || expiration.getTime() < Date.now() + 60 * 1000) {
+      await this.refreshToken();
+    } else if (expiration) {
+      this.updateTokenRefreshTimeout(expiration);
+    }
   }
 
   public async signIn(loginToken: string): Promise<SignInResult> {
@@ -121,17 +140,23 @@ export class AuthService implements OnDestroy {
   }
 
   private updateTokenRefreshTimeout(expiration: Date) {
+    if (this._tokenRefreshTimeout) clearTimeout(this._tokenRefreshTimeout);
     this._tokenRefreshTimeout = setTimeout(
       () => {
-        const loginToken = getLoginToken();
-        if (loginToken) {
-          this.signIn(loginToken);
-        } else {
-          this.signOut();
-        }
+        this.refreshToken();
       },
       Math.max(10000, expiration.getTime() - Date.now() - 1000 * 60)
     );
+  }
+
+  private async refreshToken() {
+    console.log('Refreshing token');
+    const loginToken = getLoginToken();
+    if (loginToken) {
+      await this.signIn(loginToken);
+    } else {
+      await this.signOut();
+    }
   }
 
   private clearTokenRefreshTimeout() {
