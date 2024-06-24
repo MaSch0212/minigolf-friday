@@ -10,7 +10,7 @@
             <span class="font-semibold">{{ translations.title() }}</span>
           }
         </div>
-        @if (!isServerConnected()) {
+        @if (!isServerConnected() && isLoggedIn()) {
           <p-button
             [icon]="'i-[mdi--wifi-off]'"
             [rounded]="true"
@@ -39,7 +39,7 @@
       [routerLink]="'/home'"
     />
     <div class="grow"></div>
-    @if (!isServerConnected()) {
+    @if (!isServerConnected() && isLoggedIn()) {
       <p-button
         [icon]="'i-[mdi--wifi-off]'"
         [rounded]="true"
