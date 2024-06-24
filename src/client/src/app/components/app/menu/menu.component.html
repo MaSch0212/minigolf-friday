@@ -28,7 +28,7 @@
       <ng-container *ngTemplateOutlet="updateButtonTemplate"></ng-container>
     </ng-template>
   </p-menubar>
-} @else {
+} @else if (isLoggedIn()) {
   <div class="relative flex flex-row gap-2">
     <p-button
       [icon]="'i-[mdi--home]'"

@@ -3,6 +3,9 @@
     "esbenp.prettier-vscode",
     "firsttris.vscode-jest-runner",
     "dbaeumer.vscode-eslint",
-    "angular.ng-template"
+    "angular.ng-template",
+    "bradlc.vscode-tailwindcss",
+    "ms-dotnettools.csdevkit",
+    "csharpier.csharpier-vscode"
   ]
 }
