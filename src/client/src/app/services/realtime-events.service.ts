@@ -8,8 +8,8 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { defer, EMPTY, EmptyError, filter, firstValueFrom, map, pairwise, startWith } from 'rxjs';
 
 import { AuthService } from './auth.service';
@@ -27,6 +27,7 @@ import {
   PlayerEventTimeslotRegistrationChanged,
 } from '../models/realtime-events';
 import { SignalrRetryPolicy } from '../signalr-retry-policy';
+import { onDocumentVisibilityChange$ } from '../utils/event.utils';
 import { retryWithPolicy } from '../utils/rxjs.utils';
 
 const USER_CHANGED = 'userChanged';
@@ -72,10 +73,28 @@ export class RealtimeEventsService implements OnDestroy {
       const tokenInfo = this._authService.token();
       untracked(() => this.onLoginChanged(tokenInfo));
     });
+
+    onDocumentVisibilityChange$()
+      .pipe(
+        takeUntilDestroyed(),
+        filter(x => x)
+      )
+      .subscribe(() => this.ensureConnected());
   }
 
   public ngOnDestroy() {
     this.disconnect();
+  }
+
+  private async ensureConnected() {
+    await this._authService.ensureTokenNotExpired();
+    if (!this._authService.token()) return;
+    if (!this._hubConnection) {
+      await this.connect();
+    } else if (this._hubConnection.state !== HubConnectionState.Connected) {
+      await this._hubConnection.stop();
+      this.start();
+    }
   }
 
   private onLoginChanged(token: AuthTokenInfo | null | undefined) {
@@ -127,9 +146,17 @@ export class RealtimeEventsService implements OnDestroy {
     connection.onclose(() => this._isConnected.set(false));
 
     this._hubConnection = connection;
+    await this.start();
+  }
+
+  private async start() {
     try {
       await firstValueFrom(
-        defer(() => this._hubConnection?.start() ?? EMPTY).pipe(
+        defer(() =>
+          !this._hubConnection || this._hubConnection.state === HubConnectionState.Connected
+            ? EMPTY
+            : this._hubConnection.start()
+        ).pipe(
           retryWithPolicy(
             new SignalrRetryPolicy((error, nextDelay) =>
               console.warn(
@@ -140,7 +167,9 @@ export class RealtimeEventsService implements OnDestroy {
           )
         )
       );
-      this._isConnected.set(true);
+      if (this._hubConnection?.state === HubConnectionState.Connected) {
+        this._isConnected.set(true);
+      }
     } catch (ex) {
       if (!(ex instanceof EmptyError)) {
         throw ex;

@@ -5,6 +5,7 @@ import {
   isDevMode,
   APP_INITIALIZER,
   inject,
+  Injector,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -59,13 +60,12 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: () => {
-        // Inject services that need to be initialized
-        inject(WebPushService);
         inject(ThemeService);
-
         const authService = inject(AuthService);
+        const injector = inject(Injector);
         return async () => {
           await authService.init();
+          injector.get(WebPushService);
         };
       },
     },
