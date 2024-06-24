@@ -1,3 +1,22 @@
 :host {
-  @apply flex flex-col h-full;
+  @apply flex h-full flex-col;
+}
+
+.bg-image {
+  background-image: url('/icons/icon512_maskable.png');
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  /* Add the blur effect */
+  filter: blur(15px);
+  -webkit-filter: blur(15px);
+
+  /* little overshoot to make blur edges invisible */
+  height: 110%;
+  width: 110%;
+  left: -5%;
+  top: -5%;
 }
