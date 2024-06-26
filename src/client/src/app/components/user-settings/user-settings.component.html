@@ -53,6 +53,8 @@
   } @else {
     @if (settings(); as settings) {
       <p-card [header]="translations.settings_notifications_title()">
+        <!-- this toggle caused confusion during alpha testing -->
+        <!--
         <div class="flex flex-col gap-4">
           <div class="flex flex-row items-center gap-4">
             <div class="grow">
@@ -70,7 +72,7 @@
                 [showTrigger]="settingsSaveStates.enabledOnAllDevices | async"
               />
             </div>
-          </div>
+          </div> -->
 
           <div class="flex flex-col gap-1">
             <div class="flex flex-row items-center gap-4">
