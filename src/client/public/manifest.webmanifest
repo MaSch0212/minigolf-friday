@@ -1,8 +1,6 @@
 {
   "name": "Minigolf Freitag",
   "short_name": "Minigolf Freitag",
-  "theme_color": "#9e48d9",
-  "background_color": "#13276c",
   "display": "standalone",
   "scope": "./",
   "start_url": "./events",
