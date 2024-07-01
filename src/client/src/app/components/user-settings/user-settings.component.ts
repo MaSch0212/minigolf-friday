@@ -12,7 +12,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { filter, map, Subject } from 'rxjs';
+import { filter, map, Subject, timer } from 'rxjs';
 
 import { SavedFadingMessageComponent } from '../+common/saved-fading-message.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
@@ -132,6 +132,7 @@ export class UserSettingsComponent {
   );
 
   protected readonly isUpdatingPushSubscription = signal(false);
+  protected readonly sendPush = signal(false);
   protected readonly isLoading = computed(() => isActionBusy(this._loadActionState()));
   protected readonly isUpdating = computed(() => isActionBusy(this._updateActionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this._loadActionState()));
@@ -142,6 +143,7 @@ export class UserSettingsComponent {
     notifyEventStart: this.getSaveState('notifyOnEventStart'),
     notifyEventUpdate: this.getSaveState('notifyOnEventUpdated'),
     notifyTimeslotStart: this.getSaveState('notifyOnTimeslotStart'),
+    testSend: toObservable(this.sendPush),
   };
 
   constructor() {
@@ -164,6 +166,14 @@ export class UserSettingsComponent {
 
   protected updateUserSettings(changes: Partial<UserSettings>) {
     this._store.dispatch(updateUserSettingsAction(changes));
+  }
+
+  protected async sendTestNotification() {
+    console.log('test');
+    this.sendPush.set(true);
+    timer(1000).subscribe(() => {
+      this.sendPush.set(false);
+    });
   }
 
   protected async toggleNotifications(enabled: boolean) {

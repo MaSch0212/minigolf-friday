@@ -41,6 +41,10 @@
       "title": "Notifications",
       "enabledOnAllDevices": "Enabled on all devices",
       "eanbled": "Enabled on this device",
+      "testNotification": {
+        "text": "test notification",
+        "buttonText": "send"
+      },
       "errors": {
         "notSupported": "Notifications are not supported by this browser. Probably this website needs to be installed onto the homescreen.",
         "notGranted": {
