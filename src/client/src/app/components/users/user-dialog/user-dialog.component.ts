@@ -150,7 +150,7 @@ export class UserDialogComponent {
     );
   }
 
-  public open(user?: User) {
+  public edit(user: User) {
     this.userToUpdate.set(user);
     this.form.reset(
       user
@@ -166,6 +166,11 @@ export class UserDialogComponent {
           }
         : undefined
     );
+    this.visible.set(true);
+  }
+
+  public create(user: string) {
+    this.form.reset({ alias: user });
     this.visible.set(true);
   }
 

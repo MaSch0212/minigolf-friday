@@ -26,7 +26,7 @@
       <p-button
         icon="i-[mdi--plus]"
         label="{{ translations.shared_add() }}"
-        (onClick)="dialog.open()"
+        (onClick)="dialog.create(filter()); filter.set('')"
       />
     </div>
     <div class="grow overflow-auto pb-4 pt-3">
@@ -42,7 +42,7 @@
               [rounded]="true"
               [text]="true"
               size="small"
-              (onClick)="dialog.open(user)"
+              (onClick)="dialog.edit(user)"
             />
             <p-button
               icon="i-[mdi--delete]"
