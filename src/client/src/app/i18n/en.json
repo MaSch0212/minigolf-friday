@@ -170,6 +170,10 @@
       "title": "Delete user",
       "text": "Are you sure you want to delete user \"{{alias}}\"?"
     },
+    "footer": {
+      "players": "Players",
+      "admins": "Admins"
+    },
     "dialog": {
       "addHeader": "Add user",
       "editHeader": "Edit user \"{{alias}}\"",
