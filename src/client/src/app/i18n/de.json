@@ -41,6 +41,10 @@
       "title": "Benachrichtigungen",
       "enabledOnAllDevices": "Auf allen Geräten aktiviert",
       "eanbled": "Auf diesem Gerät aktiviert",
+      "testNotification": {
+        "text": "Testbenachrichtigung",
+        "buttonText": "senden"
+      },
       "errors": {
         "notSupported": "Benachrichtigungen werden von diesem Browser nicht unterstützt. Gegenebenfalls muss die Webseite auf dem Home-Bildschirm installiert werden.",
         "notGranted": {
