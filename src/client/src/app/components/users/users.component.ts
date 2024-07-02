@@ -54,7 +54,19 @@ export class UsersComponent {
 
   protected readonly translations = inject(TranslateService).translations;
   protected readonly filter = signal('');
-  protected readonly users = computed(() => this.filterUsers(this._allUsers(), this.filter()));
+  protected readonly players = computed(() =>
+    this.filterUsers(
+      this._allUsers().filter(x => !x.roles.includes('admin')),
+      this.filter()
+    )
+  );
+  protected readonly admins = computed(() =>
+    this.filterUsers(
+      this._allUsers().filter(x => x.roles.includes('admin')),
+      this.filter()
+    )
+  );
+  protected readonly users = computed(() => this.admins().concat(this.players()));
   protected readonly isLoading = computed(() => isActionBusy(this._actionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this._actionState()));
 
