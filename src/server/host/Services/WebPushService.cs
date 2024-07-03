@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using MinigolfFriday.Data;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Models.Push;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Domain.Options;
 using WebPush;
 
@@ -17,7 +18,9 @@ public sealed class WebPushService(
     IOptions<WebPushOptions> webPushOptions,
     IConfigureOptions<JsonSerializerOptions> configureJsonSerializerOptions,
     DatabaseContext databaseContext,
-    ILogger<WebPushService> logger
+    ILogger<WebPushService> logger,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
 ) : IWebPushService, IDisposable
 {
     private readonly JsonSerializerOptions _serializerOptions = GetJsonSerializerOptions(
@@ -185,6 +188,13 @@ public sealed class WebPushService(
         await databaseContext
             .UserPushSubscriptions.Where(x => x.Id == subscription.Id)
             .ExecuteDeleteAsync(cancellation);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(
+                idService.User.Encode(subscription.UserId),
+                RealtimeEventChangeType.Updated
+            ),
+            cancellation
+        );
     }
 
     private Task RetrySendAsync(

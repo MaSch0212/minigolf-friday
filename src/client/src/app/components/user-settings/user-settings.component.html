@@ -102,6 +102,24 @@
           </div>
 
           @if (settings.enableNotifications && notificationsEnabled()) {
+            <div class="flex flex-row items-center gap-4 pt-2">
+              <div class="grow">
+                {{ translations.settings_notifications_testNotification_text() }}
+              </div>
+              <div class="relative -my-4 p-0">
+                <p-button
+                  class="items-center"
+                  [label]="translations.shared_send()"
+                  icon="i-[mdi--send]"
+                  size="small"
+                  [severity]="'primary'"
+                  (onClick)="sendTestNotification()"
+                />
+                <app-saved-fading-message [showTrigger]="settingsSaveStates.testSend | async">{{
+                  translations.shared_sent()
+                }}</app-saved-fading-message>
+              </div>
+            </div>
             <h3 class="m-0">{{ translations.settings_notifications_notify_title() }}</h3>
             <div class="flex flex-col gap-4 pl-4">
               <div class="flex flex-row items-center gap-4">

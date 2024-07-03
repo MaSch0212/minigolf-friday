@@ -195,6 +195,18 @@ public static class PushNotificationData
             };
     }
 
+    public record TestNotification(string Title, string Body) : IPushNotificationData
+    {
+        public string Type => "test-notification";
+
+        public Dictionary<string, PushNotificationOnActionClick> OnActionClick =>
+            new() { { "default", new($"/events") } };
+
+        public string GetTitle(string lang) => Title;
+
+        public string GetBody(string lang) => Body;
+    }
+
     private static string NormalizeLang(string lang)
     {
         if (lang.StartsWith("de", StringComparison.OrdinalIgnoreCase))

@@ -22,6 +22,7 @@ import {
   updateUserSettingsAction,
 } from '../../+state/user-settings';
 import { keepUserSettingsLoaded } from '../../+state/user-settings/user-settings.utils';
+import { NotificationsService } from '../../api/services';
 import { ResetNgModelDirective } from '../../directives/reset-ng-model.directive';
 import { UserSettings } from '../../models/parsed-models';
 import { AuthService } from '../../services/auth.service';
@@ -75,6 +76,7 @@ export class UserSettingsComponent {
   private readonly _actions$ = inject(Actions);
   private readonly _messageService = inject(MessageService);
   private readonly _webPushService = inject(WebPushService);
+  private readonly _notificationService = inject(NotificationsService);
 
   private readonly _loadActionState = selectSignal(selectUserSettingsActionState('load'));
   private readonly _updateActionState = selectSignal(selectUserSettingsActionState('update'));
@@ -132,6 +134,7 @@ export class UserSettingsComponent {
   );
 
   protected readonly isUpdatingPushSubscription = signal(false);
+  protected readonly sendPush = signal(false);
   protected readonly isLoading = computed(() => isActionBusy(this._loadActionState()));
   protected readonly isUpdating = computed(() => isActionBusy(this._updateActionState()));
   protected readonly hasFailed = computed(() => hasActionFailed(this._loadActionState()));
@@ -142,6 +145,7 @@ export class UserSettingsComponent {
     notifyEventStart: this.getSaveState('notifyOnEventStart'),
     notifyEventUpdate: this.getSaveState('notifyOnEventUpdated'),
     notifyTimeslotStart: this.getSaveState('notifyOnTimeslotStart'),
+    testSend: toObservable(this.sendPush),
   };
 
   constructor() {
@@ -164,6 +168,19 @@ export class UserSettingsComponent {
 
   protected updateUserSettings(changes: Partial<UserSettings>) {
     this._store.dispatch(updateUserSettingsAction(changes));
+  }
+
+  protected async sendTestNotification() {
+    this.sendPush.set(false);
+    const response = await this._notificationService.sendNotification({
+      body: {
+        title: this.translations.users_notificationDialog_titleDefault(),
+        body: this.translations.users_notificationDialog_bodyDefault(),
+      },
+    });
+    if (response.ok) {
+      this.sendPush.set(true);
+    }
   }
 
   protected async toggleNotifications(enabled: boolean) {

@@ -9,11 +9,13 @@ namespace MinigolfFriday.Domain.Models;
 /// <param name="Alias">The alias that is used to display the user in the UI.</param>
 /// <param name="Roles">The assigned roles to the user.</param>
 /// <param name="PlayerPreferences">Preferences regarding other players.</param>
+/// <param name="HasPushSubscription">Determines wether the user has active push subscriptions.</param>
 public record User(
     [property: Required] string Id,
     [property: Required] string Alias,
     [property: Required] Role[] Roles,
-    [property: Required] PlayerPreferences PlayerPreferences
+    [property: Required] PlayerPreferences PlayerPreferences,
+    bool? HasPushSubscription
 );
 
 /// <summary>

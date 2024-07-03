@@ -37,6 +37,15 @@
             [class.border-t-[1px]]="index > 0"
           >
             <app-user-item [user]="user" class="min-w-0 grow" />
+            @if (user.hasPushSubscription) {
+              <p-button
+                icon="i-[mdi--bell]"
+                [rounded]="true"
+                [text]="true"
+                size="small"
+                (onClick)="pushDialog.open(user)"
+              />
+            }
             <p-button
               icon="i-[mdi--pencil-outline]"
               [rounded]="true"
@@ -76,3 +85,4 @@
 }
 
 <app-user-dialog #dialog />
+<app-user-push-dialog #pushDialog />

@@ -41,6 +41,9 @@
       "title": "Notifications",
       "enabledOnAllDevices": "Enabled on all devices",
       "eanbled": "Enabled on this device",
+      "testNotification": {
+        "text": "Test notification"
+      },
       "errors": {
         "notSupported": "Notifications are not supported by this browser. Probably this website needs to be installed onto the homescreen.",
         "notGranted": {
@@ -194,6 +197,14 @@
     },
     "error": {
       "load": "Failed to load users."
+    },
+    "notificationDialog": {
+      "dialogTitle": "Notify player",
+      "sendTo": "senden an \"{{alias}}\"",
+      "title": "title",
+      "titleDefault": "test notification",
+      "body": "body",
+      "bodyDefault": "Notifications are working!!! Wohoo ⛳"
     }
   },
   "playerEvents": {
@@ -247,7 +258,9 @@
     "commit": "Commit",
     "minute": "Minute",
     "minutes": "Minutes",
-    "none": "None"
+    "none": "None",
+    "send": "send",
+    "sent": "sent"
   },
   "validation": {
     "required": "Cannot be blank.",

@@ -67,7 +67,7 @@
 <ng-template #updateButtonTemplate>
   @if (newVersionAvailable()) {
     <div class="top-5 absolute-center">
-      <div [@flyInTopAnimation]>
+      <div>
         <p-button
           [icon]="'i-[mdi--cloud-download]'"
           [label]="translations.shared_update()"

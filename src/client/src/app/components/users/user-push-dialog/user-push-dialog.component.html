@@ -1,0 +1,53 @@
+<p-dialog
+  [header]="translations.users_notificationDialog_dialogTitle()"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="min-w-[80vw]"
+>
+  <div class="flex flex-col gap-4" [formGroup]="form">
+    <div>
+      {{ translations.users_notificationDialog_sendTo() | interpolate: user() }}
+    </div>
+
+    <span class="p-float-label">
+      <input
+        pInputText
+        [id]="id('title')"
+        type="text"
+        formControlName="title"
+        autocomplete="off"
+        pAutoFocus
+        [autofocus]="true"
+        [placeholder]="translations.users_notificationDialog_titleDefault()"
+      />
+      <label [htmlFor]="id('title')">{{ translations.users_notificationDialog_title() }}</label>
+    </span>
+
+    <span class="p-float-label">
+      <textarea
+        pInputTextarea
+        [id]="id('body')"
+        formControlName="body"
+        autocomplete="off"
+        [placeholder]="translations.users_notificationDialog_bodyDefault()"
+      ></textarea>
+      <label [htmlFor]="id('body')">{{ translations.users_notificationDialog_body() }}</label>
+    </span>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button
+      [disabled]="isLoading()"
+      [text]="true"
+      label="{{ translations.shared_cancel() }}"
+      (onClick)="close()"
+    />
+    <p-button
+      [disabled]="isLoading()"
+      label="{{ translations.shared_send() }}"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>
