@@ -22,7 +22,7 @@ public class SendNotificationRequestValidator : Validator<SendNotificationReques
 {
     public SendNotificationRequestValidator(IIdService idService)
     {
-        // RuleFor(x => x.UserId).NotNull().ValidSqid(idService.User);
+        When(x => x.UserId != null, () => RuleFor(x => x.UserId!).ValidSqid(idService.User));
     }
 }
 
@@ -53,21 +53,20 @@ public class SendNotificationEndpoint(
             userId = idService.User.DecodeSingle(req.UserId);
         }
 
-        var user = null as UserEntity;
-        try
+        var user = await databaseContext
+            .Users.Include(x => x.Settings)
+            .FirstOrDefaultAsync(x => x.Id == userId, ct);
+
+        if (user == null)
         {
-            user = await databaseContext
-                .Users.Include(x => x.Settings)
-                .FirstAsync(x => x.Id == userId, ct);
-        }
-        catch (System.Exception)
-        {
-            Logger.LogWarning(EndpointErrors.UserNotFound, req.UserId);
-            await this.SendErrorAsync(EndpointErrors.UserNotFound, req.UserId, ct);
+            Logger.LogWarning(EndpointErrors.UserNotFound, userId);
+            await this.SendErrorAsync(
+                EndpointErrors.UserNotFound,
+                idService.User.Encode(userId),
+                ct
+            );
             return;
         }
-
-        Logger.LogWarning("send to userId: {} ", user.Alias);
 
         var notifications = await databaseContext
             .Users.Where(u => u.Id == userId)
