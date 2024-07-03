@@ -32,7 +32,8 @@ public class UpdateUserEndpoint
                     Id = user.Id,
                     Alias = "Renamed User",
                     Roles = user.Roles,
-                    PlayerPreferences = user.PlayerPreferences
+                    PlayerPreferences = user.PlayerPreferences,
+                    HasPushSubscription = false
                 }
             );
     }
@@ -57,7 +58,8 @@ public class UpdateUserEndpoint
                     Id = user.Id,
                     Alias = user.Alias,
                     Roles = [Role.Admin],
-                    PlayerPreferences = user.PlayerPreferences
+                    PlayerPreferences = user.PlayerPreferences,
+                    HasPushSubscription = false
                 }
             );
     }
@@ -97,7 +99,8 @@ public class UpdateUserEndpoint
                     {
                         Avoid = [users[2].User.Id],
                         Prefer = [users[1].User.Id]
-                    }
+                    },
+                    HasPushSubscription = false
                 }
             );
     }
@@ -137,7 +140,8 @@ public class UpdateUserEndpoint
                     {
                         Avoid = [users[0].User.Id],
                         Prefer = [users[2].User.Id]
-                    }
+                    },
+                    HasPushSubscription = false
                 }
             );
     }
@@ -182,7 +186,8 @@ public class UpdateUserEndpoint
                     {
                         Avoid = [users[2].User.Id],
                         Prefer = [users[3].User.Id]
-                    }
+                    },
+                    HasPushSubscription = false
                 }
             );
     }
