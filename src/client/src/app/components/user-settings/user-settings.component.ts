@@ -12,7 +12,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { filter, map, Subject, timer } from 'rxjs';
+import { filter, map, Subject } from 'rxjs';
 
 import { SavedFadingMessageComponent } from '../+common/saved-fading-message.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
@@ -22,6 +22,7 @@ import {
   updateUserSettingsAction,
 } from '../../+state/user-settings';
 import { keepUserSettingsLoaded } from '../../+state/user-settings/user-settings.utils';
+import { NotificationsService } from '../../api/services';
 import { ResetNgModelDirective } from '../../directives/reset-ng-model.directive';
 import { UserSettings } from '../../models/parsed-models';
 import { AuthService } from '../../services/auth.service';
@@ -75,6 +76,7 @@ export class UserSettingsComponent {
   private readonly _actions$ = inject(Actions);
   private readonly _messageService = inject(MessageService);
   private readonly _webPushService = inject(WebPushService);
+  private readonly _notificationService = inject(NotificationsService);
 
   private readonly _loadActionState = selectSignal(selectUserSettingsActionState('load'));
   private readonly _updateActionState = selectSignal(selectUserSettingsActionState('update'));
@@ -169,11 +171,11 @@ export class UserSettingsComponent {
   }
 
   protected async sendTestNotification() {
-    console.log('test');
-    this.sendPush.set(true);
-    timer(1000).subscribe(() => {
-      this.sendPush.set(false);
-    });
+    this.sendPush.set(false);
+    const response = await this._notificationService.sendNotification({ body: {} });
+    if (response.ok) {
+      this.sendPush.set(true);
+    }
   }
 
   protected async toggleNotifications(enabled: boolean) {
