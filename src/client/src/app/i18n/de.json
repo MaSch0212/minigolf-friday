@@ -42,9 +42,7 @@
       "enabledOnAllDevices": "Auf allen Geräten aktiviert",
       "eanbled": "Auf diesem Gerät aktiviert",
       "testNotification": {
-        "text": "Testbenachrichtigung",
-        "buttonText": "Senden",
-        "successText": "Gesendet"
+        "text": "Testbenachrichtigung"
       },
       "errors": {
         "notSupported": "Benachrichtigungen werden von diesem Browser nicht unterstützt. Gegenebenfalls muss die Webseite auf dem Home-Bildschirm installiert werden.",
@@ -199,6 +197,14 @@
     },
     "error": {
       "load": "Fehler beim Laden der Benutzer."
+    },
+    "notificationDialog": {
+      "dialogTitle": "Spieler Benachrichtigen",
+      "sendTo": "senden an \"{{alias}}\"",
+      "title": "Titel",
+      "titleDefault": "Testbenachrichtigung",
+      "body": "Inhalt",
+      "bodyDefault": "Benachrichtigungen funktionieren!!! Wohoo ⛳"
     }
   },
   "playerEvents": {
@@ -252,7 +258,9 @@
     "commit": "Freigeben",
     "minute": "Minute",
     "minutes": "Minuten",
-    "none": "Keine"
+    "none": "Keine",
+    "send": "Senden",
+    "sent": "Gesendet"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

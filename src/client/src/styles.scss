@@ -197,13 +197,21 @@
       @apply px-3;
     }
 
+    input::placeholder,
+    textarea::placeholder {
+      opacity: 1;
+    }
+
     input:focus,
     input.p-filled,
     textarea:focus,
     textarea.p-filled,
     .p-inputwrapper-focus,
-    .p-inputwrapper-filled {
+    .p-inputwrapper-filled,
+    input[placeholder],
+    textarea[placeholder] {
       ~ label {
+        font-size: 0.75rem;
         top: 2px;
         padding: 0 4px;
         left: 8px;

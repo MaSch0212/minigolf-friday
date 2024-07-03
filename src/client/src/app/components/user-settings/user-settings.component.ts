@@ -172,7 +172,12 @@ export class UserSettingsComponent {
 
   protected async sendTestNotification() {
     this.sendPush.set(false);
-    const response = await this._notificationService.sendNotification({ body: {} });
+    const response = await this._notificationService.sendNotification({
+      body: {
+        title: this.translations.users_notificationDialog_titleDefault(),
+        body: this.translations.users_notificationDialog_bodyDefault(),
+      },
+    });
     if (response.ok) {
       this.sendPush.set(true);
     }

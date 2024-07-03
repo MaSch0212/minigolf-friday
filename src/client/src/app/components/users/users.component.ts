@@ -10,6 +10,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { UserDialogComponent } from './user-dialog/user-dialog.component';
 import { UserItemComponent } from './user-item/user-item.component';
+import { UserPushDialogComponent } from './user-push-dialog/user-push-dialog.component';
 import { isActionBusy, hasActionFailed } from '../../+state/action-state';
 import {
   keepUsersLoaded,
@@ -37,6 +38,7 @@ function userMatchesFilter(map: User | undefined, lowerCaseFilter: string): map 
     InputTextModule,
     MessagesModule,
     UserDialogComponent,
+    UserPushDialogComponent,
     UserItemComponent,
     ProgressSpinnerModule,
   ],

@@ -109,14 +109,14 @@
               <div class="relative -my-4 p-0">
                 <p-button
                   class="items-center"
-                  [label]="translations.settings_notifications_testNotification_buttonText()"
+                  [label]="translations.shared_send()"
                   icon="i-[mdi--send]"
                   size="small"
                   [severity]="'primary'"
                   (onClick)="sendTestNotification()"
                 />
                 <app-saved-fading-message [showTrigger]="settingsSaveStates.testSend | async">{{
-                  translations.settings_notifications_testNotification_successText()
+                  translations.shared_sent()
                 }}</app-saved-fading-message>
               </div>
             </div>
