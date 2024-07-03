@@ -37,6 +37,9 @@
             [class.border-t-[1px]]="index > 0"
           >
             <app-user-item [user]="user" class="min-w-0 grow" />
+            @if (user.hasPushSubscription) {
+              <span class="i-[mdi--bell] mr-2"></span>
+            }
             <p-button
               icon="i-[mdi--pencil-outline]"
               [rounded]="true"
