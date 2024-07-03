@@ -2,6 +2,9 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Services;
 
 namespace MinigolfFriday.Host.Endpoints.Notifications;
 
@@ -18,8 +21,12 @@ public class UnsubscribeFromNotificationsRequestValidator
 }
 
 /// <summary>Unsubscribe from notifications.</summary>
-public class UnsubscribeFromNotificationsEndpoint(DatabaseContext databaseContext)
-    : Endpoint<UnsubscribeFromNotificationsRequest>
+public class UnsubscribeFromNotificationsEndpoint(
+    DatabaseContext databaseContext,
+    IJwtService jwtService,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
+) : Endpoint<UnsubscribeFromNotificationsRequest>
 {
     public override void Configure()
     {
@@ -28,6 +35,7 @@ public class UnsubscribeFromNotificationsEndpoint(DatabaseContext databaseContex
         Description(x =>
             x.ClearDefaultAccepts().Accepts<UnsubscribeFromNotificationsRequest>("application/json")
         );
+        this.ProducesErrors(EndpointErrors.UserIdNotInClaims);
     }
 
     public override async Task HandleAsync(
@@ -35,9 +43,22 @@ public class UnsubscribeFromNotificationsEndpoint(DatabaseContext databaseContex
         CancellationToken ct
     )
     {
+        if (!jwtService.TryGetUserId(User, out var userId))
+        {
+            Logger.LogWarning(EndpointErrors.UserIdNotInClaims);
+            await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
+            return;
+        }
         await databaseContext
             .UserPushSubscriptions.Where(x => x.Endpoint == req.Endpoint)
             .ExecuteDeleteAsync(ct);
         await SendOkAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(
+                idService.User.Encode(userId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
     }
 }

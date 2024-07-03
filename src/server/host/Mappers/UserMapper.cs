@@ -18,7 +18,8 @@ public class UserMapper(IIdService idService) : IUserMapper
                 new(
                     entity.Avoid.Select(x => idService.User.Encode(x.Id)).ToArray(),
                     entity.Prefer.Select(x => idService.User.Encode(x.Id)).ToArray()
-                )
+                ),
+                entity.PushSubscriptions.Any()
             );
 
     public User Map(UserEntity entity) => MapUserExpression.Compile()(entity);

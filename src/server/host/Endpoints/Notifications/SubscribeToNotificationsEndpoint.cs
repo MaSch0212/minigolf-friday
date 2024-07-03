@@ -3,6 +3,7 @@ using FluentValidation;
 using MaSch.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
+using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
 
@@ -31,7 +32,9 @@ public class SubscribeToNotificationsRequestValidator : Validator<SubscribeToNot
 /// <summary>Subscribe to notifications.</summary>
 public class SubscribeToNotificationsEndpoint(
     DatabaseContext databaseContext,
-    IJwtService jwtService
+    IJwtService jwtService,
+    IRealtimeEventsService realtimeEventsService,
+    IIdService idService
 ) : Endpoint<SubscribeToNotificationsRequest>
 {
     public override void Configure()
@@ -89,5 +92,12 @@ public class SubscribeToNotificationsEndpoint(
         }
 
         await SendOkAsync(ct);
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.UserChanged(
+                idService.User.Encode(userId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
     }
 }
