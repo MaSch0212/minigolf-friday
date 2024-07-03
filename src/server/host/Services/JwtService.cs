@@ -70,4 +70,9 @@ public class JwtService(IOptionsMonitor<JwtOptions> jwtOptions, IIdService idSer
         userId = -1;
         return false;
     }
+
+    public bool HasRole(ClaimsPrincipal user, Role role)
+    {
+        return user.IsInRole(FastEnum.GetName(role)!);
+    }
 }
