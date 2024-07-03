@@ -1,4 +1,4 @@
-import { computed, EventEmitter, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, EventEmitter, inject, Injectable, signal } from '@angular/core';
 import { toObservable, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { SwPush } from '@angular/service-worker';
 import { combineLatest, filter, first, startWith, pairwise, firstValueFrom, map } from 'rxjs';
@@ -66,9 +66,8 @@ export class WebPushService {
         }
       });
 
-    this._authService.onBeforeSignOut
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.disable(true));
+    const sub = this._authService.onBeforeSignOut(() => this.disable(true));
+    inject(DestroyRef).onDestroy(() => sub.unsubscribe());
   }
 
   public async enable(): Promise<boolean> {
@@ -100,6 +99,7 @@ export class WebPushService {
   }
 
   public async disable(keepSubscription: boolean = false): Promise<void> {
+    console.log('disable');
     if (!this.notificationsSupported) return;
 
     const subscription = this._subscription();

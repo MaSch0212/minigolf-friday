@@ -1,15 +1,7 @@
-import {
-  EventEmitter,
-  Injectable,
-  OnDestroy,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { Injectable, OnDestroy, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, Unsubscribable } from 'rxjs';
 
 import {
   AuthTokenInfo,
@@ -30,6 +22,7 @@ export class AuthService implements OnDestroy {
   private readonly _api = inject(AuthenticationService);
   private readonly _router = inject(Router);
 
+  private readonly _beforeSignOut: (() => Promise<void>)[] = [];
   private readonly _token = signal<AuthTokenInfo | null | undefined>(undefined);
 
   private _tokenRefreshTimeout?: any;
@@ -37,7 +30,6 @@ export class AuthService implements OnDestroy {
   public readonly token = this._token.asReadonly();
   public readonly user = computed(() => this.token()?.user);
   public readonly isAuthorized = computed(() => !!this._token());
-  public readonly onBeforeSignOut = new EventEmitter<void>();
 
   constructor() {
     effect(() => {
@@ -130,11 +122,23 @@ export class AuthService implements OnDestroy {
   public async signOut() {
     if (!environment.authenticationRequired) return;
 
-    this.onBeforeSignOut.emit();
+    await Promise.all(this._beforeSignOut.map(x => x()));
     setLoginToken(null);
     this._token.set(null);
 
     this._router.navigate(['/login']);
+  }
+
+  public onBeforeSignOut(action: () => Promise<void>): Unsubscribable {
+    this._beforeSignOut.push(action);
+    return {
+      unsubscribe: () => {
+        const index = this._beforeSignOut.indexOf(action);
+        if (index >= 0) {
+          this._beforeSignOut.splice(index, 1);
+        }
+      },
+    };
   }
 
   public ngOnDestroy(): void {
