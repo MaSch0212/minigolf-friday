@@ -115,7 +115,9 @@
                   [severity]="'primary'"
                   (onClick)="sendTestNotification()"
                 />
-                <app-saved-fading-message [showTrigger]="settingsSaveStates.testSend | async" />
+                <app-saved-fading-message [showTrigger]="settingsSaveStates.testSend | async">{{
+                  translations.settings_notifications_testNotification_successText()
+                }}</app-saved-fading-message>
               </div>
             </div>
             <h3 class="m-0">{{ translations.settings_notifications_notify_title() }}</h3>
