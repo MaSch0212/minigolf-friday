@@ -49,11 +49,11 @@
                 [disabled]="!allowToStart()"
               />
               @if (!hasInstances()) {
-                <small class="text-warning text-center">{{
+                <small class="text-center text-warning">{{
                   translations.events_warning_notStartableNoInstances()
                 }}</small>
               } @else if (!allTimeslotsHaveMaps()) {
-                <small class="text-warning text-center">{{
+                <small class="text-center text-warning">{{
                   translations.events_warning_notStartableMissingMap()
                 }}</small>
               }
@@ -73,6 +73,11 @@
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
+        <span
+          class="inline-block rounded-full bg-primary pr-2 text-center font-bold text-primary-text"
+        >
+          <span class="i-[mdi--account] ml-2"></span> {{ playersAmount() }}
+        </span>
         @if (!event.startedAt && event.staged) {
           <p-button
             [label]="translations.shared_add()"
