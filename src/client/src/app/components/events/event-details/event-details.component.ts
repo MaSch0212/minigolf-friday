@@ -80,6 +80,9 @@ export class EventDetailsComponent {
   protected readonly timeslots = computed(() =>
     [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
   );
+  protected readonly playersAmount = computed(
+    () => new Set(this.timeslots().flatMap(x => x.playerIds)).size
+  );
   protected readonly maps = selectSignal(mapSelectors.selectEntities);
   protected readonly allUsers = selectSignal(userSelectors.selectEntities);
   protected readonly hasInstances = computed(() =>
