@@ -13,6 +13,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
     : IEventInstanceService
 {
     const int MAX_GROUP_SIZE = 5;
+    const int MIN_TIMESLOT_REGISTRATIONS = 3;
 
     public async Task<
         Result<(EventEntity Event, EventTimeslotInstances[] Instances)>
@@ -42,7 +43,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
 
         foreach (
             var timeslot in @event.Timeslots.Where(x =>
-                x.IsFallbackAllowed && x.Registrations.Count < MAX_GROUP_SIZE
+                x.IsFallbackAllowed && x.Registrations.Count < MIN_TIMESLOT_REGISTRATIONS
             )
         )
         {
