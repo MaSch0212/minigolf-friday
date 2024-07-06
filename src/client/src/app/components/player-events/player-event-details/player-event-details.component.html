@@ -126,6 +126,25 @@
         }
         @if (event.isStarted) {
           <h2 class="m-0 pt-4">{{ translations.playerEvents_games() }}</h2>
+
+          @if (games().length === 0) {
+            <p-messages severity="info">
+              <ng-template pTemplate>
+                <span class="i-[mdi--info-circle-outline] mr-2"></span>
+                <div class="flex flex-col gap-1">
+                  <span class="font-semibold">{{
+                    translations.playerEvents_noGames_general()
+                  }}</span>
+                  <span>{{
+                    hasRegisteredTimeslot()
+                      ? translations.playerEvents_noGames_registered()
+                      : translations.playerEvents_noGames_notRegistered()
+                  }}</span>
+                </div>
+              </ng-template>
+            </p-messages>
+          }
+
           @for (game of games(); track game.timeslot.id) {
             <p-card>
               <h3 class="m-0 pb-8">

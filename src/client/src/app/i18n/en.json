@@ -226,6 +226,11 @@
     "time": "Time",
     "groupCode": "Group code",
     "map": "Map",
+    "noGames": {
+      "general": "No games available.",
+      "registered": "The timeslot(s) for which you are registered will not take place because too few players have registered for it.",
+      "notRegistered": "You have not registered for a timeslot."
+    },
     "error": {
       "load": "Failed to load events.",
       "loadOne": "Failed to load event.",

@@ -226,6 +226,11 @@
     "time": "Uhrzeit",
     "groupCode": "Raumname",
     "map": "Bahn",
+    "noGames": {
+      "general": "Keine Spiele verfügbar.",
+      "registered": "Der/die Zeitslot(s) für die du angemeldet bist, finden nicht statt, da sich zu wenig Spieler dafür angemeldet haben.",
+      "notRegistered": "Du hast dich für keinen Zeitslot angemeldet."
+    },
     "error": {
       "load": "Fehler beim Laden der Veranstaltungen.",
       "loadOne": "Fehler beim Laden der Veranstaltung.",
