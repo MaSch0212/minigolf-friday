@@ -53,6 +53,9 @@ export class TranslateService {
   constructor() {
     effect(() => {
       const lang = this.language();
+
+      document.documentElement.lang = lang;
+
       let getTranslations = langs[lang];
       if (!getTranslations && lang.includes('-')) {
         getTranslations = langs[lang.split('-')[0]];

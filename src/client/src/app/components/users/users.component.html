@@ -63,21 +63,21 @@
             />
           </div>
         }
-        <div class="flex min-w-0 flex-row gap-0 rounded-b-lg bg-surface-100 p-3 pl-4">
-          <p class="m-0 flex min-w-0 grow items-center gap-2">
+        <div class="flex min-w-0 flex-row justify-between rounded-b-lg bg-surface-100 p-3 pl-4">
+          <div class="flex min-w-0 items-center gap-2">
             <span class="i-[mdi--crown]"></span> {{ translations.users_footer_admins() }}:
             <span
               class="inline-block rounded-full bg-primary pl-2 pr-2 text-center font-bold text-primary-text"
               >{{ admins().length }}
             </span>
-          </p>
-          <p class="m-0 flex min-w-0 grow items-center gap-2">
+          </div>
+          <div class="flex min-w-0 items-center gap-2">
             <span class="i-[mdi--account]"></span> {{ translations.users_footer_players() }}:
             <span
               class="inline-block rounded-full bg-primary pl-2 pr-2 text-center font-bold text-primary-text"
               >{{ players().length }}
             </span>
-          </p>
+          </div>
         </div>
       </div>
     </div>
