@@ -63,8 +63,8 @@ function isDarkColorSchemePrefered() {
   const listener = (e: MediaQueryListEvent) => {
     result.set(e.matches);
   };
-  userMedia.addEventListener('change', listener);
-  inject(DestroyRef).onDestroy(() => userMedia.removeEventListener('change', listener));
+  userMedia.addListener(listener);
+  inject(DestroyRef).onDestroy(() => userMedia.removeListener(listener));
 
   return result;
 }
