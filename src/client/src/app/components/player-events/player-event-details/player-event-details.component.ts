@@ -95,6 +95,9 @@ export class PlayerEventDetailsComponent {
   protected readonly timeslots = computed(() =>
     [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
   );
+  protected readonly hasRegisteredTimeslot = computed(() =>
+    this.timeslots().some(x => x.isRegistered)
+  );
   protected readonly timeslotSaveStates = chainSignals(
     computed(() => this.timeslots().map(x => x.id), { equal: areArraysEqual }),
     id =>
