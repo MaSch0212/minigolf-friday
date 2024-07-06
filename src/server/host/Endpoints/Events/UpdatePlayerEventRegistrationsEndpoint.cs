@@ -145,7 +145,7 @@ public class UpdatePlayerEventRegistrationsEndpoint(
             }
             else
             {
-                existing.FallbackEventTimeslot = fallbackTimeslot;
+                existing.FallbackEventTimeslotId = fallbackTimeslot?.Id;
             }
         }
         await databaseContext.SaveChangesAsync(ct);

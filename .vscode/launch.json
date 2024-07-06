@@ -9,6 +9,12 @@
       "type": "dotnet",
       "request": "launch",
       "projectPath": "${workspaceFolder}/src/server/host/MinigolfFriday.Host.csproj"
+    },
+    {
+      "name": "C#: Host Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processName": "MinigolfFriday.Host.exe"
     }
   ]
 }
