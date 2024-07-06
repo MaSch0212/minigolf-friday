@@ -11,18 +11,20 @@
           }
         </div>
         @if (!isServerConnected() && isLoggedIn()) {
-          <p-button
-            [icon]="'i-[mdi--wifi-off]'"
-            [rounded]="true"
-            [text]="true"
-            [severity]="'danger'"
-            class="-my-8 self-center"
-            styleClass="text-[1.5rem]"
-            (onClick)="offlinePanel.toggle($event)"
-          />
-          <p-overlayPanel #offlinePanel [dismissable]="true">
-            <span>{{ translations.nav_offline() }}</span>
-          </p-overlayPanel>
+          @defer (on timer(1000)) {
+            <p-button
+              [icon]="'i-[mdi--wifi-off]'"
+              [rounded]="true"
+              [text]="true"
+              [severity]="'danger'"
+              class="-my-8 self-center"
+              styleClass="text-[1.5rem]"
+              (onClick)="offlinePanel.toggle($event)"
+            />
+            <p-overlayPanel #offlinePanel [dismissable]="true">
+              <span>{{ translations.nav_offline() }}</span>
+            </p-overlayPanel>
+          }
         }
       </div>
       <ng-container *ngTemplateOutlet="updateButtonTemplate"></ng-container>
@@ -40,14 +42,16 @@
     />
     <div class="grow"></div>
     @if (!isServerConnected() && isLoggedIn()) {
-      <p-button
-        [icon]="'i-[mdi--wifi-off]'"
-        [rounded]="true"
-        [text]="true"
-        [severity]="'danger'"
-        styleClass="h-14 w-14 p-4 text-[1.5rem]"
-        (onClick)="offlinePanel.toggle($event)"
-      />
+      @defer (on timer(1000)) {
+        <p-button
+          [icon]="'i-[mdi--wifi-off]'"
+          [rounded]="true"
+          [text]="true"
+          [severity]="'danger'"
+          styleClass="h-14 w-14 p-4 text-[1.5rem]"
+          (onClick)="offlinePanel.toggle($event)"
+        />
+      }
       <p-overlayPanel #offlinePanel [dismissable]="true">
         <span>{{ translations.nav_offline() }}</span>
       </p-overlayPanel>
@@ -67,7 +71,7 @@
 <ng-template #updateButtonTemplate>
   @if (newVersionAvailable()) {
     <div class="top-5 absolute-center">
-      <div>
+      <div [@flyInTopAnimation]>
         <p-button
           [icon]="'i-[mdi--cloud-download]'"
           [label]="translations.shared_update()"

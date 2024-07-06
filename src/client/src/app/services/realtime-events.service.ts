@@ -75,11 +75,14 @@ export class RealtimeEventsService implements OnDestroy {
     });
 
     onDocumentVisibilityChange$()
-      .pipe(
-        takeUntilDestroyed(),
-        filter(x => x)
-      )
-      .subscribe(() => this.ensureConnected());
+      .pipe(takeUntilDestroyed())
+      .subscribe(isVisible => {
+        if (isVisible) {
+          this.ensureConnected();
+        } else {
+          this.disconnect();
+        }
+      });
   }
 
   public ngOnDestroy() {

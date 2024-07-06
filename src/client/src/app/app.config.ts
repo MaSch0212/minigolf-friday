@@ -26,6 +26,7 @@ import { environment } from './environments/environment';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { AuthService } from './services/auth.service';
 import { ThemeService } from './services/theme.service';
+import { UpdateService } from './services/update.service';
 import { WebPushService } from './services/web-push.service';
 
 export const appConfig: ApplicationConfig = {
@@ -60,6 +61,7 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: () => {
+        inject(UpdateService);
         inject(ThemeService);
         const authService = inject(AuthService);
         const injector = inject(Injector);
