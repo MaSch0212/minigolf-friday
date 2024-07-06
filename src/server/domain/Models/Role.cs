@@ -17,5 +17,11 @@ public enum Role
     /// When a user has this role, they can administrate users, maps and events.
     /// </summary>
     [EnumMember(Value = "admin")]
-    Admin = 1
+    Admin = 1,
+
+    /// <summary>
+    /// When a user has this role, they have access to debugging tools.
+    /// </summary>
+    [EnumMember(Value = "developer")]
+    Developer = 2
 }

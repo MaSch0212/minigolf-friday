@@ -189,7 +189,8 @@
       "roles": {
         "title": "Roles",
         "player": "Player",
-        "admin": "Administrator"
+        "admin": "Administrator",
+        "developer": "Developer"
       },
       "error": {
         "save": "Failed to save user."

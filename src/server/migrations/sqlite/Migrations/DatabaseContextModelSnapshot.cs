@@ -198,6 +198,11 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                         {
                             Id = 1,
                             Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Developer"
                         });
                 });
 
