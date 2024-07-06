@@ -41,6 +41,7 @@
     "@ngrx/store-devtools": "18.0.0-rc.0",
     "@types/eslint": "^8.56.10",
     "copy-to-clipboard": "^3.3.3",
+    "eruda": "^3.0.1",
     "immer": "^10.1.1",
     "primeng": "17.18.0",
     "rxjs": "~7.8.1",

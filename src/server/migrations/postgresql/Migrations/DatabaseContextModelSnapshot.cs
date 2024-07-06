@@ -215,6 +215,11 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                         {
                             Id = 1,
                             Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Developer"
                         });
                 });
 

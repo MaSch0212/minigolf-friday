@@ -76,6 +76,7 @@ export class UserDialogComponent {
     alias: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     isPlayer: new FormControl<boolean>(true, { nonNullable: true }),
     isAdmin: new FormControl<boolean>(false, { nonNullable: true }),
+    isDeveloper: new FormControl<boolean>(false, { nonNullable: true }),
     preferences: this._formBuilder.group({
       avoid: new FormControl<string[]>([], { nonNullable: true }),
       prefer: new FormControl<string[]>([], { nonNullable: true }),
@@ -159,6 +160,7 @@ export class UserDialogComponent {
             alias: user.alias ?? '',
             isPlayer: user.roles.includes('player') ?? false,
             isAdmin: user.roles.includes('admin') ?? false,
+            isDeveloper: user.roles.includes('developer') ?? false,
             preferences: {
               avoid: user.playerPreferences.avoid ?? [],
               prefer: user.playerPreferences.prefer ?? [],
@@ -233,6 +235,9 @@ export class UserDialogComponent {
     }
     if (this.form.value.isAdmin) {
       user.roles.push('admin');
+    }
+    if (this.form.value.isDeveloper) {
+      user.roles.push('developer');
     }
 
     const userToUpdate = this.userToUpdate();

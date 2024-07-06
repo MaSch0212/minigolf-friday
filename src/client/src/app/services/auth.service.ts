@@ -15,6 +15,10 @@ import { environment } from '../environments/environment';
 import { onDocumentVisibilityChange$ } from '../utils/event.utils';
 import { assertBody } from '../utils/http.utils';
 
+import type { Eruda } from 'eruda';
+
+let eruda: Eruda | undefined;
+
 export type SignInResult = 'success' | 'invalid-token' | 'error';
 
 @Injectable({ providedIn: 'root' })
@@ -34,6 +38,16 @@ export class AuthService implements OnDestroy {
   constructor() {
     effect(() => {
       const token = this._token();
+
+      const isDev = token?.user?.roles.includes('developer');
+      if (isDev) {
+        (eruda ? Promise.resolve(eruda) : import('eruda').then(x => (eruda = x.default))).then(x =>
+          x.init()
+        );
+      } else if (eruda) {
+        eruda.destroy();
+      }
+
       if (token === undefined) return;
       setAuthTokenInfo(token);
       if (token) {
