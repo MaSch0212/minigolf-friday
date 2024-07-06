@@ -14,6 +14,7 @@ public static class DbUpdateBuilder
 
 public class DbUpdateBuilder<T>(IQueryable<T> query)
 {
+    private bool _hasSetPropertyCalls = false;
     private Expression<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>> _expression = sett => sett;
 
     public DbUpdateBuilder<T> With(
@@ -25,11 +26,12 @@ public class DbUpdateBuilder<T>(IQueryable<T> query)
             Expression.Call(_expression.Body, call.Method, call.Arguments),
             _expression.Parameters
         );
+        _hasSetPropertyCalls = true;
         return this;
     }
 
     public async Task<int> ExecuteAsync(CancellationToken cancellation = default)
     {
-        return await query.ExecuteUpdateAsync(_expression, cancellation);
+        return _hasSetPropertyCalls ? await query.ExecuteUpdateAsync(_expression, cancellation) : 0;
     }
 }
