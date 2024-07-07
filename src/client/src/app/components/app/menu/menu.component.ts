@@ -22,10 +22,10 @@ import { chainSignals } from '../../../utils/signal.utils';
   imports: [
     ButtonModule,
     CommonModule,
-    MenubarModule,
     MenuModule,
-    TooltipModule,
+    MenubarModule,
     OverlayPanelModule,
+    TooltipModule,
   ],
   templateUrl: './menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

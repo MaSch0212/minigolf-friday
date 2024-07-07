@@ -3,8 +3,10 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "plugins": ["ng-module-sort"],
   "rules": {
     "@angular-eslint/prefer-on-push-component-change-detection": "error",
-    "no-console": "error"
+    "no-console": "error",
+    "ng-module-sort/decorator-array-items": "error"
   }
 }
