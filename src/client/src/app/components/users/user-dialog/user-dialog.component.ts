@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -40,6 +41,7 @@ import { TranslateService } from '../../../services/translate.service';
 import { areArraysEqual } from '../../../utils/array.utils';
 import { notNullish } from '../../../utils/common.utils';
 import { selectSignal } from '../../../utils/ngrx.utils';
+import { UserCreatedDialogComponent } from '../user-created-dialog/user-created-dialog.component';
 import { UserItemComponent } from '../user-item/user-item.component';
 
 @Component({
@@ -59,6 +61,7 @@ import { UserItemComponent } from '../user-item/user-item.component';
     MessagesModule,
     OverlayPanelModule,
     ReactiveFormsModule,
+    UserCreatedDialogComponent,
     UserItemComponent,
   ],
   templateUrl: './user-dialog.component.html',
@@ -70,6 +73,8 @@ export class UserDialogComponent {
   private readonly _messageService = inject(MessageService);
   private readonly _allUsers = selectSignal(userSelectors.selectEntities);
   private readonly _randomId = Math.random().toString(36).substring(2, 9);
+
+  private readonly _userCreatedDialog = viewChild.required(UserCreatedDialogComponent);
 
   protected readonly form = this._formBuilder.group({
     id: new FormControl<string | null>(null),
@@ -124,10 +129,10 @@ export class UserDialogComponent {
     actions$
       .pipe(ofType(addUserAction.success, updateUserAction.success), takeUntilDestroyed())
       .subscribe(({ type, response }) => {
-        if (type === addUserAction.success.type) {
-          this.copyLoginToken(response.loginToken);
-        }
         this.close();
+        if (type === addUserAction.success.type) {
+          this._userCreatedDialog().open(response);
+        }
       });
     actions$
       .pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed())
