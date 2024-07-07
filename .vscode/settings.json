@@ -21,6 +21,7 @@
     "**/*.code-search": true,
     "**/.cache": true,
     "**/dist": true,
+    "**/.angular": true,
     "**/coverage": true,
     "pnpm-lock.yaml": true
   },

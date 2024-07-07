@@ -24,7 +24,10 @@ export const loadMapsReducers: Reducers<MapsFeatureState> = [
       props.reload ? mapsEntityAdapter.removeAll(state) : state
     )
   ),
-  handleHttpAction('load', loadMapsAction, { condition: (s, p) => !p.silent }),
+  handleHttpAction('load', loadMapsAction, {
+    condition: (s, p) => !p.silent,
+    startCondition: (s, p) => s.actionStates.load.state === 'none' || p.reload === true,
+  }),
 ];
 
 export const loadMapsEffects: Effects = {

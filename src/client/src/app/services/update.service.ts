@@ -1,8 +1,9 @@
-import { inject, Injectable } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { effect, inject, Injectable } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { SwUpdate } from '@angular/service-worker';
 import { merge, filter, map, debounceTime } from 'rxjs';
 
+import { Logger } from './logger.service';
 import { RealtimeEventsService } from './realtime-events.service';
 import { onDocumentVisibilityChange$ } from '../utils/event.utils';
 
@@ -25,12 +26,30 @@ export class UpdateService {
         onDocumentVisibilityChange$().pipe(filter(isVisible => isVisible)),
         this._realtimeEventsService.onReconnected$
       )
-        .pipe(debounceTime(1000))
-        .subscribe(() => {
-          console.info('Checking for updates...');
-          this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
+        .pipe(takeUntilDestroyed(), debounceTime(1000))
+        .subscribe(async () => {
+          Logger.logDebug('UpdateService', 'Checking for updates...');
+          const result = await this._swUpdate.checkForUpdate();
+          Logger.logDebug('UpdateService', 'Update check result:', result);
         });
-      this._swUpdate.unrecoverable.subscribe(() => location.reload());
+
+      this._swUpdate.unrecoverable.pipe(takeUntilDestroyed()).subscribe(() => {
+        Logger.logError(
+          'UpdateService',
+          'Unrecoverable error in service worker, reloading page...'
+        );
+        location.reload();
+      });
+
+      this._swUpdate.versionUpdates.pipe(takeUntilDestroyed()).subscribe(x => {
+        Logger.logDebug('UpdateService', 'Got version update event', x);
+      });
     }
+
+    effect(() => {
+      if (this.newVersionAvailable()) {
+        Logger.logInfo('UpdateService', 'New version available');
+      }
+    });
   }
 }

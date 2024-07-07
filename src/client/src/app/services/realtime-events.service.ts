@@ -9,10 +9,16 @@ import {
   untracked,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  HubConnectionState,
+  InvocationMessage,
+} from '@microsoft/signalr';
 import { defer, EMPTY, EmptyError, filter, firstValueFrom, map, pairwise, startWith } from 'rxjs';
 
 import { AuthService } from './auth.service';
+import { Logger } from './logger.service';
 import { AuthTokenInfo } from './storage';
 import {
   UserChangedRealtimeEvent,
@@ -95,6 +101,7 @@ export class RealtimeEventsService implements OnDestroy {
     if (!this._hubConnection) {
       await this.connect();
     } else if (this._hubConnection.state !== HubConnectionState.Connected) {
+      Logger.logDebug('RealtimeEventsService', 'Restarting realtime events connection');
       await this._hubConnection.stop();
       this.start();
     }
@@ -120,10 +127,10 @@ export class RealtimeEventsService implements OnDestroy {
       })
       .withAutomaticReconnect(
         new SignalrRetryPolicy((error, nextDelay) =>
-          console.warn(
+          Logger.logWarn(
+            'RealtimeEventsService',
             `Realtime events connection lost. Retry connection in ${nextDelay}ms.`,
-            error,
-            nextDelay
+            error
           )
         )
       )
@@ -148,11 +155,25 @@ export class RealtimeEventsService implements OnDestroy {
     connection.onreconnected(() => this._isConnected.set(true));
     connection.onclose(() => this._isConnected.set(false));
 
+    if (connection['_invokeClientMethod']) {
+      const oldHandler = connection['_invokeClientMethod'];
+      connection['_invokeClientMethod'] = (message: InvocationMessage) => {
+        Logger.logDebug('RealtimeEventsService', 'Received realtime event:', {
+          methodName: message.target,
+          arguments: message.arguments,
+        });
+        oldHandler.call(connection, message);
+      };
+    } else {
+      Logger.logWarn('RealtimeEventsService', 'Cannot hook into HubConnection._invokeClientMethod');
+    }
+
     this._hubConnection = connection;
     await this.start();
   }
 
   private async start() {
+    Logger.logDebug('RealtimeEventsService', 'Starting realtime events connection');
     try {
       await firstValueFrom(
         defer(() =>
@@ -162,7 +183,8 @@ export class RealtimeEventsService implements OnDestroy {
         ).pipe(
           retryWithPolicy(
             new SignalrRetryPolicy((error, nextDelay) =>
-              console.warn(
+              Logger.logWarn(
+                'RealtimeEventsService',
                 `Realtime events connection unsuccessful. Retry connection in ${nextDelay}ms.`,
                 error
               )
@@ -170,12 +192,20 @@ export class RealtimeEventsService implements OnDestroy {
           )
         )
       );
+      Logger.logDebug(
+        'RealtimeEventsService',
+        'Realtime events connection started with state',
+        this._hubConnection?.state
+      );
       if (this._hubConnection?.state === HubConnectionState.Connected) {
         this._isConnected.set(true);
       }
     } catch (ex) {
       if (!(ex instanceof EmptyError)) {
+        Logger.logError('RealtimeEventsService', 'Failed to start realtime events connection', ex);
         throw ex;
+      } else {
+        Logger.logDebug('RealtimeEventsService', 'Realtime events connection already started');
       }
     }
   }
@@ -186,6 +216,7 @@ export class RealtimeEventsService implements OnDestroy {
 
   private async disconnect() {
     if (this._hubConnection) {
+      Logger.logDebug('RealtimeEventsService', 'Stopping realtime events connection');
       const connection = this._hubConnection;
       this._hubConnection = undefined;
       await connection.stop();

@@ -121,6 +121,7 @@ export class PlayerEventDetailsComponent {
       .filter(x => x.instance)
       .map(x => ({
         timeslot: x,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         instance: x.instance!,
       }))
   );

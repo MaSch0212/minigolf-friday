@@ -25,9 +25,9 @@ export const updateUserEffects = {
     (store = inject(Store), api = inject(UserAdministrationService)) =>
       onHttpAction(updateUserAction, selectUsersActionState('update')).pipe(
         concatLatestFrom(({ props }) => store.select(selectUser(props.id))),
-        filter(([, oldUser]) => !!oldUser),
+        filter((x): x is [ReturnType<typeof updateUserAction>, User] => !!x[1]),
         switchMap(([{ props }, oldUser]) =>
-          toHttpAction(updateUser(api, props, oldUser!), updateUserAction, props)
+          toHttpAction(updateUser(api, props, oldUser), updateUserAction, props)
         )
       )
   ),

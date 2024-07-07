@@ -103,7 +103,6 @@ export class EventTimeslotDialogComponent {
 
         const timeslot = untracked(() => this.timeslot());
         if (this.visible() && timeslot) {
-          console.log('timeslot', timeslot);
           untracked(() =>
             this.form.setValue({
               time: dateWithTime(new Date(), timeslot.time),

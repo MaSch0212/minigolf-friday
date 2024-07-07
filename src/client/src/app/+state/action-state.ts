@@ -69,8 +69,6 @@ export type HttpActionCreator<
   error: _ActionCreatorWithResponse<`[${TScope}] [Error] ${TName}`, TProps, unknown>;
 };
 
-type x = HttpActionCreator<'a', 'b', { a: string }, { b: number }>;
-
 export function createHttpAction<TProps extends object, TSuccess = unknown>() {
   return <TScope extends string, TName extends string>(scope: TScope, name: TName) => {
     const action = createAction(`[${scope}] ${name}`, creator<TProps>());
@@ -97,6 +95,7 @@ export function handleHttpAction<
   TActionStateName extends TInferredState extends { actionStates: Record<string, ActionState> }
     ? keyof TInferredState['actionStates']
     : never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TAction extends HttpActionCreator<string, string, any, any>,
   TProps = Parameters<TAction>[0],
   TInferredState = TState,
@@ -134,12 +133,14 @@ export function handleHttpAction<
       } else if (props.type === action.success.type) {
         actionStates[actionStateName as string] = successActionState;
       } else if (props.type === action.error.type) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         actionStates[actionStateName as string] = errorActionState((props as any).response);
       }
     })
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function onHttpAction<T extends HttpActionCreator<string, string, any, any>>(
   action: T,
   actionStateSelector?: Selector<object, ActionState>,

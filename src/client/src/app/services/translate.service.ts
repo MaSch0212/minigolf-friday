@@ -106,9 +106,11 @@ export type TranslationsSignal<T> = Signal<T> &
   Readonly<{
     [K in TranslateKeys<T>]: Signal<string> & { key: K };
   }>;
-function toTranslationsSignal<T>(signal: Signal<T | undefined>): TranslationsSignal<T> {
+function toTranslationsSignal<T extends Record<string, unknown>>(
+  signal: Signal<T | undefined>
+): TranslationsSignal<T> {
   return new Proxy(signal, {
-    get(target: any, prop) {
+    get(target: Signal<T | undefined> & Record<string | symbol, unknown>, prop) {
       if (typeof prop !== 'string' || isFunctionKey(prop)) {
         return target[prop];
       }
@@ -119,6 +121,12 @@ function toTranslationsSignal<T>(signal: Signal<T | undefined>): TranslationsSig
   }) as TranslationsSignal<T>;
 }
 
-function getDeepValue<T>(obj: T, path: string[]): unknown {
-  return path.reduce((xs, x) => (xs && (xs as any)[x] ? (xs as any)[x] : null), obj);
+function getDeepValue<T extends Record<string, unknown> | undefined>(
+  obj: T,
+  path: string[]
+): unknown {
+  return path.reduce<Record<string, unknown> | null | undefined>(
+    (xs, x) => (xs && xs[x] ? (xs[x] as Record<string, unknown>) : null),
+    obj
+  );
 }

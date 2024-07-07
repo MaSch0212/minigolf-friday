@@ -19,13 +19,24 @@ export function keepEventsLoaded(options?: OptionalInjector) {
     .subscribe(() => store.dispatch(loadEventsAction({ reload: true, silent: true })));
 }
 
-export function keepEventLoaded(eventId: Signal<string>, options?: OptionalInjector) {
+export function keepEventLoaded(
+  eventId: Signal<string | null | undefined>,
+  options?: OptionalInjector
+) {
   const store = injectEx(Store, options);
 
-  effect(() => store.dispatch(loadEventAction({ eventId: eventId(), reload: false })), {
-    ...options,
-    allowSignalWrites: true,
-  });
+  effect(
+    () => {
+      const id = eventId();
+      if (id) {
+        store.dispatch(loadEventAction({ eventId: id, reload: false }));
+      }
+    },
+    {
+      ...options,
+      allowSignalWrites: true,
+    }
+  );
 
   store
     .select(selectEventsActionState('loadOne'))
@@ -33,7 +44,10 @@ export function keepEventLoaded(eventId: Signal<string>, options?: OptionalInjec
       filter(x => x.state === 'none'),
       takeUntilDestroyed(injectEx(DestroyRef, options))
     )
-    .subscribe(() =>
-      store.dispatch(loadEventAction({ eventId: eventId(), reload: true, silent: true }))
-    );
+    .subscribe(() => {
+      const id = eventId();
+      if (id) {
+        store.dispatch(loadEventAction({ eventId: id, reload: true, silent: true }));
+      }
+    });
 }

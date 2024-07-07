@@ -102,13 +102,10 @@ export class EventDetailsComponent {
     () => this.canBuildInstances() && this.event() && !this.event()?.startedAt
   );
 
-  protected readonly canCommit = computed(
-    () =>
-      this.event() &&
-      this.event()?.staged &&
-      this.event()?.timeslots &&
-      this.event()!.timeslots.length > 0
-  );
+  protected readonly canCommit = computed(() => {
+    const event = this.event();
+    return event && event.staged && event.timeslots && event.timeslots.length > 0;
+  });
 
   protected readonly allowToStart = computed(
     () => this.hasInstances() && this.allTimeslotsHaveMaps()
@@ -138,10 +135,13 @@ export class EventDetailsComponent {
   }
 
   protected deleteEvent() {
+    const event = this.event();
+    if (!event) return;
+
     this._confirmationService.confirm({
       header: this.translations.events_deleteDialog_title(),
       message: interpolate(this.translations.events_deleteDialog_text(), {
-        date: formatDate(this.event()!.date, 'mediumDate', this.locale()),
+        date: formatDate(event.date, 'mediumDate', this.locale()),
       }),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
@@ -151,7 +151,7 @@ export class EventDetailsComponent {
       accept: () => {
         this._store.dispatch(
           removeEventAction({
-            eventId: this.eventId()!,
+            eventId: event.id,
           })
         );
       },
@@ -159,10 +159,13 @@ export class EventDetailsComponent {
   }
 
   protected startEvent() {
+    const event = this.event();
+    if (!event) return;
+
     this._confirmationService.confirm({
       header: this.translations.events_startDialog_title(),
       message: interpolate(this.translations.events_startDialog_text(), {
-        date: formatDate(this.event()!.date, 'mediumDate', this.locale()),
+        date: formatDate(event.date, 'mediumDate', this.locale()),
       }),
       acceptLabel: this.translations.shared_start(),
       acceptButtonStyleClass: 'p-button-success',
@@ -172,7 +175,7 @@ export class EventDetailsComponent {
       accept: () => {
         this._store.dispatch(
           startEventAction({
-            eventId: this.eventId()!,
+            eventId: event.id,
           })
         );
       },
@@ -180,10 +183,13 @@ export class EventDetailsComponent {
   }
 
   protected commitEvent() {
+    const event = this.event();
+    if (!event) return;
+
     this._confirmationService.confirm({
       header: this.translations.events_commitDialog_title(),
       message: interpolate(this.translations.events_commitDialog_text(), {
-        date: formatDate(this.event()!.date, 'mediumDate', this.locale()),
+        date: formatDate(event.date, 'mediumDate', this.locale()),
       }),
       acceptLabel: this.translations.shared_commit(),
       acceptButtonStyleClass: 'p-button-success',
@@ -193,7 +199,7 @@ export class EventDetailsComponent {
       accept: () => {
         this._store.dispatch(
           commitEventAction({
-            eventId: this.eventId()!,
+            eventId: event.id,
             commit: true,
           })
         );

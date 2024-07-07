@@ -23,6 +23,7 @@ function _createFunctionalEffect<Source extends () => Observable<unknown>>(
   return createEffect(source, actualConfig);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EffectResult<OT> = Observable<OT> | ((...args: any[]) => Observable<OT>);
 type ConditionallyDisallowActionCreator<DT, Result> = DT extends false
   ? unknown
@@ -46,6 +47,7 @@ export type CreateFunctionalEffectFunction = typeof _createFunctionalEffect & {
 };
 
 export const createFunctionalEffect: CreateFunctionalEffectFunction = (() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (_createFunctionalEffect as any).dispatching = _createDispatchingFunctionalEffect;
   return _createFunctionalEffect as CreateFunctionalEffectFunction;
 })();

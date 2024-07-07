@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 export class AuthInterceptor implements HttpInterceptor {
   private readonly _authService = inject(AuthService);
 
-  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  public intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (req.url.includes('api/auth/token')) {
       return next.handle(req);
     }
