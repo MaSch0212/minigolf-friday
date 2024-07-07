@@ -21,7 +21,7 @@ const dayMillis = 24 * 60 * 60 * 1000;
 @Component({
   selector: 'app-player-events',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, RouterLink, InterpolatePipe, MessagesModule],
+  imports: [CommonModule, InterpolatePipe, MessagesModule, ProgressSpinnerModule, RouterLink],
   templateUrl: './player-events.component.html',
   styleUrl: './player-events.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
