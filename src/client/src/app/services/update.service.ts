@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SwUpdate } from '@angular/service-worker';
-import { merge, filter, map } from 'rxjs';
+import { merge, filter, map, debounceTime } from 'rxjs';
 
 import { RealtimeEventsService } from './realtime-events.service';
 import { onDocumentVisibilityChange$ } from '../utils/event.utils';
@@ -24,10 +24,12 @@ export class UpdateService {
       merge(
         onDocumentVisibilityChange$().pipe(filter(isVisible => isVisible)),
         this._realtimeEventsService.onReconnected$
-      ).subscribe(() => {
-        console.info('Checking for updates...');
-        this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
-      });
+      )
+        .pipe(debounceTime(1000))
+        .subscribe(() => {
+          console.info('Checking for updates...');
+          this._swUpdate.checkForUpdate().then(x => console.info('Update check result:', x));
+        });
       this._swUpdate.unrecoverable.subscribe(() => location.reload());
     }
   }

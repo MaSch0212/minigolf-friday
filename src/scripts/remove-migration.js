@@ -1,6 +1,5 @@
 import { spawnSync } from "child_process";
-import { argv } from "process";
-import { repoRootDir } from "./vars.js";
+import { repoRootDir } from "./utils.js";
 import path from "path";
 
 const buildResult = spawnSync("dotnet", ["build"], {

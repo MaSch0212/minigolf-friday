@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { repository, imageName, repoRootDir, getArg, getVersionTag } from "./vars.js";
+import { repository, imageName, repoRootDir, getArg, getVersionTag } from "./utils.js";
 
 const configuration = getArg("--configuration", "-c") ?? "Release";
 

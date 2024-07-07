@@ -25,7 +25,6 @@ ENV WEBPUSH__PRIVATEKEY=
 
 COPY src/server/host/bin/Release/publish .
 COPY src/client/dist/minigolf-friday/browser ./wwwroot/
-RUN sed -i "s/\$VERSION/$BUILDTIME/g" wwwroot/index.html
 
 HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost/healthz || exit 1
 
