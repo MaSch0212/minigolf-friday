@@ -8,6 +8,7 @@
   (visibleChange)="visible.set($event)"
   [modal]="true"
   [draggable]="false"
+  [resizable]="false"
 >
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2" [formGroup]="form">
     @if (hasFailed()) {
@@ -191,3 +192,5 @@
     </p-listbox>
   </ng-template>
 </p-overlayPanel>
+
+<app-user-created-dialog />
