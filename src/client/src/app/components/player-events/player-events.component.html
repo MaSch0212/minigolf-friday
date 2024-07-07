@@ -14,7 +14,7 @@
       >
     </ng-template>
   </p-messages>
-} @else {
+} @else if (user()?.roles?.includes('player')) {
   <div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto pb-4">
     <h2 class="m-0">{{ translations.playerEvents_currentEvents() }}</h2>
     <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">

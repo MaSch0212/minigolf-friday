@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { repository, imageName, repoRootDir, getVersionTag } from "./vars.js";
+import { repository, imageName, repoRootDir, getVersionTag } from "./utils.js";
 import { appendFileSync } from "fs";
 
 const inspectResult = spawnSync(

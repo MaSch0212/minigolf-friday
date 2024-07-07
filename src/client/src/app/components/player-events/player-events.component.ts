@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { map, timer } from 'rxjs';
@@ -28,7 +27,6 @@ const dayMillis = 24 * 60 * 60 * 1000;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerEventsComponent {
-  private readonly _store = inject(Store);
   private readonly _translateService = inject(TranslateService);
 
   protected readonly translations = this._translateService.translations;

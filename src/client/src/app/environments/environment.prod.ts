@@ -1,9 +1,7 @@
 import { Environment } from './environment.type';
 
-const minigolfFriday: { version: string } = (window as any).minigolfFriday;
-
 export const environment: Environment = {
   getProviders: () => [],
   authenticationRequired: true,
-  ...minigolfFriday,
+  version: (document.head.querySelector('meta[name="version"]') as HTMLMetaElement)?.content ?? '',
 };

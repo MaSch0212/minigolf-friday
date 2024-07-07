@@ -15,5 +15,8 @@
     "docker:build:inttest": "node src/scripts/docker-build-inttest.js",
     "docker:push": "node src/scripts/docker-push.js",
     "test:integration": "dotnet test test/MinigolfFriday.IntegrationTests/MinigolfFriday.IntegrationTests.csproj"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10"
   }
 }
