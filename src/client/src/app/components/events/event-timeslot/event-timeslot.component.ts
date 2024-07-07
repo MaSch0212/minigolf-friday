@@ -38,10 +38,14 @@ import {
 import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
-import { ifTruthy } from '../../../utils/common.utils';
+import { ifTruthy, isNullish } from '../../../utils/common.utils';
 import { dateWithTime, timeToString } from '../../../utils/date.utils';
 import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
 import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-timeslot-dialog.component';
+
+function asString(value: unknown): string | null {
+  return typeof value === 'string' ? value : null;
+}
 
 @Component({
   selector: 'app-event-timeslot',
@@ -74,10 +78,10 @@ export class EventTimeslotComponent {
   protected readonly locale = this._translateService.language;
 
   private readonly eventId = toSignal(
-    this._activatedRoute.params.pipe(map(data => data['eventId']))
+    this._activatedRoute.params.pipe(map(data => asString(data['eventId'])))
   );
   private readonly timeslotId = toSignal(
-    this._activatedRoute.params.pipe(map(data => data['timeslotId']))
+    this._activatedRoute.params.pipe(map(data => asString(data['timeslotId'])))
   );
   private readonly actionState = selectSignal(selectEventsActionState('loadOne'));
   private readonly loadUsersActionState = selectSignal(selectUsersActionState('load'));
@@ -167,15 +171,18 @@ export class EventTimeslotComponent {
   }
 
   protected addPreconfig() {
-    this._store.dispatch(
-      addEventPreconfigAction({
-        eventId: this.eventId()!,
-        timeslotId: this.timeslotId()!,
-      })
-    );
+    const eventId = this.eventId();
+    const timeslotId = this.timeslotId();
+    if (isNullish(eventId) || isNullish(timeslotId)) return;
+
+    this._store.dispatch(addEventPreconfigAction({ eventId, timeslotId }));
   }
 
   protected removePreconfig(preconfig: EventInstancePreconfiguration) {
+    const eventId = this.eventId();
+    const timeslotId = this.timeslotId();
+    if (isNullish(eventId) || isNullish(timeslotId)) return;
+
     this._confirmationService.confirm({
       header: this.translations.events_deletePreconfigDialog_title(),
       message: interpolate(this.translations.events_deletePreconfigDialog_text(), preconfig),
@@ -186,20 +193,20 @@ export class EventTimeslotComponent {
       rejectButtonStyleClass: 'p-button-text',
       accept: () =>
         this._store.dispatch(
-          removeEventPreconfigAction({
-            eventId: this.eventId()!,
-            timeslotId: this.timeslotId()!,
-            preconfigId: preconfig.id,
-          })
+          removeEventPreconfigAction({ eventId, timeslotId, preconfigId: preconfig.id })
         ),
     });
   }
 
   protected addPlayerToPreconfig(preconfigId: string, userId: string) {
+    const eventId = this.eventId();
+    const timeslotId = this.timeslotId();
+    if (isNullish(eventId) || isNullish(timeslotId)) return;
+
     this._store.dispatch(
       addPlayerToEventPreconfigurationAction({
-        eventId: this.eventId()!,
-        timeslotId: this.timeslotId()!,
+        eventId,
+        timeslotId,
         preconfigId,
         playerId: userId,
       })
@@ -207,10 +214,14 @@ export class EventTimeslotComponent {
   }
 
   protected removePlayerFromPreconfig(preconfigId: string, userId: string) {
+    const eventId = this.eventId();
+    const timeslotId = this.timeslotId();
+    if (isNullish(eventId) || isNullish(timeslotId)) return;
+
     this._store.dispatch(
       removePlayerFromPreconfigAction({
-        eventId: this.eventId()!,
-        timeslotId: this.timeslotId()!,
+        eventId,
+        timeslotId,
         preconfigId,
         playerId: userId,
       })
@@ -218,10 +229,14 @@ export class EventTimeslotComponent {
   }
 
   protected deleteTimeslot() {
+    const eventId = this.eventId();
+    const timeslot = this.timeslot();
+    if (isNullish(eventId) || isNullish(timeslot)) return;
+
     this._confirmationService.confirm({
       header: this.translations.events_deleteTimeslotDialog_title(),
       message: interpolate(this.translations.events_deleteTimeslotDialog_text(), {
-        time: timeToString(this.timeslot()!.time, 'minutes'),
+        time: timeToString(timeslot.time, 'minutes'),
       }),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
@@ -229,12 +244,7 @@ export class EventTimeslotComponent {
       rejectLabel: this.translations.shared_cancel(),
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {
-        this._store.dispatch(
-          removeEventTimeslotAction({
-            eventId: this.eventId()!,
-            timeslotId: this.timeslotId()!,
-          })
-        );
+        this._store.dispatch(removeEventTimeslotAction({ eventId, timeslotId: timeslot.id }));
       },
     });
   }

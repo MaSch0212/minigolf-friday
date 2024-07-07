@@ -29,7 +29,10 @@ export const loadEventsReducers: Reducers<EventsFeatureState> = [
       })
     )
   ),
-  handleHttpAction('load', loadEventsAction, { condition: (s, p) => !p.silent }),
+  handleHttpAction('load', loadEventsAction, {
+    condition: (s, p) => !p.silent,
+    startCondition: (s, p) => s.actionStates.load.state === 'none' || p.reload === true,
+  }),
 ];
 
 export const loadEventsEffects: Effects = {

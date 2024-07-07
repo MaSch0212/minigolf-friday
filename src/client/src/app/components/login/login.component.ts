@@ -22,6 +22,7 @@ import { ErrorTextDirective } from '../../directives/error-text.directive';
 import { InterpolatePipe } from '../../directives/interpolate.pipe';
 import { OnEnterDirective } from '../../directives/on-enter.directive';
 import { AuthService, SignInResult } from '../../services/auth.service';
+import { Logger } from '../../services/logger.service';
 import { TranslateService } from '../../services/translate.service';
 
 @Component({
@@ -112,7 +113,7 @@ export class LoginComponent {
       const result = await this._authService.signIn(loginToken);
       this.loginResult.set(result);
     } catch (error) {
-      console.error(error);
+      Logger.logError('LoginComponent', 'Failed to sign in', error);
       this.loginResult.set('error');
     } finally {
       this.isLoggingIn.set(false);

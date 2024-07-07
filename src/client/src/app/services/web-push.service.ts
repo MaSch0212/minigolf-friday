@@ -4,6 +4,7 @@ import { SwPush } from '@angular/service-worker';
 import { combineLatest, filter, first, startWith, pairwise, firstValueFrom, map } from 'rxjs';
 
 import { AuthService } from './auth.service';
+import { Logger } from './logger.service';
 import { getHasConfiguredPush, setHasConfiguredPush } from './storage';
 import { TranslateService } from './translate.service';
 import { WellKnownService } from './well-known.service';
@@ -34,7 +35,10 @@ export class WebPushService {
     : signal(false);
 
   constructor() {
-    if (!this.notificationsSupported) return;
+    if (!this.notificationsSupported) {
+      Logger.logInfo('WebPushService', 'Web push notifications are not supported');
+      return;
+    }
 
     if (!getHasConfiguredPush()) {
       combineLatest([toObservable(this._authService.isAuthorized), this._swPush.subscription])
@@ -58,7 +62,15 @@ export class WebPushService {
       this._swPush.subscription,
     ])
       .pipe(startWith([undefined, undefined, undefined]), pairwise(), takeUntilDestroyed())
-      .subscribe(([[_oldUser, _oldLang, oldSub], [newUser, newLang, newSub]]) => {
+      .subscribe(([[oldUser, oldLang, oldSub], [newUser, newLang, newSub]]) => {
+        Logger.logDebug('WebPushService', 'User, lang, sub changed', {
+          oldUser,
+          oldLang,
+          oldSub,
+          newUser,
+          newLang,
+          newSub,
+        });
         if (newSub && newLang && newUser && newUser.id !== 'admin') {
           this.registerSubscription(newLang, newSub);
         } else if (oldSub && !newSub) {
@@ -77,18 +89,23 @@ export class WebPushService {
 
     let permission: NotificationPermission = Notification.permission;
     if (permission === 'default') {
+      Logger.logDebug('WebPushService', 'Requesting permission for push notifications');
       permission = await Notification.requestPermission();
       this.notificationsPermission.set(permission);
     }
 
+    Logger.logDebug('WebPushService', 'Permission for push notifications', permission);
     if (permission === 'granted') {
       const subscription = this._subscription();
       if (subscription) {
+        Logger.logDebug('WebPushService', 'Already subscribed to push notifications', subscription);
         await this.registerSubscription(this._translateService.language(), subscription);
         setHasConfiguredPush(true);
         return true;
       }
+      Logger.logDebug('WebPushService', 'Getting VAPID key');
       const { vapidPublicKey } = await firstValueFrom(this._wellKnownService.wellKnown$);
+      Logger.logDebug('WebPushService', 'Requesting subscription to push notifications');
       await this._swPush.requestSubscription({ serverPublicKey: vapidPublicKey });
       setHasConfiguredPush(true);
       return true;
@@ -99,7 +116,6 @@ export class WebPushService {
   }
 
   public async disable(keepSubscription: boolean = false): Promise<void> {
-    console.log('disable');
     if (!this.notificationsSupported) return;
 
     const subscription = this._subscription();
@@ -108,12 +124,14 @@ export class WebPushService {
     if (keepSubscription) {
       await this.unregisterSubscription(subscription);
     } else {
+      Logger.logDebug('WebPushService', 'Unsubscribing from push notifications', subscription);
       await this._swPush.unsubscribe();
       setHasConfiguredPush(true);
     }
   }
 
   private async registerSubscription(newLang: string, newSub: PushSubscription) {
+    Logger.logDebug('WebPushService', 'Registering subscription', newSub);
     await this._notificationsService.subscribeToNotifications({
       body: {
         lang: newLang,
@@ -125,6 +143,7 @@ export class WebPushService {
   }
 
   private async unregisterSubscription(oldSub: PushSubscription) {
+    Logger.logDebug('WebPushService', 'Unregistering subscription', oldSub);
     await this._notificationsService.unsubscribeFromNotifications({
       body: { endpoint: oldSub.endpoint },
     });

@@ -21,12 +21,19 @@ export function selectEventsActionState(action: keyof EventsFeatureState['action
   return createDistinctSelector(selectEventsActionStates, state => state[action]);
 }
 
-export function selectEvent(id: string) {
-  return createDistinctSelector(selectEventsFeature, state => state.entities[id]);
+export function selectEvent(id: string | null | undefined) {
+  return createDistinctSelector(selectEventsFeature, state =>
+    id ? state.entities[id] ?? null : null
+  );
 }
 
-export function selectEventTimeslot(eventId: string, timeslotId: string) {
+export function selectEventTimeslot(
+  eventId: string | null | undefined,
+  timeslotId: string | null | undefined
+) {
   return createDistinctSelector(selectEventsFeature, state =>
-    state.entities[eventId]?.timeslots.find(x => x.id === timeslotId)
+    eventId && timeslotId
+      ? state.entities[eventId]?.timeslots.find(x => x.id === timeslotId) ?? null
+      : null
   );
 }

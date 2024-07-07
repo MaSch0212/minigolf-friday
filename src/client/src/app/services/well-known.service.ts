@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { defer, of, ReplaySubject, retry, switchMap, throwError } from 'rxjs';
 
+import { Logger } from './logger.service';
 import { ApiGetWellKnownConfigurationResponse } from '../api/models';
 import { WellKnownService as WellKnownApiService } from '../api/services';
-import { assertBody } from '../utils/http.utils';
 
 @Injectable({ providedIn: 'root' })
 export class WellKnownService {
@@ -12,11 +12,20 @@ export class WellKnownService {
   public wellKnown$ = new ReplaySubject<ApiGetWellKnownConfigurationResponse>(1);
 
   constructor() {
-    this._api.getWellKnownConfiguration().then(response => {
-      if (response.ok) {
-        this.wellKnown$.next(assertBody(response));
-      }
-      this.wellKnown$.error(response);
-    });
+    defer(() => this._api.getWellKnownConfiguration())
+      .pipe(
+        switchMap(response =>
+          response.ok && response.body ? of(response.body) : throwError(() => response)
+        ),
+        retry({
+          delay: error => {
+            Logger.logError('WellKnownService', 'Error getting well-known configuration', {
+              error,
+            });
+            return of(5000);
+          },
+        })
+      )
+      .subscribe(this.wellKnown$);
   }
 }

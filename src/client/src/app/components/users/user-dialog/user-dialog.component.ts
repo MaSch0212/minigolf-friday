@@ -129,6 +129,9 @@ export class UserDialogComponent {
         }
         this.close();
       });
+    actions$
+      .pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed())
+      .subscribe(() => this.tokenVisible.set(true));
 
     effect(
       () => {
@@ -198,10 +201,15 @@ export class UserDialogComponent {
   }
 
   protected loadLoginToken() {
-    if (!this.loginToken()) {
-      this._store.dispatch(loadUserLoginTokenAction({ userId: this.userToUpdate()!.id }));
+    if (this.loginToken()) {
+      this.tokenVisible.set(true);
+      return;
     }
-    this.tokenVisible.set(true);
+
+    const user = this.userToUpdate();
+    if (!user) return;
+
+    this._store.dispatch(loadUserLoginTokenAction({ userId: user.id }));
   }
 
   protected async copyLoginToken(token: string | null | undefined) {

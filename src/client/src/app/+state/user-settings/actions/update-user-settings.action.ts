@@ -5,7 +5,6 @@ import { switchMap } from 'rxjs';
 
 import { UserSettingsService } from '../../../api/services';
 import { UserSettings } from '../../../models/parsed-models';
-import { RealtimeEventsService } from '../../../services/realtime-events.service';
 import { isEmptyObject, removeUndefinedProperties } from '../../../utils/common.utils';
 import { createHttpAction, handleHttpAction, onHttpAction, toHttpAction } from '../../action-state';
 import { createFunctionalEffect } from '../../functional-effect';
@@ -35,19 +34,18 @@ export const updateUserSettingsReducers: Reducers<UserSettingsFeatureState> = [
 ];
 
 export const updateUserSettingsEffects: Effects = {
-  updateUserSettings$: createFunctionalEffect.dispatching(
-    (api = inject(UserSettingsService), events = inject(RealtimeEventsService)) =>
-      onHttpAction(updateUserSettingsAction, selectUserSettingsActionState('update')).pipe(
-        switchMap(({ props }) =>
-          toHttpAction(
-            updateUserSettings(api, props),
-            updateUserSettingsAction,
-            props
-            // , () =>
-            //     events.skipEvent('userSettingsChanged')
-          )
+  updateUserSettings$: createFunctionalEffect.dispatching((api = inject(UserSettingsService)) =>
+    onHttpAction(updateUserSettingsAction, selectUserSettingsActionState('update')).pipe(
+      switchMap(({ props }) =>
+        toHttpAction(
+          updateUserSettings(api, props),
+          updateUserSettingsAction,
+          props
+          // , () =>
+          //     events.skipEvent('userSettingsChanged')
         )
       )
+    )
   ),
 };
 

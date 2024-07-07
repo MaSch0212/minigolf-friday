@@ -40,7 +40,11 @@ export const appConfig: ApplicationConfig = {
       router: routerReducer,
     }),
     provideRouterStore(),
-    provideStoreDevtools({ name: `Minigolf Friday (${Math.random().toString(16).substring(2)})` }),
+    provideStoreDevtools({
+      name: `Minigolf Friday (${Math.random().toString(16).substring(2)})`,
+      autoPause: true,
+      maxAge: 1000,
+    }),
     provideAppState(),
     provideUsersState(),
     provideMapsState(),

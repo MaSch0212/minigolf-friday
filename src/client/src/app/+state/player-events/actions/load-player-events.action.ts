@@ -32,7 +32,10 @@ export const loadPlayerEventsReducers: Reducers<PlayerEventsFeatureState> = [
       })
     )
   ),
-  handleHttpAction('load', loadPlayerEventsAction, { condition: (s, p) => !p.silent }),
+  handleHttpAction('load', loadPlayerEventsAction, {
+    condition: (s, p) => !p.silent,
+    startCondition: (s, p) => s.actionStates.load.state === 'none' || p.reload === true,
+  }),
 ];
 
 export const loadPlayerEventsEffects: Effects = {

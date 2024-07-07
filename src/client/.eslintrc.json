@@ -4,6 +4,7 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "@angular-eslint/prefer-on-push-component-change-detection": "error"
+    "@angular-eslint/prefer-on-push-component-change-detection": "error",
+    "no-console": "error"
   }
 }
