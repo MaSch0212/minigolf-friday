@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { InterpolatePipe, interpolate } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
@@ -35,7 +36,6 @@ import {
   selectUsersActionState,
   userSelectors,
 } from '../../../+state/users';
-import { InterpolatePipe, interpolate } from '../../../directives/interpolate.pipe';
 import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy, isNullish } from '../../../utils/common.utils';

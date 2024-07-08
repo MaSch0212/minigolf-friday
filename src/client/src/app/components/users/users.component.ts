@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { interpolate } from '@ngneers/signal-translate';
 import { Store } from '@ngrx/store';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -18,7 +19,6 @@ import {
   selectUsersActionState,
   userSelectors,
 } from '../../+state/users';
-import { interpolate } from '../../directives/interpolate.pipe';
 import { User } from '../../models/parsed-models';
 import { TranslateService } from '../../services/translate.service';
 import { notNullish } from '../../utils/common.utils';

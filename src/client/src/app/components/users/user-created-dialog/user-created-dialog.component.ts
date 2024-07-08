@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { interpolate, InterpolatePipe } from '@ngneers/signal-translate';
 import copyToClipboard from 'copy-to-clipboard';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 
-import { interpolate, InterpolatePipe } from '../../../directives/interpolate.pipe';
 import { User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 

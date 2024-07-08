@@ -7,8 +7,8 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { interpolate } from '@ngneers/signal-translate';
 
-import { interpolate } from './interpolate.pipe';
 import { TranslateService } from '../services/translate.service';
 
 @Directive({
