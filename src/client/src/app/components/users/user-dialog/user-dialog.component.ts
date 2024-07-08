@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { InterpolatePipe } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import copyToClipboard from 'copy-to-clipboard';
@@ -35,7 +36,6 @@ import {
   updateUserAction,
   userSelectors,
 } from '../../../+state/users';
-import { InterpolatePipe } from '../../../directives/interpolate.pipe';
 import { User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 import { areArraysEqual } from '../../../utils/array.utils';

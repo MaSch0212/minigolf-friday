@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { InterpolatePipe } from '@ngneers/signal-translate';
 import { AutoFocusModule } from 'primeng/autofocus';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -8,7 +9,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 
 import { NotificationsService } from '../../../api/services';
-import { InterpolatePipe } from '../../../directives/interpolate.pipe';
 import { User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 

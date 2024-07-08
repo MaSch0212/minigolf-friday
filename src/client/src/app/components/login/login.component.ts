@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { InterpolatePipe } from '@ngneers/signal-translate';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,7 +20,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { distinctUntilChanged, map, startWith } from 'rxjs';
 
 import { ErrorTextDirective } from '../../directives/error-text.directive';
-import { InterpolatePipe } from '../../directives/interpolate.pipe';
 import { OnEnterDirective } from '../../directives/on-enter.directive';
 import { AuthService, SignInResult } from '../../services/auth.service';
 import { Logger } from '../../services/logger.service';

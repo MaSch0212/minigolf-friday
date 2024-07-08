@@ -44,6 +44,9 @@ importers:
       '@ngneers/easy-ngrx-distinct-selector':
         specifier: ^0.1.1
         version: 0.1.1(@ngrx/store@18.0.0-rc.0(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))
+      '@ngneers/signal-translate':
+        specifier: ^0.1.0
+        version: 0.1.0(@angular/common@18.0.2(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))
       '@ngrx/effects':
         specifier: 18.0.0-rc.0
         version: 18.0.0-rc.0(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(@ngrx/store@18.0.0-rc.0(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))(rxjs@7.8.1)
@@ -1879,6 +1882,12 @@ packages:
     resolution: {integrity: sha512-brPu9EhQO0REiMTSzFQ8T64g0h7q2bCsSLvvbTdRqRFaP/mMtpmoc98LGphJNxUKJUPnApTX7UQYhGomPr7xJQ==}
     peerDependencies:
       prettier: '>= 3'
+
+  '@ngneers/signal-translate@0.1.0':
+    resolution: {integrity: sha512-paGwqgt0heBGCc9GdfbzAzjvsgnehXW+DCeqoFbA71e+A9RhGuWjxL64CRAJBo7hDyggmlsMyHgFEwZyEYo4Fw==}
+    peerDependencies:
+      '@angular/common': 17 || 18
+      '@angular/core': 17 || 18
 
   '@ngrx/effects@18.0.0-rc.0':
     resolution: {integrity: sha512-nlD0DW4pzE5YPvFM++jnK7reE9i3wvbYhOLQ4adbMJ/+SByBp1FaajJRWdl/YjnWN2uPmQ1HZ5HvXSXQKaY1gg==}
@@ -8296,6 +8305,12 @@ snapshots:
   '@ngneers/prettier-config@1.0.0(prettier@3.3.1)':
     dependencies:
       prettier: 3.3.1
+
+  '@ngneers/signal-translate@0.1.0(@angular/common@18.0.2(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))':
+    dependencies:
+      '@angular/common': 18.0.2(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1)
+      '@angular/core': 18.0.2(rxjs@7.8.1)(zone.js@0.14.7)
+      tslib: 2.6.3
 
   '@ngrx/effects@18.0.0-rc.0(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(@ngrx/store@18.0.0-rc.0(@angular/core@18.0.2(rxjs@7.8.1)(zone.js@0.14.7))(rxjs@7.8.1))(rxjs@7.8.1)':
     dependencies:
