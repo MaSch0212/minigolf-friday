@@ -1,7 +1,7 @@
 export { addEventPreconfigAction } from './actions/add-event-preconfig.action';
 export { addEventTimeslotAction } from './actions/add-event-timeslot.action';
 export { addEventAction } from './actions/add-event.action';
-export { commitEventAction } from './actions/commit-event.action';
+export { updateEventAction } from './actions/update-event.action';
 export { eventTimeslotRegistrationChangedAction } from './actions/event-timeslot-registration-changed.action';
 export { addPlayerToEventPreconfigurationAction } from './actions/add-player-to-preconfig.action';
 export { buildEventInstancesAction } from './actions/build-event-instances.action';

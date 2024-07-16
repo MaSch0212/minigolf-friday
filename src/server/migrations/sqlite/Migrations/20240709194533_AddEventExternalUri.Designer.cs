@@ -2,53 +2,49 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinigolfFriday.Data;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MinigolfFriday.Migrations.PostgreSql.Migrations
+namespace MinigolfFriday.Migrations.Sqlite.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240709194533_AddEventExternalUri")]
+    partial class AddEventExternalUri
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.EventEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
                     b.Property<DateOnly>("Date")
-                        .HasColumnType("date")
+                        .HasColumnType("TEXT")
                         .HasColumnName("date");
 
                     b.Property<string>("ExternalUri")
-                        .HasColumnType("text")
+                        .HasColumnType("TEXT")
                         .HasColumnName("external_uri");
 
                     b.Property<DateTimeOffset>("RegistrationDeadline")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("TEXT")
                         .HasColumnName("registration_deadline");
 
                     b.Property<bool>("Staged")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("staged");
 
                     b.Property<DateTimeOffset?>("StartedAt")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("TEXT")
                         .HasColumnName("started_at");
 
                     b.HasKey("Id");
@@ -60,19 +56,17 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("GroupCode")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("group_code");
 
                     b.Property<long>("timeslot_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -85,13 +79,11 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
                     b.Property<long>("event_timeslot_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -104,25 +96,23 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
                     b.Property<long>("EventId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("event_id");
 
                     b.Property<bool>("IsFallbackAllowed")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("is_fallback_allowed");
 
                     b.Property<long?>("MapId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("map_id");
 
                     b.Property<TimeOnly>("Time")
-                        .HasColumnType("time without time zone")
+                        .HasColumnType("TEXT")
                         .HasColumnName("time");
 
                     b.HasKey("Id");
@@ -139,21 +129,19 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
                     b.Property<long>("EventTimeslotId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("event_timeslot_id");
 
                     b.Property<long?>("FallbackEventTimeslotId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("fallback_event_timeslot_id");
 
                     b.Property<long>("PlayerId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
@@ -171,21 +159,19 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.HasKey("Id");
@@ -196,13 +182,13 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("MinigolfFriday.Data.Entities.RoleEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.HasKey("Id");
@@ -231,23 +217,21 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Alias")
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("alias");
 
                     b.Property<string>("LoginToken")
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("login_token");
 
                     b.Property<long?>("SettingsId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("settings_id");
 
                     b.HasKey("Id");
@@ -264,35 +248,33 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Auth")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("auth");
 
                     b.Property<string>("Endpoint")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("endpoint");
 
                     b.Property<string>("Lang")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("lang");
 
                     b.Property<string>("P256DH")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("p256dh");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
@@ -309,33 +291,31 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
                     b.Property<bool>("EnableNotifications")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("enable_notifications");
 
                     b.Property<bool>("NotifyOnEventPublish")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("notify_on_event_publish");
 
                     b.Property<bool>("NotifyOnEventStart")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("notify_on_event_start");
 
                     b.Property<bool>("NotifyOnEventUpdated")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("notify_on_event_updated");
 
                     b.Property<bool>("NotifyOnTimeslotStart")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("notify_on_timeslot_start");
 
                     b.Property<int>("SecondsToNotifyBeforeTimeslotStart")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("seconds_to_notify_before_timeslot_start");
 
                     b.HasKey("Id");
@@ -346,10 +326,10 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("event_instances_to_users", b =>
                 {
                     b.Property<long>("event_instance_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("event_instance_id", "user_id");
 
@@ -361,10 +341,10 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("users_to_avoided_users", b =>
                 {
                     b.Property<long>("avoided_user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("avoided_user_id", "user_id");
 
@@ -376,10 +356,10 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("users_to_event_instance_preconfigurations", b =>
                 {
                     b.Property<long>("event_instance_preconfiguration_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("event_instance_preconfiguration_id", "user_id");
 
@@ -391,10 +371,10 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("users_to_preferred_users", b =>
                 {
                     b.Property<long>("preferred_user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("preferred_user_id", "user_id");
 
@@ -406,10 +386,10 @@ namespace MinigolfFriday.Migrations.PostgreSql.Migrations
             modelBuilder.Entity("users_to_roles", b =>
                 {
                     b.Property<int>("role_id")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("user_id")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("role_id", "user_id");
 

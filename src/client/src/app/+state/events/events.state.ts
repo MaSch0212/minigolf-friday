@@ -11,7 +11,7 @@ export type EventsFeatureState = EntityState<Event> & {
     add: ActionState;
     remove: ActionState;
     start: ActionState;
-    commit: ActionState;
+    update: ActionState;
     addTimeslot: ActionState;
     removeTimeslot: ActionState;
     buildInstances: ActionState;
@@ -36,7 +36,7 @@ export const initialEventsFeatureState: EventsFeatureState = eventEntityAdapter.
     add: initialActionState,
     remove: initialActionState,
     start: initialActionState,
-    commit: initialActionState,
+    update: initialActionState,
     addTimeslot: initialActionState,
     removeTimeslot: initialActionState,
     buildInstances: initialActionState,

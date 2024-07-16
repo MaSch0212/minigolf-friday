@@ -92,6 +92,7 @@ export class PlayerEventDetailsComponent {
     isActionBusy(this.registerActionState())
   );
   protected readonly event = selectSignal(computed(() => selectPlayerEvent(this.eventId())));
+  protected readonly externalUri = computed(() => this.event()?.externalUri);
   protected readonly timeslots = computed(() =>
     [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
   );
@@ -206,5 +207,9 @@ export class PlayerEventDetailsComponent {
       }
     }
     return true;
+  }
+
+  protected openExternalUri() {
+    window.location.href = this.externalUri() as string;
   }
 }

@@ -35,6 +35,10 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("date")
                         .HasColumnName("date");
 
+                    b.Property<string>("ExternalUri")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("external_uri");
+
                     b.Property<DateTimeOffset>("RegistrationDeadline")
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("registration_deadline");

@@ -72,6 +72,37 @@
       </p-card>
 
       <div class="mt-4 flex flex-row items-center gap-2">
+        <h2 class="m-0 grow">{{ translations.events_facebookLink() }}</h2>
+        <div>
+          <p-inputGroup>
+            <button
+              type="button"
+              pButton
+              [label]="
+                externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
+                  ? translations.shared_edit()
+                  : translations.shared_add()
+              "
+              icon="i-[mdi--facebook]"
+              (click)="modifyExternalUriDialog.open(externalUri())"
+            ></button>
+            <button
+              type="button"
+              pButton
+              class="bg-surface-a text-primary"
+              icon="i-[mdi--arrow-right-circle]"
+              [disabled]="
+                externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
+                  ? false
+                  : true
+              "
+              (click)="openExternalUri()"
+            ></button>
+          </p-inputGroup>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
         <span
           class="inline-block rounded-full bg-primary pr-2 text-center font-bold text-primary-text"
@@ -189,6 +220,7 @@
       }
 
       <app-event-timeslot-dialog #createTimeslotDialog [event]="event" />
+      <app-modify-external-uri-dialog #modifyExternalUriDialog [event]="event" />
     } @else {
       <div class="mt-16 flex flex-col items-center gap-8">
         <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>

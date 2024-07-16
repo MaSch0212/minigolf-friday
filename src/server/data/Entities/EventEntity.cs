@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MinigolfFriday.Domain.Models;
 
 namespace MinigolfFriday.Data.Entities;
 
@@ -12,6 +13,8 @@ public class EventEntity
     public required bool Staged { get; set; }
 
     public List<EventTimeslotEntity> Timeslots { get; set; } = [];
+
+    public string? ExternalUri { get; set; } = null;
 
     public static void Configure(EntityTypeBuilder<EventEntity> builder)
     {
@@ -27,5 +30,6 @@ public class EventEntity
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Staged).HasColumnName("staged").IsRequired();
+        builder.Property(x => x.ExternalUri).HasColumnName("external_uri");
     }
 }

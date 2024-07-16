@@ -1,0 +1,20 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [header]="translations.events_facebookLink()"
+>
+  <p-inputGroup>
+    <input
+      #inputElement
+      class="w-full max-w-[350px]"
+      type="text"
+      pInputText
+      autocomplete="off"
+      [ngModel]="externalUri()"
+      (ngModelChange)="externalUri.set($event)"
+    />
+    <button pButton icon="i-[mdi--backspace]" (click)="clearExternalUri()"></button>
+    <button pButton icon="i-[mdi--check]" (click)="updateExternalUri()"></button>
+  </p-inputGroup>
+</p-dialog>

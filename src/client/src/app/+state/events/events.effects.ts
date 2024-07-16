@@ -6,7 +6,6 @@ import { addEventTimeslotEffects } from './actions/add-event-timeslot.action';
 import { addEventEffects } from './actions/add-event.action';
 import { addPlayerToEventPreconfigurationEffects } from './actions/add-player-to-preconfig.action';
 import { buildEventInstancesEffects } from './actions/build-event-instances.action';
-import { commitEventEffects } from './actions/commit-event.action';
 import { loadEventAction, loadEventEffects } from './actions/load-event.action';
 import { loadEventsEffects } from './actions/load-events.action';
 import { removeEventPreconfigEffects } from './actions/remove-event-preconfig.action';
@@ -15,6 +14,7 @@ import { removeEventAction, removeEventEffects } from './actions/remove-event.ac
 import { removePlayerFromPreconfigEffects } from './actions/remove-player-from-preconfig.action';
 import { startEventEffects } from './actions/start-event.action';
 import { updateEventTimeslotEffects } from './actions/update-event-timeslot.action';
+import { updateEventEffects } from './actions/update-event.action';
 import {
   eventTimeslotRegistrationChangedAction,
   resetEventsActionStateAction,
@@ -36,7 +36,7 @@ export const eventsFeatureEffects: Effects[] = [
   removeEventEffects,
   removePlayerFromPreconfigEffects,
   startEventEffects,
-  commitEventEffects,
+  updateEventEffects,
   updateEventTimeslotEffects,
   {
     eventUpdated$: createFunctionalEffect.dispatching((events = inject(RealtimeEventsService)) =>

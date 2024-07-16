@@ -83,6 +83,8 @@
     "rebuildGroups": "Gruppen neu bilden",
     "commit": "Event freigeben",
     "staged": "vorbereitet",
+    "facebookLink": "Facebook link",
+    "visitFacebookLink": "Öffne Facebook Event",
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
