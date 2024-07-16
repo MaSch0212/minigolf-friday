@@ -112,7 +112,7 @@
                     <span class="flex w-full flex-row items-center gap-2">
                       <span class="min-w-0 grow truncate">{{
                         translations.events_playerAmount()
-                          | interpolate: { amount: preconfig.playerIds.length }
+                          | interpolate: { amount: preconfig.playerIds.length.toString() }
                       }}</span>
                       <p-button
                         class="-my-2"
