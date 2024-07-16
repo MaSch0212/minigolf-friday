@@ -1,10 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Models.RealtimeEvents;
+using MinigolfFriday.Host.Common;
+using MinigolfFriday.Host.Mappers;
+using MinigolfFriday.Host.Options;
 using MinigolfFriday.Host.Services;
 using MinigolfFriday.Host.Utilities;
 
@@ -51,7 +55,8 @@ public class CreateUserRequestValidator : Validator<CreateUserRequest>
 public class CreateUserEndpoint(
     DatabaseContext databaseContext,
     IRealtimeEventsService realtimeEventsService,
-    IIdService idService
+    IIdService idService,
+    IUserMapper userMapper
 ) : Endpoint<CreateUserRequest, CreateUserResponse>
 {
     public override void Configure()
@@ -59,10 +64,21 @@ public class CreateUserEndpoint(
         Post("");
         Group<UserAdministrationGroup>();
         Description(x => x.ClearDefaultProduces(200).Produces<CreateUserResponse>(201));
+        this.ProducesError(EndpointErrors.UserExists);
     }
 
     public override async Task HandleAsync(CreateUserRequest req, CancellationToken ct)
     {
+        var existentUser = await databaseContext
+            .Users.Where(x => x.Alias == req.Alias)
+            .Select(userMapper.MapUserExpression)
+            .FirstOrDefaultAsync(ct);
+        if (existentUser != null)
+        {
+            await this.SendErrorAsync(EndpointErrors.UserExists, existentUser.Alias, ct);
+            return;
+        }
+
         var user = new UserEntity()
         {
             Alias = req.Alias,
