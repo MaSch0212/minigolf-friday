@@ -31,7 +31,6 @@ public class StartEventEndpoint(
     DatabaseContext databaseContext,
     IRealtimeEventsService realtimeEventsService,
     IIdService idService,
-    IUserPushSubscriptionMapper userPushSubscriptionMapper,
     IWebPushService webPushService
 ) : Endpoint<StartEventRequest>
 {
