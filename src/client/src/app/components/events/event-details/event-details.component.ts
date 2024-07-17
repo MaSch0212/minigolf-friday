@@ -233,7 +233,7 @@ export class EventDetailsComponent {
   }
 
   protected openExternalUri() {
-    window.open(this.externalUri() as string, '_blank');
+    window.location.href = this.externalUri() as string;
   }
 
   protected buildInstances() {
