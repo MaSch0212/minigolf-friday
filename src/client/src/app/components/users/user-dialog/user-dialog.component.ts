@@ -41,8 +41,8 @@ import { TranslateService } from '../../../services/translate.service';
 import { areArraysEqual } from '../../../utils/array.utils';
 import { notNullish } from '../../../utils/common.utils';
 import { selectSignal } from '../../../utils/ngrx.utils';
-import { UserCreatedDialogComponent } from '../user-created-dialog/user-created-dialog.component';
 import { UserItemComponent } from '../user-item/user-item.component';
+import { UserWelcomeDialogComponent } from '../user-welcome-dialog/user-welcome-dialog.component';
 
 @Component({
   selector: 'app-user-dialog',
@@ -61,8 +61,8 @@ import { UserItemComponent } from '../user-item/user-item.component';
     MessagesModule,
     OverlayPanelModule,
     ReactiveFormsModule,
-    UserCreatedDialogComponent,
     UserItemComponent,
+    UserWelcomeDialogComponent,
   ],
   templateUrl: './user-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,7 +74,7 @@ export class UserDialogComponent {
   private readonly _allUsers = selectSignal(userSelectors.selectEntities);
   private readonly _randomId = Math.random().toString(36).substring(2, 9);
 
-  private readonly _userCreatedDialog = viewChild.required(UserCreatedDialogComponent);
+  private readonly _userWelcomeDialog = viewChild.required(UserWelcomeDialogComponent);
 
   protected readonly form = this._formBuilder.group({
     id: new FormControl<string | null>(null),
@@ -90,6 +90,7 @@ export class UserDialogComponent {
   protected readonly translations = inject(TranslateService).translations;
   protected readonly userToUpdate = signal<User | undefined>(undefined);
   protected readonly visible = signal(false);
+  protected readonly userWelcomeDialogRequested = signal(false);
 
   private readonly _actionState = selectSignal(
     computed(() => selectUsersActionState(this.userToUpdate() ? 'update' : 'add'))
@@ -131,12 +132,13 @@ export class UserDialogComponent {
       .subscribe(({ type, response }) => {
         this.close();
         if (type === addUserAction.success.type) {
-          this._userCreatedDialog().open(response);
+          this._userWelcomeDialog().open(response);
         }
       });
-    actions$
-      .pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed())
-      .subscribe(() => this.tokenVisible.set(true));
+    actions$.pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed()).subscribe(() => {
+      this.tokenVisible.set(true);
+      this.openUserWelcomeDialog();
+    });
 
     effect(
       () => {
@@ -283,6 +285,26 @@ export class UserDialogComponent {
 
   protected id(purpose: string) {
     return `${purpose}-${this._randomId}`;
+  }
+
+  protected requestUserWelcomeDialog() {
+    this.userWelcomeDialogRequested.set(true);
+    if (!this.tokenVisible()) {
+      this.loadLoginToken();
+      return;
+    }
+    this.openUserWelcomeDialog();
+  }
+
+  protected openUserWelcomeDialog() {
+    if (this.userWelcomeDialogRequested() && this.userToUpdate()) {
+      const userToDisplay = {
+        loginToken: this.loginToken(),
+        alias: this.userToUpdate()?.alias,
+      } as User;
+      this._userWelcomeDialog().open(userToDisplay);
+      this.userWelcomeDialogRequested.set(false);
+    }
   }
 
   private getUsersByIds(ids: string[]) {

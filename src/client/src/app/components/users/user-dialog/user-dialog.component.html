@@ -29,30 +29,36 @@
     </span>
 
     @if (userToUpdate()) {
-      <p-iconField class="p-float-label min-w-0 grow sm:col-span-2" [iconPosition]="'right'">
-        @if (isTokenLoading()) {
-          <p-inputIcon styleClass="i-[mdi--loading] animate-spin" />
-        } @else if (!tokenVisible()) {
-          <p-inputIcon
-            styleClass="i-[mdi--eye-outline] cursor-pointer"
-            (click)="loadLoginToken()"
-          ></p-inputIcon>
-        } @else {
-          <p-inputIcon
-            styleClass="i-[mdi--content-copy] cursor-pointer"
-            (click)="copyLoginToken(loginToken())"
-          ></p-inputIcon>
-        }
-        <input
-          pInputText
-          [id]="id('loginToken')"
-          [type]="tokenVisible() ? 'text' : 'password'"
-          [value]="loginToken() ?? 'abcdefghijklmnop'"
-          [readOnly]="true"
-          autocomplete="off"
+      <div class="flex flex-row gap-2 sm:col-span-2">
+        <p-iconField class="p-float-label min-w-0 grow" [iconPosition]="'right'">
+          @if (isTokenLoading()) {
+            <p-inputIcon styleClass="i-[mdi--loading] animate-spin" />
+          } @else if (!tokenVisible()) {
+            <p-inputIcon
+              styleClass="i-[mdi--eye-outline] cursor-pointer"
+              (click)="loadLoginToken()"
+            ></p-inputIcon>
+          } @else {
+            <p-inputIcon
+              styleClass="i-[mdi--content-copy] cursor-pointer"
+              (click)="copyLoginToken(loginToken())"
+            ></p-inputIcon>
+          }
+          <input
+            pInputText
+            [id]="id('loginToken')"
+            [type]="tokenVisible() ? 'text' : 'password'"
+            [value]="loginToken() ?? 'abcdefghijklmnop'"
+            [readOnly]="true"
+            autocomplete="off"
+          />
+          <label [htmlFor]="id('loginToken')">{{ translations.users_dialog_loginToken() }}</label>
+        </p-iconField>
+        <p-button
+          icon="i-[mdi--book-open-blank-variant-outline]"
+          (onClick)="requestUserWelcomeDialog()"
         />
-        <label [htmlFor]="id('loginToken')">{{ translations.users_dialog_loginToken() }}</label>
-      </p-iconField>
+      </div>
     }
 
     <div class="sm:col-span-2">
@@ -193,4 +199,4 @@
   </ng-template>
 </p-overlayPanel>
 
-<app-user-created-dialog />
+<app-user-welcome-dialog />

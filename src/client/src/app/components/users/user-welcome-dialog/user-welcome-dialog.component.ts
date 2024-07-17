@@ -10,13 +10,13 @@ import { User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 
 @Component({
-  selector: 'app-user-created-dialog',
+  selector: 'app-user-welcome-dialog',
   standalone: true,
   imports: [ButtonModule, CommonModule, DialogModule, InterpolatePipe],
-  templateUrl: './user-created-dialog.component.html',
+  templateUrl: './user-welcome-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserCreatedDialogComponent {
+export class UserWelcomeDialogComponent {
   private readonly _messageService = inject(MessageService);
   protected readonly translations = inject(TranslateService).translations;
 
@@ -29,13 +29,13 @@ export class UserCreatedDialogComponent {
   }
 
   protected copyWelcomeMessage() {
-    const message = interpolate(this.translations.users_userCreatedDialog_welcomeMessage(), {
+    const message = interpolate(this.translations.users_userWelcomeDialog_welcomeMessage(), {
       url: (document.head.querySelector('base') as HTMLBaseElement).href,
     });
     copyToClipboard(message);
     this._messageService.add({
       severity: 'success',
-      summary: this.translations.users_userCreatedDialog_welcomeMessageCopied(),
+      summary: this.translations.users_userWelcomeDialog_welcomeMessageCopied(),
       life: 2000,
     });
   }

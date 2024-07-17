@@ -208,8 +208,8 @@
       "body": "body",
       "bodyDefault": "Notifications are working!!! Wohoo ⛳"
     },
-    "userCreatedDialog": {
-      "title": "User \"{{alias}}\" created",
+    "userWelcomeDialog": {
+      "title": "Welcome {{alias}}",
       "copyWelcomeMessage": "Copy welcome message",
       "copyPassword": "Copy password",
       "welcomeMessage": "Hello dear minigolf friends!\nRegistration for Minigolf Friday is now possible via the web-based app, which you can download at:\n{{url}}.\nSave it as a bookmark or add it to your home screen so that you can access it at any time.\nPlease log in there with your password and register yourself for your game times.\nPlease still write in the Facebook post that you have registered so that the conversation is maintained there.\nHave fun playing mini golf!\nYour organization team",
