@@ -57,7 +57,7 @@ export class ModifyExternalUriDialogComponent {
     this._store.dispatch(
       updateEventAction({
         eventId: event.id,
-        externalUri: this.externalUri().length != 0 ? this.externalUri() : ('' as string),
+        externalUri: this.externalUri(),
       })
     );
 

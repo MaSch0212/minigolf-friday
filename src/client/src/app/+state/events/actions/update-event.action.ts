@@ -24,7 +24,7 @@ export const updateEventReducers: Reducers<EventsFeatureState> = [
         id: props.eventId,
         map: produce(draft => {
           draft.staged = props.commit ? props.commit : undefined;
-          draft.externalUri = props.externalUri ? props.externalUri : 'undefined';
+          draft.externalUri = props.externalUri != undefined ? props.externalUri : undefined;
         }),
       },
       state
@@ -49,7 +49,7 @@ async function updateEvent(
     eventId: props.eventId,
     body: {
       commit: props.commit ? props.commit : undefined,
-      externalUri: props.externalUri ? props.externalUri : undefined,
+      externalUri: props.externalUri != undefined ? props.externalUri : undefined,
     },
   });
   return response.ok
