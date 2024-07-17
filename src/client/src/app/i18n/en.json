@@ -193,7 +193,8 @@
         "developer": "Developer"
       },
       "error": {
-        "save": "Failed to save user."
+        "save": "Failed to save user.",
+        "exists": "User \"{{user}}\" already exists"
       }
     },
     "error": {

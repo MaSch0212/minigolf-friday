@@ -193,7 +193,8 @@
         "developer": "Entwickler"
       },
       "error": {
-        "save": "Fehler beim Speichern des Benutzers."
+        "save": "Fehler beim Speichern des Benutzers.",
+        "exists": "Benutzer \"{{user}}\" existiert bereits"
       }
     },
     "error": {
