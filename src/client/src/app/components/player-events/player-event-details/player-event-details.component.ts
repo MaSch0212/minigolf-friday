@@ -210,6 +210,9 @@ export class PlayerEventDetailsComponent {
   }
 
   protected openExternalUri() {
-    window.location.href = this.externalUri() as string;
+    const url = this.externalUri();
+    if (url) {
+      window.location.href = url;
+    }
   }
 }

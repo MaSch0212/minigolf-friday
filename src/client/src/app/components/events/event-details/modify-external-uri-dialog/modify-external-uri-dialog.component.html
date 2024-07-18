@@ -15,6 +15,10 @@
       (ngModelChange)="externalUri.set($event)"
     />
     <button pButton icon="i-[mdi--backspace]" (click)="clearExternalUri()"></button>
-    <button pButton icon="i-[mdi--check]" (click)="updateExternalUri()"></button>
   </p-inputGroup>
+
+  <ng-template pTemplate="footer">
+    <p-button [text]="true" [label]="translations.shared_cancel()" (onClick)="visible.set(false)" />
+    <p-button [label]="translations.shared_save()" (onClick)="updateExternalUri()" />
+  </ng-template>
 </p-dialog>

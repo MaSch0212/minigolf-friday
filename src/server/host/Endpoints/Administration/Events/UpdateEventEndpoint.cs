@@ -27,9 +27,6 @@ public class UpdateEventRequestValidator : Validator<UpdateEventRequest>
     public UpdateEventRequestValidator(IIdService idService)
     {
         RuleFor(x => x.EventId).NotEmpty().ValidSqid(idService.Event);
-        RuleFor(x => x)
-            .Must(x => x.Commit != null || x.ExternalUri != null)
-            .WithMessage("Either Commit or ExternalUri must be set");
     }
 }
 

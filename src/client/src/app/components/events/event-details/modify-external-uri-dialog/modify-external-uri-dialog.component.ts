@@ -4,8 +4,8 @@ import {
   inject,
   input,
   signal,
-  ViewChild,
   ElementRef,
+  viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -31,7 +31,6 @@ import { TranslateService } from '../../../../services/translate.service';
     InputTextModule,
   ],
   templateUrl: './modify-external-uri-dialog.component.html',
-  styleUrl: './modify-external-uri-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModifyExternalUriDialogComponent {
@@ -43,7 +42,7 @@ export class ModifyExternalUriDialogComponent {
   protected readonly visible = signal(false);
   protected readonly externalUri = signal('');
 
-  private _inputElement = viewChild.required('inputElement', { read: ElementRef });
+  private readonly _inputElement = viewChild.required('inputElement', { read: ElementRef });
 
   public open(currentValue: string | null | undefined) {
     this.visible.set(true);
@@ -66,6 +65,6 @@ export class ModifyExternalUriDialogComponent {
 
   protected clearExternalUri() {
     this.externalUri.set('');
-    this.inputElement.nativeElement.focus();
+    this._inputElement().nativeElement.focus();
   }
 }
