@@ -135,10 +135,9 @@ export class UserDialogComponent {
           this._userWelcomeDialog().open(response);
         }
       });
-    actions$.pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed()).subscribe(() => {
-      this.tokenVisible.set(true);
-      this.openUserWelcomeDialog();
-    });
+    actions$
+      .pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed())
+      .subscribe(() => this.tokenVisible.set(true));
 
     effect(
       () => {
@@ -287,23 +286,10 @@ export class UserDialogComponent {
     return `${purpose}-${this._randomId}`;
   }
 
-  protected requestUserWelcomeDialog() {
-    this.userWelcomeDialogRequested.set(true);
-    if (!this.tokenVisible()) {
-      this.loadLoginToken();
-      return;
-    }
-    this.openUserWelcomeDialog();
-  }
-
   protected openUserWelcomeDialog() {
-    if (this.userWelcomeDialogRequested() && this.userToUpdate()) {
-      const userToDisplay = {
-        loginToken: this.loginToken(),
-        alias: this.userToUpdate()?.alias,
-      } as User;
-      this._userWelcomeDialog().open(userToDisplay);
-      this.userWelcomeDialogRequested.set(false);
+    const user = this.userToUpdate();
+    if (user) {
+      this._userWelcomeDialog().open(user);
     }
   }
 

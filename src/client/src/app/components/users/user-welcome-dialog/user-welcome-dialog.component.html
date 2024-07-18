@@ -10,23 +10,31 @@
       {{ translations.users_userWelcomeDialog_title() | interpolate: user() }}
     </h2>
   </ng-template>
-  <div class="flex flex-col items-end gap-2">
-    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-      <p-button
-        styleClass="w-full"
-        [icon]="'i-[mdi--text-account]'"
-        [label]="translations.users_userWelcomeDialog_copyWelcomeMessage()"
-        (onClick)="copyWelcomeMessage()"
-      />
-      @if (user()?.loginToken; as loginToken) {
+  @if (isLoading()) {
+    <div class="flex flex-row justify-center">
+      <p-progressSpinner class="m-4 self-center" styleClass="h-16 w-16" strokeWidth="4" />
+    </div>
+  } @else {
+    <div class="flex flex-col items-end gap-2">
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <p-button
           styleClass="w-full"
-          [icon]="'i-[mdi--lock]'"
-          [label]="translations.users_userWelcomeDialog_copyPassword()"
-          (onClick)="copyPassword(loginToken)"
+          [icon]="'i-[mdi--text-account]'"
+          [label]="translations.users_userWelcomeDialog_copyWelcomeMessage()"
+          (onClick)="copyWelcomeMessage()"
         />
-      }
+        @if (loginToken(); as loginToken) {
+          <p-button
+            styleClass="w-full"
+            [icon]="'i-[mdi--lock]'"
+            [label]="translations.users_userWelcomeDialog_copyPassword()"
+            (onClick)="copyPassword(loginToken)"
+          />
+        }
+      </div>
     </div>
+  }
+  <ng-template pTemplate="footer">
     <p-button
       styleClass="w-full"
       [icon]="'i-[mdi--check]'"
@@ -34,5 +42,5 @@
       (onClick)="visible.set(false)"
       [text]="true"
     />
-  </div>
+  </ng-template>
 </p-dialog>
