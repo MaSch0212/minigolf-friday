@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
+using MaSch.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
@@ -17,7 +18,8 @@ namespace MinigolfFriday.Host.Endpoints.Administration.Events;
 // / <param name="Commit">set true if you want to commit the event and send a notification to the user</param>
 public record UpdateEventRequest(
     [property: Required] string EventId,
-    [property: Required] bool Commit
+    bool? Commit,
+    string? ExternalUri
 );
 
 public class UpdateEventRequestValidator : Validator<UpdateEventRequest>
@@ -57,7 +59,7 @@ public class UpdateEventEndpoint(
             return;
         }
 
-        if (!eventInfo.Staged)
+        if (req.Commit == false && !eventInfo.Staged)
         {
             Logger.LogWarning(EndpointErrors.EventNotStaged, eventId);
             await this.SendErrorAsync(
@@ -70,7 +72,15 @@ public class UpdateEventEndpoint(
 
         var updateBuilder = DbUpdateBuilder.Create(eventQuery);
 
-        updateBuilder.With(x => x.SetProperty(x => x.Staged, false));
+        if (req.Commit == true)
+        {
+            updateBuilder.With(x => x.SetProperty(x => x.Staged, false));
+        }
+
+        if (req.ExternalUri != null)
+        {
+            updateBuilder.With(x => x.SetProperty(x => x.ExternalUri, req.ExternalUri));
+        }
 
         ThrowIfAnyErrors();
 
@@ -92,20 +102,23 @@ public class UpdateEventEndpoint(
             ct
         );
 
-        var pushSubscriptions = await databaseContext
-            .UserPushSubscriptions.Where(x =>
-                x.User.Settings == null
-                || (x.User.Settings.EnableNotifications && x.User.Settings.NotifyOnEventPublish)
-            )
-            .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
-            .ToListAsync(ct);
-        await webPushService.SendAsync(
-            pushSubscriptions,
-            new PushNotificationData.EventPublished(
-                idService.Event.Encode(eventId),
-                eventInfo.Date
-            ),
-            ct
-        );
+        if (req.Commit == true)
+        {
+            var pushSubscriptions = await databaseContext
+                .UserPushSubscriptions.Where(x =>
+                    x.User.Settings == null
+                    || (x.User.Settings.EnableNotifications && x.User.Settings.NotifyOnEventPublish)
+                )
+                .Select(userPushSubscriptionMapper.MapUserPushSubscriptionExpression)
+                .ToListAsync(ct);
+            await webPushService.SendAsync(
+                pushSubscriptions,
+                new PushNotificationData.EventPublished(
+                    idService.Event.Encode(eventId),
+                    eventInfo.Date
+                ),
+                ct
+            );
+        }
     }
 }

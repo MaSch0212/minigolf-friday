@@ -64,7 +64,7 @@ export function parseEvent(event: ApiEvent): Event {
     registrationDeadline: new Date(event.registrationDeadline),
     timeslots: event.timeslots.map(parseEventTimeslot),
     startedAt: event.startedAt ? new Date(event.startedAt) : undefined,
-    staged: event.staged,
+    staged: event.staged != null ? event.staged : undefined,
   };
 }
 

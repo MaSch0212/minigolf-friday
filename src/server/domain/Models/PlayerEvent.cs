@@ -15,7 +15,8 @@ public record PlayerEvent(
     [property: Required] DateOnly Date,
     [property: Required] DateTimeOffset RegistrationDeadline,
     [property: Required] PlayerEventTimeslot[] Timeslots,
-    [property: Required] bool IsStarted
+    [property: Required] bool IsStarted,
+    string? ExternalUri
 );
 
 /// <summary>

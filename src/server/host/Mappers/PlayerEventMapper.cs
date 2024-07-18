@@ -18,7 +18,8 @@ public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
                 .Timeslots.OrderBy(x => x.Time)
                 .Select(timeslot => Map(timeslot, userId))
                 .ToArray(),
-            entity.StartedAt != null
+            entity.StartedAt != null,
+            entity.ExternalUri
         );
     }
 

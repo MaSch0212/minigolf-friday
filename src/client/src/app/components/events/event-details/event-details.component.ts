@@ -1,6 +1,7 @@
 import { CommonModule, formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InterpolatePipe, interpolate } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
@@ -9,11 +10,15 @@ import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
 import { filter, map, timer } from 'rxjs';
 
+import { ModifyExternalUriDialogComponent } from './modify-external-uri-dialog/modify-external-uri-dialog.component';
 import { hasActionFailed, isActionBusy } from '../../../+state/action-state';
 import {
   buildEventInstancesAction,
@@ -21,7 +26,7 @@ import {
   selectEvent,
   selectEventsActionState,
   startEventAction,
-  commitEventAction,
+  updateEventAction,
 } from '../../../+state/events';
 import { keepEventLoaded } from '../../../+state/events/events.utils';
 import { mapSelectors } from '../../../+state/maps';
@@ -44,8 +49,13 @@ import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-tim
     CommonModule,
     EventFormComponent,
     EventTimeslotDialogComponent,
+    FormsModule,
+    InputGroupAddonModule,
+    InputGroupModule,
+    InputTextModule,
     InterpolatePipe,
     MessagesModule,
+    ModifyExternalUriDialogComponent,
     ProgressSpinnerModule,
     RouterLink,
     TooltipModule,
@@ -77,6 +87,8 @@ export class EventDetailsComponent {
   protected readonly isStartBusy = computed(() => isActionBusy(this.startActionState()));
   protected readonly isBuildBusy = computed(() => isActionBusy(this.buildActionState()));
   protected readonly event = selectSignal(computed(() => selectEvent(this.eventId())));
+  protected readonly externalUri = computed(() => this.event()?.externalUri);
+  // protected readonly externalUriLoaded = computed(() => )
   protected readonly timeslots = computed(() =>
     [...(this.event()?.timeslots ?? [])].sort((a, b) => compareTimes(a.time, b.time))
   );
@@ -198,13 +210,33 @@ export class EventDetailsComponent {
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {
         this._store.dispatch(
-          commitEventAction({
+          updateEventAction({
             eventId: event.id,
             commit: true,
           })
         );
       },
     });
+  }
+
+  protected updateExternalUri() {
+    const event = this.event();
+    if (!event) return;
+
+    this._store.dispatch(
+      updateEventAction({
+        eventId: event.id,
+        externalUri:
+          this.externalUri() ?? undefined,
+      })
+    );
+  }
+
+  protected openExternalUri() {
+    const url = this.externalUri();
+    if (url) {
+      window.location.href = url;
+    }
   }
 
   protected buildInstances() {

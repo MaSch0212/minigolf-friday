@@ -1,0 +1,24 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [header]="translations.events_facebookLink()"
+>
+  <p-inputGroup>
+    <input
+      #inputElement
+      class="w-full max-w-[350px]"
+      type="text"
+      pInputText
+      autocomplete="off"
+      [ngModel]="externalUri()"
+      (ngModelChange)="externalUri.set($event)"
+    />
+    <button pButton icon="i-[mdi--backspace]" (click)="clearExternalUri()"></button>
+  </p-inputGroup>
+
+  <ng-template pTemplate="footer">
+    <p-button [text]="true" [label]="translations.shared_cancel()" (onClick)="visible.set(false)" />
+    <p-button [label]="translations.shared_save()" (onClick)="updateExternalUri()" />
+  </ng-template>
+</p-dialog>

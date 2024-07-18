@@ -36,6 +36,16 @@
           </div>
         </p-card>
 
+        @if (externalUri()) {
+          <div class="flex flex-row items-center justify-center gap-4">
+            <p-button
+              [label]="translations.events_visitFacebookLink()"
+              icon="i-[mdi--facebook]"
+              (onClick)="openExternalUri()"
+            ></p-button>
+          </div>
+        }
+
         @if (!canRegister() && !event.isStarted) {
           <p-messages severity="info">
             <ng-template pTemplate>

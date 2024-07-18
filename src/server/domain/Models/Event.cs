@@ -16,7 +16,8 @@ public record Event(
     [property: Required] DateTimeOffset RegistrationDeadline,
     [property: Required] EventTimeslot[] Timeslots,
     DateTimeOffset? StartedAt,
-    [property: Required] bool Staged
+    bool? Staged,
+    string? ExternalUri
 );
 
 /// <summary>

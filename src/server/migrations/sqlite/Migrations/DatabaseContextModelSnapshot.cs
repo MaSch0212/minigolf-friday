@@ -28,6 +28,10 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("date");
 
+                    b.Property<string>("ExternalUri")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("external_uri");
+
                     b.Property<DateTimeOffset>("RegistrationDeadline")
                         .HasColumnType("TEXT")
                         .HasColumnName("registration_deadline");

@@ -83,6 +83,8 @@
     "rebuildGroups": "Rebuild groups",
     "commit": "commit event",
     "staged": "staged",
+    "facebookLink": "Facebook link",
+    "visitFacebookLink": "View Facebook Event",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",
