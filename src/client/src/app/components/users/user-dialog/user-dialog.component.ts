@@ -90,7 +90,6 @@ export class UserDialogComponent {
   protected readonly translations = inject(TranslateService).translations;
   protected readonly userToUpdate = signal<User | undefined>(undefined);
   protected readonly visible = signal(false);
-  protected readonly userWelcomeDialogRequested = signal(false);
 
   private readonly _actionState = selectSignal(
     computed(() => selectUsersActionState(this.userToUpdate() ? 'update' : 'add'))
