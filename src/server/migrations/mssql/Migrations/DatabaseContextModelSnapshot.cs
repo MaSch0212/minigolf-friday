@@ -248,6 +248,10 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Alias")
+                        .IsUnique()
+                        .HasFilter("[alias] IS NOT NULL");
+
                     b.HasIndex("LoginToken")
                         .IsUnique()
                         .HasFilter("[login_token] IS NOT NULL");
