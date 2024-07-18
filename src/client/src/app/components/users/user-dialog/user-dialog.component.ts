@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InterpolatePipe } from '@ngneers/signal-translate';
+import { interpolate, InterpolatePipe } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import copyToClipboard from 'copy-to-clipboard';
@@ -41,8 +41,8 @@ import { TranslateService } from '../../../services/translate.service';
 import { areArraysEqual } from '../../../utils/array.utils';
 import { notNullish } from '../../../utils/common.utils';
 import { selectSignal } from '../../../utils/ngrx.utils';
-import { UserCreatedDialogComponent } from '../user-created-dialog/user-created-dialog.component';
 import { UserItemComponent } from '../user-item/user-item.component';
+import { UserWelcomeDialogComponent } from '../user-welcome-dialog/user-welcome-dialog.component';
 
 @Component({
   selector: 'app-user-dialog',
@@ -61,8 +61,8 @@ import { UserItemComponent } from '../user-item/user-item.component';
     MessagesModule,
     OverlayPanelModule,
     ReactiveFormsModule,
-    UserCreatedDialogComponent,
     UserItemComponent,
+    UserWelcomeDialogComponent,
   ],
   templateUrl: './user-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,7 +74,7 @@ export class UserDialogComponent {
   private readonly _allUsers = selectSignal(userSelectors.selectEntities);
   private readonly _randomId = Math.random().toString(36).substring(2, 9);
 
-  private readonly _userCreatedDialog = viewChild.required(UserCreatedDialogComponent);
+  private readonly _userWelcomeDialog = viewChild.required(UserWelcomeDialogComponent);
 
   protected readonly form = this._formBuilder.group({
     id: new FormControl<string | null>(null),
@@ -131,7 +131,7 @@ export class UserDialogComponent {
       .subscribe(({ type, response }) => {
         this.close();
         if (type === addUserAction.success.type) {
-          this._userCreatedDialog().open(response);
+          this._userWelcomeDialog().open(response);
         }
       });
     actions$
@@ -229,6 +229,17 @@ export class UserDialogComponent {
   }
 
   protected submit() {
+    if (Object.values(this._allUsers()).some(x => x?.alias === this.form.value.alias)) {
+      this._messageService.add({
+        severity: 'error',
+        summary: interpolate(this.translations.users_dialog_error_exists(), {
+          user: this.form.value.alias,
+        }),
+        life: 2000,
+      });
+      return;
+    }
+
     if (!this.form.valid) {
       this.form.markAllAsTouched();
       return;
@@ -272,6 +283,13 @@ export class UserDialogComponent {
 
   protected id(purpose: string) {
     return `${purpose}-${this._randomId}`;
+  }
+
+  protected openUserWelcomeDialog() {
+    const user = this.userToUpdate();
+    if (user) {
+      this._userWelcomeDialog().open(user);
+    }
   }
 
   private getUsersByIds(ids: string[]) {

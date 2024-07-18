@@ -58,5 +58,6 @@ public class UserEntity
 
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.LoginToken).IsUnique();
+        builder.HasIndex(x => x.Alias).IsUnique();
     }
 }

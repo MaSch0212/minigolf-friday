@@ -195,7 +195,8 @@
         "developer": "Entwickler"
       },
       "error": {
-        "save": "Fehler beim Speichern des Benutzers."
+        "save": "Fehler beim Speichern des Benutzers.",
+        "exists": "Benutzer \"{{user}}\" existiert bereits"
       }
     },
     "error": {
@@ -209,8 +210,8 @@
       "body": "Inhalt",
       "bodyDefault": "Benachrichtigungen funktionieren!!! Wohoo ⛳"
     },
-    "userCreatedDialog": {
-      "title": "User \"{{alias}}\" created",
+    "userWelcomeDialog": {
+      "title": "Willkommen {{alias}}",
       "copyWelcomeMessage": "Willkommensnachricht kopieren",
       "copyPassword": "Passwort kopieren",
       "welcomeMessage": "Hallo Liebe Minigolffreunde!\nDie Anmeldung zum Minigolffreitag läuft ab jetzt über die Web-basierte App, welche du unter:\n{{url}}\naufrufen kannst.\nSpeichere sie dir als Lesezeichen, oder füge sie zu deinem Home-Bildschirm hinzu um jederzeit darauf zugreifen zu können.\nMelde dich dort bitte mit deinem Passwort an und registriere dich selber für deine Spielzeiten.\nBitte schreibe doch trotzdem im Facebook Beitrag, dass du dich registriert hast, damit dort die Konversation aufrecht erhalten wird.\nViel Spaß beim Minigolfen!\nDein Orga-Team",

@@ -233,6 +233,9 @@ namespace MinigolfFriday.Migrations.Sqlite.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Alias")
+                        .IsUnique();
+
                     b.HasIndex("LoginToken")
                         .IsUnique();
 
