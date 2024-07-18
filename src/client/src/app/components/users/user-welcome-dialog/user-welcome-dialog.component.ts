@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interpolate, InterpolatePipe } from '@ngneers/signal-translate';
-import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import copyToClipboard from 'copy-to-clipboard';
 import { MessageService } from 'primeng/api';
@@ -10,7 +8,12 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
-import { loadUserLoginTokenAction, selectUserLoginToken } from '../../../+state/users';
+import { isActionBusy } from '../../../+state/action-state';
+import {
+  loadUserLoginTokenAction,
+  selectUserLoginToken,
+  selectUsersActionState,
+} from '../../../+state/users';
 import { User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 import { selectSignal } from '../../../utils/ngrx.utils';
@@ -29,21 +32,14 @@ export class UserWelcomeDialogComponent {
 
   protected readonly visible = signal(false);
   protected readonly user = signal<User | undefined>(undefined);
-  protected readonly isLoading = signal(true);
+  private readonly _loadTokenState = selectSignal(selectUsersActionState('loadLoginToken'));
+  protected readonly isLoading = computed(() => isActionBusy(this._loadTokenState()));
   protected readonly loginToken = selectSignal(
     computed(() => selectUserLoginToken(this.user()?.id))
   );
 
-  constructor() {
-    const actions$ = inject(Actions);
-    actions$.pipe(ofType(loadUserLoginTokenAction.success), takeUntilDestroyed()).subscribe(() => {
-      this.isLoading.set(false);
-    });
-  }
-
   protected loadLoginToken() {
     if (this.loginToken()) {
-      this.isLoading.set(false);
       return;
     }
 
@@ -55,7 +51,6 @@ export class UserWelcomeDialogComponent {
 
   public open(user: User) {
     this.user.set(user);
-    this.isLoading.set(true);
     this.loadLoginToken();
     this.visible.set(true);
   }
