@@ -43,7 +43,7 @@ export class ModifyExternalUriDialogComponent {
   protected readonly visible = signal(false);
   protected readonly externalUri = signal('');
 
-  @ViewChild('inputElement') inputElement!: ElementRef;
+  private _inputElement = viewChild.required('inputElement', { read: ElementRef });
 
   public open(currentValue: string | null | undefined) {
     this.visible.set(true);

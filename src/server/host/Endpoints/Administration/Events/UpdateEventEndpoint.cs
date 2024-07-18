@@ -62,7 +62,7 @@ public class UpdateEventEndpoint(
             return;
         }
 
-        if (req.Commit != null && !eventInfo.Staged)
+        if (req.Commit == false && !eventInfo.Staged)
         {
             Logger.LogWarning(EndpointErrors.EventNotStaged, eventId);
             await this.SendErrorAsync(
@@ -75,7 +75,7 @@ public class UpdateEventEndpoint(
 
         var updateBuilder = DbUpdateBuilder.Create(eventQuery);
 
-        if (req.Commit != null && req.Commit.Equals(true))
+        if (req.Commit == true)
         {
             updateBuilder.With(x => x.SetProperty(x => x.Staged, false));
         }
@@ -105,7 +105,7 @@ public class UpdateEventEndpoint(
             ct
         );
 
-        if (req.Commit != null && req.Commit.Equals(true))
+        if (req.Commit == true)
         {
             var pushSubscriptions = await databaseContext
                 .UserPushSubscriptions.Where(x =>

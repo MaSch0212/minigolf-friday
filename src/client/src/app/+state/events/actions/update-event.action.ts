@@ -49,7 +49,7 @@ async function updateEvent(
     eventId: props.eventId,
     body: {
       commit: props.commit ? props.commit : undefined,
-      externalUri: props.externalUri != undefined ? props.externalUri : undefined,
+      externalUri: props.externalUri ?? undefined,
     },
   });
   return response.ok

@@ -227,13 +227,16 @@ export class EventDetailsComponent {
       updateEventAction({
         eventId: event.id,
         externalUri:
-          this.externalUri() != null ? (this.externalUri() as string | undefined) : undefined,
+          this.externalUri() ?? undefined,
       })
     );
   }
 
   protected openExternalUri() {
-    window.location.href = this.externalUri() as string;
+    const url = this.externalUri();
+    if (url) {
+      window.location.href = url;
+    }
   }
 
   protected buildInstances() {
