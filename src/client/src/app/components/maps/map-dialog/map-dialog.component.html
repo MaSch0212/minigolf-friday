@@ -1,7 +1,7 @@
 <p-dialog
   [header]="
     mapToUpdate()
-      ? (translations.maps_dialog_editHeader() | interpolate: mapToUpdate())
+      ? translations.maps_dialog_editHeader(mapToUpdate())
       : translations.maps_dialog_addHeader()
   "
   [visible]="visible()"

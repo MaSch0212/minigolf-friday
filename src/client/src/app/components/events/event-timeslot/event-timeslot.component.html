@@ -111,8 +111,7 @@
                   <ng-template pTemplate="header">
                     <span class="flex w-full flex-row items-center gap-2">
                       <span class="min-w-0 grow truncate">{{
-                        translations.events_playerAmount()
-                          | interpolate: { amount: preconfig.playerIds.length }
+                        translations.events_playerAmount({ amount: preconfig.playerIds.length })
                       }}</span>
                       <p-button
                         class="-my-2"

@@ -1,5 +1,5 @@
 @if (user(); as user) {
-  <h1>{{ translations.playerEvents_greetings() | interpolate: { name: user.alias } }}</h1>
+  <h1>{{ translations.playerEvents_greetings({ name: user.alias }) }}</h1>
 }
 
 @if (!hasEvents() && isLoading()) {
@@ -30,9 +30,7 @@
           }}</span>
           <span class="text-sm">
             @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
-              {{
-                translations.playerEvents_registered() | interpolate: { timeslots: timeslotCount }
-              }}
+              {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
             } @else {
               {{ translations.playerEvents_notRegistered() }}
             }
@@ -60,9 +58,7 @@
           }}</span>
           <span class="text-sm">
             @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
-              {{
-                translations.playerEvents_registered() | interpolate: { timeslots: timeslotCount }
-              }}
+              {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
             } @else {
               {{ translations.playerEvents_notRegistered() }}
             }

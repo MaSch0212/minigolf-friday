@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { defer, of, ReplaySubject, retry, switchMap, throwError } from 'rxjs';
+import { defer, of, ReplaySubject, retry, switchMap, throwError, timer } from 'rxjs';
 
 import { Logger } from './logger.service';
 import { ApiGetWellKnownConfigurationResponse } from '../api/models';
@@ -22,7 +22,7 @@ export class WellKnownService {
             Logger.logError('WellKnownService', 'Error getting well-known configuration', {
               error,
             });
-            return of(5000);
+            return timer(5000);
           },
         })
       )

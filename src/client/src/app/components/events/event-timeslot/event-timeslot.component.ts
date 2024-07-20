@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { InterpolatePipe, interpolate } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
@@ -58,7 +57,6 @@ function asString(value: unknown): string | null {
     DropdownModule,
     EventTimeslotDialogComponent,
     FormsModule,
-    InterpolatePipe,
     MessagesModule,
     ProgressSpinnerModule,
     TooltipModule,
@@ -185,7 +183,7 @@ export class EventTimeslotComponent {
 
     this._confirmationService.confirm({
       header: this.translations.events_deletePreconfigDialog_title(),
-      message: interpolate(this.translations.events_deletePreconfigDialog_text(), preconfig),
+      message: this.translations.events_deletePreconfigDialog_text(preconfig),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
       acceptIcon: 'p-button-icon-left i-[mdi--delete]',
@@ -235,7 +233,7 @@ export class EventTimeslotComponent {
 
     this._confirmationService.confirm({
       header: this.translations.events_deleteTimeslotDialog_title(),
-      message: interpolate(this.translations.events_deleteTimeslotDialog_text(), {
+      message: this.translations.events_deleteTimeslotDialog_text({
         time: timeToString(timeslot.time, 'minutes'),
       }),
       acceptLabel: this.translations.shared_delete(),

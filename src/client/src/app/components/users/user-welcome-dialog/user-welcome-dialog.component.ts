@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { interpolate, InterpolatePipe } from '@ngneers/signal-translate';
 import { Store } from '@ngrx/store';
 import copyToClipboard from 'copy-to-clipboard';
 import { MessageService } from 'primeng/api';
@@ -21,7 +20,7 @@ import { selectSignal } from '../../../utils/ngrx.utils';
 @Component({
   selector: 'app-user-welcome-dialog',
   standalone: true,
-  imports: [ButtonModule, CommonModule, DialogModule, InterpolatePipe, ProgressSpinnerModule],
+  imports: [ButtonModule, CommonModule, DialogModule, ProgressSpinnerModule],
   templateUrl: './user-welcome-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -56,7 +55,7 @@ export class UserWelcomeDialogComponent {
   }
 
   protected copyWelcomeMessage() {
-    const message = interpolate(this.translations.users_userWelcomeDialog_welcomeMessage(), {
+    const message = this.translations.users_userWelcomeDialog_welcomeMessage({
       url: (document.head.querySelector('base') as HTMLBaseElement).href,
     });
     copyToClipboard(message);

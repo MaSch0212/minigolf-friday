@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { InterpolatePipe } from '@ngneers/signal-translate';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { map, timer } from 'rxjs';
@@ -21,7 +20,7 @@ const dayMillis = 24 * 60 * 60 * 1000;
 @Component({
   selector: 'app-player-events',
   standalone: true,
-  imports: [CommonModule, InterpolatePipe, MessagesModule, ProgressSpinnerModule, RouterLink],
+  imports: [CommonModule, MessagesModule, ProgressSpinnerModule, RouterLink],
   templateUrl: './player-events.component.html',
   styleUrl: './player-events.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -10,7 +10,6 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { InterpolatePipe } from '@ngneers/signal-translate';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -34,7 +33,6 @@ import { TranslateService } from '../../services/translate.service';
     CommonModule,
     ErrorTextDirective,
     InputTextModule,
-    InterpolatePipe,
     OnEnterDirective,
     PasswordModule,
     ProgressSpinnerModule,

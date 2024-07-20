@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { InterpolatePipe } from '@ngneers/signal-translate';
 import { AutoFocusModule } from 'primeng/autofocus';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -22,7 +21,6 @@ import { TranslateService } from '../../../services/translate.service';
     DialogModule,
     InputTextModule,
     InputTextareaModule,
-    InterpolatePipe,
     ReactiveFormsModule,
   ],
   templateUrl: './user-push-dialog.component.html',
