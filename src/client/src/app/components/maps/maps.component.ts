@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { interpolate } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -75,7 +74,7 @@ export class MapsComponent {
   protected deleteMap(map: MinigolfMap) {
     this._confirmationService.confirm({
       header: this.translations.maps_deleteDialog_title(),
-      message: interpolate(this.translations.maps_deleteDialog_text(), map),
+      message: this.translations.maps_deleteDialog_text(map),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
       acceptIcon: 'p-button-icon-left i-[mdi--delete]',
@@ -97,7 +96,7 @@ export class MapsComponent {
     this._messageService.add({
       severity: 'error',
       summary: this.translations.maps_error_delete(),
-      detail: interpolate(this.translations.shared_tryAgainLater(), map),
+      detail: this.translations.shared_tryAgainLater(map),
       life: 2000,
     });
   }

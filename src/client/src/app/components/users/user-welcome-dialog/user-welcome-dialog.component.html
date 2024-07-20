@@ -7,7 +7,7 @@
 >
   <ng-template pTemplate="header">
     <h2 class="max-w-72 sm:max-w-none">
-      {{ translations.users_userWelcomeDialog_title() | interpolate: user() }}
+      {{ translations.users_userWelcomeDialog_title(user()) }}
     </h2>
   </ng-template>
   @if (isLoading()) {

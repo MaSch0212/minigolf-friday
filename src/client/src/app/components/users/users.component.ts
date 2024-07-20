@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { interpolate } from '@ngneers/signal-translate';
 import { Store } from '@ngrx/store';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -79,7 +78,7 @@ export class UsersComponent {
   protected deleteUser(user: User) {
     this._confirmationService.confirm({
       header: this.translations.users_deleteDialog_title(),
-      message: interpolate(this.translations.users_deleteDialog_text(), user),
+      message: this.translations.users_deleteDialog_text(user),
       acceptLabel: this.translations.shared_delete(),
       acceptButtonStyleClass: 'p-button-danger',
       acceptIcon: 'p-button-icon-left i-[mdi--delete]',

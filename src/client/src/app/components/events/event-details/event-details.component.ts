@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { InterpolatePipe, interpolate } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
@@ -53,7 +52,6 @@ import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-tim
     InputGroupAddonModule,
     InputGroupModule,
     InputTextModule,
-    InterpolatePipe,
     MessagesModule,
     ModifyExternalUriDialogComponent,
     ProgressSpinnerModule,
@@ -152,7 +150,7 @@ export class EventDetailsComponent {
 
     this._confirmationService.confirm({
       header: this.translations.events_deleteDialog_title(),
-      message: interpolate(this.translations.events_deleteDialog_text(), {
+      message: this.translations.events_deleteDialog_text({
         date: formatDate(event.date, 'mediumDate', this.locale()),
       }),
       acceptLabel: this.translations.shared_delete(),
@@ -176,7 +174,7 @@ export class EventDetailsComponent {
 
     this._confirmationService.confirm({
       header: this.translations.events_startDialog_title(),
-      message: interpolate(this.translations.events_startDialog_text(), {
+      message: this.translations.events_startDialog_text({
         date: formatDate(event.date, 'mediumDate', this.locale()),
       }),
       acceptLabel: this.translations.shared_start(),
@@ -200,7 +198,7 @@ export class EventDetailsComponent {
 
     this._confirmationService.confirm({
       header: this.translations.events_commitDialog_title(),
-      message: interpolate(this.translations.events_commitDialog_text(), {
+      message: this.translations.events_commitDialog_text({
         date: formatDate(event.date, 'mediumDate', this.locale()),
       }),
       acceptLabel: this.translations.shared_commit(),
@@ -226,8 +224,7 @@ export class EventDetailsComponent {
     this._store.dispatch(
       updateEventAction({
         eventId: event.id,
-        externalUri:
-          this.externalUri() ?? undefined,
+        externalUri: this.externalUri() ?? undefined,
       })
     );
   }

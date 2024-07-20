@@ -9,7 +9,7 @@
 >
   <div class="flex flex-col gap-4" [formGroup]="form">
     <div>
-      {{ translations.users_notificationDialog_sendTo() | interpolate: user() }}
+      {{ translations.users_notificationDialog_sendTo(user()) }}
     </div>
 
     <span class="p-float-label">

@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { interpolate, InterpolatePipe } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import copyToClipboard from 'copy-to-clipboard';
@@ -56,7 +55,6 @@ import { UserWelcomeDialogComponent } from '../user-welcome-dialog/user-welcome-
     IconFieldModule,
     InputIconModule,
     InputTextModule,
-    InterpolatePipe,
     ListboxModule,
     MessagesModule,
     OverlayPanelModule,
@@ -232,7 +230,7 @@ export class UserDialogComponent {
     if (Object.values(this._allUsers()).some(x => x?.alias === this.form.value.alias)) {
       this._messageService.add({
         severity: 'error',
-        summary: interpolate(this.translations.users_dialog_error_exists(), {
+        summary: this.translations.users_dialog_error_exists({
           user: this.form.value.alias,
         }),
         life: 2000,

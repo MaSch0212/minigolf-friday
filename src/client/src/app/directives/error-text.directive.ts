@@ -7,7 +7,6 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { interpolate } from '@ngneers/signal-translate';
 
 import { TranslateService } from '../services/translate.service';
 
@@ -32,8 +31,8 @@ export class ErrorTextDirective implements AfterViewInit {
         const firstError = !errors ? undefined : Object.entries(errors)[0];
         if (firstError) {
           const [errorKey, errorValue] = firstError;
-          element.textContent = interpolate(
-            this._translateService.translate(`validation_${errorKey}`),
+          element.textContent = this._translateService.translate(
+            `validation_${errorKey}`,
             errorValue as Record<string, unknown>
           );
         } else {

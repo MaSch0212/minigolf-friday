@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InterpolatePipe } from '@ngneers/signal-translate';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { ButtonModule } from 'primeng/button';
@@ -31,7 +30,6 @@ import { selectSignal } from '../../../utils/ngrx.utils';
     CommonModule,
     DialogModule,
     InputTextModule,
-    InterpolatePipe,
     MessagesModule,
     ReactiveFormsModule,
   ],

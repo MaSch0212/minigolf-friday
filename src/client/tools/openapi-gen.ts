@@ -1,11 +1,14 @@
-const path = require('path');
+import path from 'path';
+import url from 'url';
 
-const { OpenApiGenerator } = require('@goast/core');
-const {
+import { OpenApiGenerator } from '@goast/core';
+import {
   TypeScriptAngularServicesGenerator,
   TypeScriptEasyNetworkStubsGenerator,
   TypeScriptModelsGenerator,
-} = require('@goast/typescript');
+} from '@goast/typescript';
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 new OpenApiGenerator({ outputDir: path.join(__dirname, '../src/app/api') })
   .useType(TypeScriptModelsGenerator, { typeNameCasing: { casing: 'pascal', prefix: 'Api' } })

@@ -1,7 +1,7 @@
 <p-dialog
   [header]="
     userToUpdate()
-      ? (translations.users_dialog_editHeader() | interpolate: userToUpdate())
+      ? translations.users_dialog_editHeader(userToUpdate())
       : translations.users_dialog_addHeader()
   "
   [visible]="visible()"
