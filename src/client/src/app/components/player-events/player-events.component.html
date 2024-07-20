@@ -52,21 +52,21 @@
 
 <ng-template #eventEntryTemplate let-event let-index="index">
   <a
-    class="flex min-w-0 flex-row flex-wrap items-center gap-x-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+    class="flex min-w-0 flex-row items-center gap-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
     [class.border-t-[1px]]="index > 0"
     [routerLink]="[event.id]"
     pRipple
   >
-    <span class="grow font-semibold">{{
-      event.date | date: 'fullDate' : undefined : locale()
-    }}</span>
-    <span class="text-sm">
-      @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
-        {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
-      } @else {
-        {{ translations.playerEvents_notRegistered() }}
-      }
-    </span>
+    <div class="flex min-w-0 grow flex-row flex-wrap items-center justify-between gap-x-4">
+      <span class="font-semibold">{{ event.date | date: 'fullDate' : undefined : locale() }}</span>
+      <span class="text-sm">
+        @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
+          {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
+        } @else {
+          {{ translations.playerEvents_notRegistered() }}
+        }
+      </span>
+    </div>
     @if (user()?.roles?.includes('admin')) {
       <p-button
         class="-mr-2"
