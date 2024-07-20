@@ -1,3 +1,4 @@
+using System.Net;
 using FluentResults;
 using MaSch.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,6 @@ using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Host.Utilities;
-using System.Net;
 
 namespace MinigolfFriday.Host.Services;
 
@@ -56,20 +56,32 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             }
         }
 
+        var playerPairScores = new Dictionary<PlayerPair, int>();
         var instances = new List<EventTimeslotInstances>();
-        var playerGroups = new List<long[][]>();
         foreach (var kv in timeslotPlayers)
         {
             var groupCodeGenerator = new GroupCodeGenerator();
             var timeslot = kv.Key;
             var players = kv.Value;
-            var groups = GeneratePlayerGroups(playerGroups, players, timeslot.Preconfigurations, allPlayers);
+            var groups = GeneratePlayerGroups(
+                playerPairScores,
+                players,
+                timeslot.Preconfigurations,
+                allPlayers
+            );
 
-            playerGroups.Add(groups);
-            instances.Add(new EventTimeslotInstances(
-                idService.EventTimeslot.Encode(timeslot.Id),
-                groups.Select(group => new EventInstance("", groupCodeGenerator.Generate(), group.Select(playerId => idService.User.Encode(playerId)).ToArray())).ToArray()
-            ));
+            instances.Add(
+                new EventTimeslotInstances(
+                    idService.EventTimeslot.Encode(timeslot.Id),
+                    groups
+                        .Select(group => new EventInstance(
+                            "",
+                            groupCodeGenerator.Generate(),
+                            group.Select(playerId => idService.User.Encode(playerId)).ToArray()
+                        ))
+                        .ToArray()
+                )
+            );
         }
 
         return (@event, instances.ToArray());
@@ -147,7 +159,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
     }
 
     private long[][] GeneratePlayerGroups(
-        ICollection<long[][]> previousGroups,
+        Dictionary<PlayerPair, int> playerPairScores,
         IEnumerable<long> playerIds,
         IEnumerable<EventInstancePreconfigurationEntity> preconfigs,
         Dictionary<long, Player> allPlayers
@@ -189,19 +201,30 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             var group = groups.MinBy(x => x.Count)!;
 
             // Calculate scores for all remaining players for the group and take the one with the highest score
-            group.Add(
-                remaining.PopMaxScore(x =>
-                    group.Aggregate(0, (acc, y) => acc + getPlayerScore(previousGroups, x, y))
-                )
+            var playerToAdd = remaining.PopMaxScore(x =>
+                group.Aggregate(0, (acc, y) => acc + GetPlayerScore(playerPairScores, x, y))
             );
+
+            foreach (var other in group)
+                playerPairScores[PlayerPair.Create(playerToAdd.Id, other.Id)] -= 100;
+
+            group.Add(playerToAdd);
         }
 
         return groups.Select(x => x.Select(y => y.Id).ToArray()).ToArray();
     }
 
-    private static int getPlayerScore(ICollection<long[][]> previousGroups, Player a, Player b)
+    private static int GetPlayerScore(
+        Dictionary<PlayerPair, int> playerPairScores,
+        Player a,
+        Player b
+    )
     {
-        var score = 0;
+        var playerPair = PlayerPair.Create(a.Id, b.Id);
+        if (playerPairScores.TryGetValue(new(a.Id, b.Id), out var score))
+            return score;
+
+        score = 0;
         if (a.Avoid.Contains(b))
             score -= 2;
         if (b.Avoid.Contains(a))
@@ -210,10 +233,7 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             score++;
         if (b.Prefer.Contains(a))
             score++;
-        score -= previousGroups
-            .SelectMany(group => group.Where(players => players.Contains(a.Id)))
-            .Where(group => group.Contains(b.Id))
-            .Count() * 100;
+        playerPairScores[playerPair] = score;
         return score;
     }
 
@@ -224,5 +244,13 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         public List<Player> Prefer { get; } = [];
     }
 
-    private readonly record struct PlayerPair(long PlayerId1, long PlayerId2);
+    private readonly record struct PlayerPair(long PlayerId1, long PlayerId2)
+    {
+        public static PlayerPair Create(long PlayerId1, long PlayerId2)
+        {
+            if (PlayerId1 < PlayerId2)
+                return new(PlayerId1, PlayerId2);
+            return new(PlayerId2, PlayerId1);
+        }
+    }
 }
