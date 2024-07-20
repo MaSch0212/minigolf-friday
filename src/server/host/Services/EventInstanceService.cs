@@ -1,10 +1,11 @@
-using System.Net;
 using FluentResults;
+using MaSch.Core.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
 using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Host.Utilities;
+using System.Net;
 
 namespace MinigolfFriday.Host.Services;
 
@@ -55,15 +56,23 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             }
         }
 
-        return (
-            @event,
-            timeslotPlayers
-                .Select(x => new EventTimeslotInstances(
-                    idService.EventTimeslot.Encode(x.Key.Id),
-                    GenerateEventInstances(x.Value, x.Key.Preconfigurations, allPlayers).ToArray()
-                ))
-                .ToArray()
-        );
+        var instances = new List<EventTimeslotInstances>();
+        var playerGroups = new List<long[][]>();
+        foreach (var kv in timeslotPlayers)
+        {
+            var groupCodeGenerator = new GroupCodeGenerator();
+            var timeslot = kv.Key;
+            var players = kv.Value;
+            var groups = GeneratePlayerGroups(playerGroups, players, timeslot.Preconfigurations, allPlayers);
+
+            playerGroups.Add(groups);
+            instances.Add(new EventTimeslotInstances(
+                idService.EventTimeslot.Encode(timeslot.Id),
+                groups.Select(group => new EventInstance("", groupCodeGenerator.Generate(), group.Select(playerId => idService.User.Encode(playerId)).ToArray())).ToArray()
+            ));
+        }
+
+        return (@event, instances.ToArray());
     }
 
     public async Task PersistEventInstancesAsync(
@@ -137,7 +146,8 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         return players;
     }
 
-    private List<EventInstance> GenerateEventInstances(
+    private long[][] GeneratePlayerGroups(
+        ICollection<long[][]> previousGroups,
         IEnumerable<long> playerIds,
         IEnumerable<EventInstancePreconfigurationEntity> preconfigs,
         Dictionary<long, Player> allPlayers
@@ -181,23 +191,15 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             // Calculate scores for all remaining players for the group and take the one with the highest score
             group.Add(
                 remaining.PopMaxScore(x =>
-                    group.Aggregate(0, (acc, y) => acc + getPlayerScore(x, y))
+                    group.Aggregate(0, (acc, y) => acc + getPlayerScore(previousGroups, x, y))
                 )
             );
         }
 
-        var Generator = new GroupCodeGenerator();
-
-        return groups
-            .Select(x => new EventInstance(
-                "",
-                Generator.Generate(),
-                x.Select(y => idService.User.Encode(y.Id)).ToArray()
-            ))
-            .ToList();
+        return groups.Select(x => x.Select(y => y.Id).ToArray()).ToArray();
     }
 
-    private static int getPlayerScore(Player a, Player b)
+    private static int getPlayerScore(ICollection<long[][]> previousGroups, Player a, Player b)
     {
         var score = 0;
         if (a.Avoid.Contains(b))
@@ -208,6 +210,10 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
             score++;
         if (b.Prefer.Contains(a))
             score++;
+        score -= previousGroups
+            .SelectMany(group => group.Where(players => players.Contains(a.Id)))
+            .Where(group => group.Contains(b.Id))
+            .Count() * 100;
         return score;
     }
 
@@ -217,4 +223,6 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
         public List<Player> Avoid { get; } = [];
         public List<Player> Prefer { get; } = [];
     }
+
+    private readonly record struct PlayerPair(long PlayerId1, long PlayerId2);
 }
