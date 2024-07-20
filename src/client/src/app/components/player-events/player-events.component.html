@@ -19,23 +19,9 @@
     <h2 class="m-0">{{ translations.playerEvents_currentEvents() }}</h2>
     <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
       @for (event of currentEvents(); track event.id; let index = $index) {
-        <a
-          class="flex min-w-0 flex-row flex-wrap items-center justify-between gap-x-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
-          [class.border-t-[1px]]="index > 0"
-          [routerLink]="[event.id]"
-          pRipple
-        >
-          <span class="font-semibold">{{
-            event.date | date: 'fullDate' : undefined : locale()
-          }}</span>
-          <span class="text-sm">
-            @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
-              {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
-            } @else {
-              {{ translations.playerEvents_notRegistered() }}
-            }
-          </span>
-        </a>
+        <ng-container
+          *ngTemplateOutlet="eventEntryTemplate; context: { $implicit: event, index: $index }"
+        ></ng-container>
       }
       @if (currentEvents().length === 0) {
         <div class="px-4 py-2 text-center leading-8">
@@ -46,24 +32,10 @@
 
     <h2 class="m-0">{{ translations.playerEvents_pastEvents() }}</h2>
     <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
-      @for (event of pastEvents(); track event.id; let index = $index) {
-        <a
-          class="flex min-w-0 flex-row flex-wrap items-center justify-between gap-x-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
-          [class.border-t-[1px]]="index > 0"
-          [routerLink]="[event.id]"
-          pRipple
-        >
-          <span class="font-semibold">{{
-            event.date | date: 'fullDate' : undefined : locale()
-          }}</span>
-          <span class="text-sm">
-            @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
-              {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
-            } @else {
-              {{ translations.playerEvents_notRegistered() }}
-            }
-          </span>
-        </a>
+      @for (event of pastEvents(); track event.id) {
+        <ng-container
+          *ngTemplateOutlet="eventEntryTemplate; context: { $implicit: event, index: $index }"
+        ></ng-container>
       }
       @if (pastEvents().length === 0) {
         <div class="px-4 py-2 text-center leading-8">
@@ -77,3 +49,35 @@
     }
   </div>
 }
+
+<ng-template #eventEntryTemplate let-event let-index="index">
+  <a
+    class="flex min-w-0 flex-row flex-wrap items-center gap-x-4 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+    [class.border-t-[1px]]="index > 0"
+    [routerLink]="[event.id]"
+    pRipple
+  >
+    <span class="grow font-semibold">{{
+      event.date | date: 'fullDate' : undefined : locale()
+    }}</span>
+    <span class="text-sm">
+      @if (getRegisteredTimeslotsCount(event); as timeslotCount) {
+        {{ translations.playerEvents_registered({ timeslots: timeslotCount }) }}
+      } @else {
+        {{ translations.playerEvents_notRegistered() }}
+      }
+    </span>
+    @if (user()?.roles?.includes('admin')) {
+      <p-button
+        class="-mr-2"
+        icon="i-[mdi--pencil]"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        [pTooltip]="translations.shared_edit()"
+        [routerLink]="['/manage', 'events', event.id]"
+        (click)="$event.stopPropagation(); $event.preventDefault()"
+      />
+    }
+  </a>
+</ng-template>

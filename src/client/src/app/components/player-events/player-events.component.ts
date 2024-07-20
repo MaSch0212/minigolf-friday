@@ -2,8 +2,10 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TooltipModule } from 'primeng/tooltip';
 import { map, timer } from 'rxjs';
 
 import { hasActionFailed, isActionBusy } from '../../+state/action-state';
@@ -20,7 +22,14 @@ const dayMillis = 24 * 60 * 60 * 1000;
 @Component({
   selector: 'app-player-events',
   standalone: true,
-  imports: [CommonModule, MessagesModule, ProgressSpinnerModule, RouterLink],
+  imports: [
+    ButtonModule,
+    CommonModule,
+    MessagesModule,
+    ProgressSpinnerModule,
+    RouterLink,
+    TooltipModule,
+  ],
   templateUrl: './player-events.component.html',
   styleUrl: './player-events.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
