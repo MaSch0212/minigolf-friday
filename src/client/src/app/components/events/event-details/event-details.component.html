@@ -73,33 +73,31 @@
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_facebookLink() }}</h2>
-        <div>
-          <p-inputGroup>
-            <button
-              type="button"
-              pButton
-              [label]="
-                externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
-                  ? translations.shared_edit()
-                  : translations.shared_add()
-              "
-              icon="i-[mdi--facebook]"
-              (click)="modifyExternalUriDialog.open(externalUri())"
-            ></button>
-            <button
-              type="button"
-              pButton
-              class="bg-surface-a text-primary"
-              icon="i-[mdi--arrow-right-circle]"
-              [disabled]="
-                externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
-                  ? false
-                  : true
-              "
-              (click)="openExternalUri()"
-            ></button>
-          </p-inputGroup>
-        </div>
+        <p-inputGroup class="w-auto">
+          <button
+            type="button"
+            pButton
+            [label]="
+              externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
+                ? translations.shared_edit()
+                : translations.shared_add()
+            "
+            icon="i-[mdi--facebook]"
+            (click)="modifyExternalUriDialog.open(externalUri())"
+          ></button>
+          <button
+            type="button"
+            pButton
+            [outlined]="true"
+            icon="i-[mdi--arrow-right-circle]"
+            [disabled]="
+              externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
+                ? false
+                : true
+            "
+            (click)="openExternalUri()"
+          ></button>
+        </p-inputGroup>
       </div>
 
       <div class="mt-4 flex flex-row items-center gap-2">
@@ -155,16 +153,29 @@
         <div class="flex flex-row items-center pt-4">
           <h2 class="m-0 grow">{{ translations.events_groups() }}</h2>
           @if (!event.startedAt) {
-            <p-button
-              icon="i-[mdi--shuffle]"
-              [label]="
-                hasInstances()
-                  ? translations.events_rebuildGroups()
-                  : translations.events_buildGroups()
-              "
-              (onClick)="buildInstances()"
-              [loading]="isBuildBusy()"
-            />
+            <p-inputGroup class="w-auto">
+              <button
+                pButton
+                icon="i-[mdi--shuffle]"
+                [label]="
+                  hasInstances()
+                    ? translations.events_rebuildGroups()
+                    : translations.events_buildGroups()
+                "
+                (click)="buildInstances()"
+                [loading]="isBuildBusy()"
+              ></button>
+              @if (hasInstances()) {
+                <button
+                  pButton
+                  icon="i-[mdi--pencil]"
+                  [outlined]="true"
+                  [pTooltip]="translations.events_editGroups()"
+                  (click)="instancesDialog.open(event)"
+                  [loading]="isBuildBusy()"
+                ></button>
+              }
+            </p-inputGroup>
           }
         </div>
         <div class="flex shrink-0 flex-row overflow-auto text-xs">
@@ -234,3 +245,5 @@
     }
   }
 </div>
+
+<app-event-instances-dialog #instancesDialog />

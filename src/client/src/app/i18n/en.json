@@ -80,6 +80,7 @@
     "start": "Start event",
     "groups": "Groups",
     "buildGroups": "Build groups",
+    "editGroups": "Edit groups",
     "rebuildGroups": "Rebuild groups",
     "commit": "commit event",
     "staged": "staged",
@@ -135,6 +136,11 @@
     "commitDialog": {
       "title": "Commit event",
       "text": "Do you really want to release the event {{date}}? The time slots can no longer be adjusted and players will be notified of a new event"
+    },
+    "instancesDialog": {
+      "title": "Event instances",
+      "registeredPlayers": "Registered players",
+      "unregisteredPlayers": "Unregistered players"
     },
     "warning": {
       "notStartableNoInstances": "The event cannot be started because the groups have not been built yet.",
@@ -257,6 +263,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
+    "remove": "Remove",
     "edit": "Edit",
     "ok": "OK",
     "email": "Email",
