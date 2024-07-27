@@ -17,7 +17,10 @@ public class EventMapper(IIdService idService) : IEventMapper
             entity.Timeslots?.Select(Map).ToArray() ?? [],
             entity.StartedAt,
             entity.Staged,
-            entity.ExternalUri
+            entity.ExternalUri,
+            entity.UserIdEditingInstances != null
+                ? idService.User.Encode(entity.UserIdEditingInstances.Value)
+                : null
         );
     }
 

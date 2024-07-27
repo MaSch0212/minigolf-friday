@@ -11,10 +11,10 @@ public class EventEntity
     public required DateTimeOffset RegistrationDeadline { get; set; }
     public DateTimeOffset? StartedAt { get; set; }
     public required bool Staged { get; set; }
+    public string? ExternalUri { get; set; }
+    public long? UserIdEditingInstances { get; set; }
 
     public List<EventTimeslotEntity> Timeslots { get; set; } = [];
-
-    public string? ExternalUri { get; set; } = null;
 
     public static void Configure(EntityTypeBuilder<EventEntity> builder)
     {
@@ -27,9 +27,17 @@ public class EventEntity
             .HasColumnName("registration_deadline")
             .IsRequired();
         builder.Property(x => x.StartedAt).HasColumnName("started_at");
-
-        builder.HasKey(x => x.Id);
         builder.Property(x => x.Staged).HasColumnName("staged").IsRequired();
         builder.Property(x => x.ExternalUri).HasColumnName("external_uri");
+        builder.Property(x => x.UserIdEditingInstances).HasColumnName("user_id_editing_instances");
+
+        builder.HasKey(x => x.Id);
+
+        builder
+            .HasOne<UserEntity>()
+            .WithMany()
+            .HasPrincipalKey(x => x.Id)
+            .HasForeignKey(x => x.UserIdEditingInstances)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

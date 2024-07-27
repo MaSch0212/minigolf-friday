@@ -12,6 +12,10 @@ import { removeEventPreconfigEffects } from './actions/remove-event-preconfig.ac
 import { removeEventTimeslotEffects } from './actions/remove-event-timeslot.action';
 import { removeEventAction, removeEventEffects } from './actions/remove-event.action';
 import { removePlayerFromPreconfigEffects } from './actions/remove-player-from-preconfig.action';
+import {
+  setEditingEventInstancesAction,
+  setEditingEventInstancesEffects,
+} from './actions/set-editing-event-instances.action';
 import { setEventInstancesEffects } from './actions/set-event-instances.action';
 import { startEventEffects } from './actions/start-event.action';
 import { updateEventTimeslotEffects } from './actions/update-event-timeslot.action';
@@ -36,6 +40,7 @@ export const eventsFeatureEffects: Effects[] = [
   removeEventTimeslotEffects,
   removeEventEffects,
   removePlayerFromPreconfigEffects,
+  setEditingEventInstancesEffects,
   setEventInstancesEffects,
   startEventEffects,
   updateEventEffects,
@@ -66,6 +71,16 @@ export const eventsFeatureEffects: Effects[] = [
     eventTimeslotRegistrationChanged$: createFunctionalEffect.dispatching(() =>
       inject(RealtimeEventsService).playerEventTimeslotRegistrationChanged.pipe(
         map(event => eventTimeslotRegistrationChangedAction(event))
+      )
+    ),
+    eventInstancesEditorChanged$: createFunctionalEffect.dispatching(() =>
+      inject(RealtimeEventsService).eventInstancesEditorChanged.pipe(
+        map(event =>
+          setEditingEventInstancesAction.success(
+            { eventId: event.eventId, isEditing: !!event.userId },
+            { userIdEditingInstances: event.userId ?? null }
+          )
+        )
       )
     ),
 

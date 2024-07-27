@@ -20,6 +20,10 @@ export type EventTimeslotChangedRealtimeEvent = {
 export type EventInstancesChangedRealtimeEvent = {
   eventId: string;
 };
+export type EventInstancesEditorChangedEvent = {
+  eventId: string;
+  userId: string | null | undefined;
+};
 export type EventPreconfigurationChangedRealtimeEvent = {
   eventId: string;
   eventTimeslotId: string;

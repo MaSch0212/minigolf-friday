@@ -13,6 +13,7 @@ import { removeEventTimeslotReducers } from './actions/remove-event-timeslot.act
 import { removeEventReducers } from './actions/remove-event.action';
 import { removePlayerFromPreconfigReducers } from './actions/remove-player-from-preconfig.action';
 import { resetEventsActionStateReducers } from './actions/reset-events-action-state.action';
+import { setEditingEventInstancesReducers } from './actions/set-editing-event-instances.action';
 import { setEventInstancesReducers } from './actions/set-event-instances.action';
 import { startEventReducers } from './actions/start-event.action';
 import { updateEventTimeslotReducers } from './actions/update-event-timeslot.action';
@@ -35,6 +36,7 @@ export const eventsReducer = createReducer<EventsFeatureState>(
   ...removeEventReducers,
   ...removePlayerFromPreconfigReducers,
   ...resetEventsActionStateReducers,
+  ...setEditingEventInstancesReducers,
   ...setEventInstancesReducers,
   ...startEventReducers,
   ...updateEventTimeslotReducers,

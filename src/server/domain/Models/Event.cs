@@ -17,7 +17,8 @@ public record Event(
     [property: Required] EventTimeslot[] Timeslots,
     DateTimeOffset? StartedAt,
     bool? Staged,
-    string? ExternalUri
+    string? ExternalUri,
+    string? UserIdEditingInstances
 );
 
 /// <summary>

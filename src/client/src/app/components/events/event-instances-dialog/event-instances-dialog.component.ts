@@ -1,20 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { produce } from 'immer';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { ListboxModule } from 'primeng/listbox';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { filter } from 'rxjs';
+import { filter, firstValueFrom, pairwise } from 'rxjs';
 
-import { isActionBusy } from '../../../+state/action-state';
-import { selectEventsActionState, setEventInstancesAction } from '../../../+state/events';
+import { hasActionFailed, isActionBusy, isActionIdle } from '../../../+state/action-state';
+import {
+  selectEventEditor,
+  selectEventsActionState,
+  setEditingEventInstancesAction,
+  setEventInstancesAction,
+} from '../../../+state/events';
 import { userSelectors } from '../../../+state/users';
 import { Event, EventInstance, EventTimeslot } from '../../../models/parsed-models';
+import { AuthService } from '../../../services/auth.service';
 import { Logger } from '../../../services/logger.service';
 import { TranslateService } from '../../../services/translate.service';
 import { notNullish } from '../../../utils/common.utils';
@@ -40,6 +55,9 @@ type EventInstances = { timeslot: EventTimeslot; instances: EventInstance[] }[];
 })
 export class EventInstancesDialogComponent {
   private readonly _store = inject(Store);
+  private readonly _messageService = inject(MessageService);
+  private readonly _confirmService = inject(ConfirmationService);
+  private readonly _authService = inject(AuthService);
   protected readonly translations = inject(TranslateService).translations;
 
   private readonly _removeItem: EventInstance = {
@@ -51,6 +69,9 @@ export class EventInstancesDialogComponent {
 
   protected readonly visible = signal(false);
   protected readonly event = signal<Event | null>(null);
+  protected readonly eventEditedBy = selectSignal(
+    computed(() => selectEventEditor(this.event()?.id))
+  );
   protected readonly instances = signal<EventInstances>([]);
   protected readonly allUsers = selectSignal(userSelectors.selectEntities);
   protected readonly unassignedUsers = computed(() =>
@@ -102,6 +123,40 @@ export class EventInstancesDialogComponent {
   protected readonly isBusy = computed(() => isActionBusy(this._actionState()));
 
   constructor() {
+    toObservable(this.visible)
+      .pipe(
+        pairwise(),
+        takeUntilDestroyed(),
+        filter(([prev, curr]) => prev && !curr)
+      )
+      .subscribe(() => {
+        const event = this.event();
+        if (event && this.eventEditedBy() === this._authService.user()?.id) {
+          this._store.dispatch(
+            setEditingEventInstancesAction({ eventId: event.id, isEditing: false })
+          );
+        }
+        this.event.set(null);
+        this.instances.set([]);
+      });
+
+    effect(
+      () => {
+        const eventEditedBy = this.eventEditedBy();
+        if (eventEditedBy !== this._authService.user()?.id && untracked(() => this.visible())) {
+          this.visible.set(false);
+          const user = eventEditedBy ? this.allUsers()[eventEditedBy] : null;
+          this._confirmService.confirm({
+            message: this.translations.events_removeFromEditingBy(user),
+            rejectVisible: false,
+            acceptIcon: 'no-icon',
+            acceptLabel: this.translations.shared_ok(),
+          });
+        }
+      },
+      { allowSignalWrites: true }
+    );
+
     errorToastEffect(this.translations.events_error_changeGroups, this._actionState);
 
     const actions$ = inject(Actions);
@@ -114,7 +169,41 @@ export class EventInstancesDialogComponent {
       .subscribe(() => this.visible.set(false));
   }
 
-  public open(event: Event) {
+  public async open(event: Event) {
+    if (event.userIdEditingInstances) {
+      const user = this.allUsers()[event.userIdEditingInstances];
+      const result = await new Promise<boolean>(resolve => {
+        this._confirmService.confirm({
+          icon: 'i-[mdi--account-lock]',
+          header: this.translations.events_userIsEditingAlreadyTitle(),
+          message: this.translations.events_userIsEditingAlready(user),
+          acceptLabel: this.translations.events_removeUserFromEditing(user),
+          acceptButtonStyleClass: 'p-button-danger',
+          rejectLabel: this.translations.shared_cancel(),
+          rejectButtonStyleClass: 'p-button-text',
+          accept: () => resolve(true),
+          reject: () => resolve(false),
+        });
+      });
+      if (!result) return;
+    }
+
+    this._store.dispatch(setEditingEventInstancesAction({ eventId: event.id, isEditing: true }));
+    const result = await firstValueFrom(
+      this._store
+        .select(selectEventsActionState('setInstancesEditing'))
+        .pipe(filter(x => isActionIdle(x)))
+    );
+    if (hasActionFailed(result)) {
+      this._messageService.add({
+        severity: 'error',
+        summary: this.translations.events_error_setEditingInstances(),
+        detail: this.translations.shared_tryAgainLater(),
+        life: 7500,
+      });
+      return;
+    }
+
     this.event.set(event);
     this.instances.set(
       event.timeslots.map(timeslot => ({ timeslot, instances: timeslot.instances }))

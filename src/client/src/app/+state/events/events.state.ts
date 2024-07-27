@@ -16,6 +16,7 @@ export type EventsFeatureState = EntityState<Event> & {
     removeTimeslot: ActionState;
     buildInstances: ActionState;
     setInstances: ActionState;
+    setInstancesEditing: ActionState;
     updateTimeslot: ActionState;
     addPreconfig: ActionState;
     removePreconfig: ActionState;
@@ -42,6 +43,7 @@ export const initialEventsFeatureState: EventsFeatureState = eventEntityAdapter.
     removeTimeslot: initialActionState,
     buildInstances: initialActionState,
     setInstances: initialActionState,
+    setInstancesEditing: initialActionState,
     updateTimeslot: initialActionState,
     addPreconfig: initialActionState,
     removePreconfig: initialActionState,

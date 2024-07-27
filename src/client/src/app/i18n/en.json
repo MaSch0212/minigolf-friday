@@ -86,6 +86,10 @@
     "staged": "staged",
     "facebookLink": "Facebook link",
     "visitFacebookLink": "View Facebook Event",
+    "userIsEditingAlreadyTitle": "User is editing already",
+    "userIsEditingAlready": "<b>{{alias}}</b> is already editing the groups for the event.<br>The groups can only be edited by one person at a time.<br><br>Please consult with {{alias}}. If in doubt, you can also remove {{alias}} from the edit mode.<br><br><b>Important: </b>Please note that all changes made by {{alias}} will be lost.",
+    "removeUserFromEditing": "Remove {{alias}} from edit mode",
+    "removeFromEditingBy": "You have been removed from edit mode by {{alias}}.",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",
@@ -156,7 +160,8 @@
       "deletePreconfig": "Failed to delete preconfigured group.",
       "start": "Failed to start event.",
       "buildGroups": "Failed to build groups.",
-      "changeGroups": "Failed to change groups."
+      "changeGroups": "Failed to change groups.",
+      "setEditingInstances": "Error when claiming the editing of groups."
     }
   },
   "maps": {

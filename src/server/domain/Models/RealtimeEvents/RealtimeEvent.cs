@@ -70,6 +70,15 @@ public static class RealtimeEvent
         public RealtimeEventGroup Group => RealtimeEventGroup.Admin;
     }
 
+    /// <summary>Event that is triggered when the editor of an event instance changed.</summary>
+    public record EventInstancesEditorChanged(string EventId, string? UserId) : IGroupRealtimeEvent
+    {
+        public static string MethodName => "EventInstancesEditorChanged";
+
+        [JsonIgnore]
+        public RealtimeEventGroup Group => RealtimeEventGroup.Admin;
+    }
+
     /// <summary>Event that is triggered when a preconfiguration of an event timeslot changed.</summary>
     public record EventPreconfigurationChanged(
         string EventId,
