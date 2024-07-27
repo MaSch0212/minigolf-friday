@@ -51,7 +51,13 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                         .HasColumnType("datetimeoffset")
                         .HasColumnName("started_at");
 
+                    b.Property<long?>("UserIdEditingInstances")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id_editing_instances");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserIdEditingInstances");
 
                     b.ToTable("events", (string)null);
                 });
@@ -421,6 +427,14 @@ namespace MinigolfFriday.Migrations.MsSql.Migrations
                     b.HasIndex("user_id");
 
                     b.ToTable("users_to_roles");
+                });
+
+            modelBuilder.Entity("MinigolfFriday.Data.Entities.EventEntity", b =>
+                {
+                    b.HasOne("MinigolfFriday.Data.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserIdEditingInstances")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("MinigolfFriday.Data.Entities.EventInstanceEntity", b =>

@@ -80,11 +80,16 @@
     "start": "Start event",
     "groups": "Groups",
     "buildGroups": "Build groups",
+    "editGroups": "Edit groups",
     "rebuildGroups": "Rebuild groups",
     "commit": "commit event",
     "staged": "staged",
     "facebookLink": "Facebook link",
     "visitFacebookLink": "View Facebook Event",
+    "userIsEditingAlreadyTitle": "User is editing already",
+    "userIsEditingAlready": "<b>{{alias}}</b> is already editing the groups for the event.<br>The groups can only be edited by one person at a time.<br><br>Please consult with {{alias}}. If in doubt, you can also remove {{alias}} from the edit mode.<br><br><b>Important: </b>Please note that all changes made by {{alias}} will be lost.",
+    "removeUserFromEditing": "Remove {{alias}} from edit mode",
+    "removeFromEditingBy": "You have been removed from edit mode by {{alias}}.",
     "timeslot": {
       "notFound": "This timeslot does not exist.",
       "preconfiguredGroups": "Preconfigured groups",
@@ -136,6 +141,11 @@
       "title": "Commit event",
       "text": "Do you really want to release the event {{date}}? The time slots can no longer be adjusted and players will be notified of a new event"
     },
+    "instancesDialog": {
+      "title": "Event instances",
+      "registeredPlayers": "Registered players",
+      "unregisteredPlayers": "Unregistered players"
+    },
     "warning": {
       "notStartableNoInstances": "The event cannot be started because the groups have not been built yet.",
       "notStartableMissingMap": "The event cannot be started because not all played timeslots have a map assigned."
@@ -149,7 +159,9 @@
       "deleteTimeslot": "Failed to delete timeslot.",
       "deletePreconfig": "Failed to delete preconfigured group.",
       "start": "Failed to start event.",
-      "buildGroups": "Failed to build groups."
+      "buildGroups": "Failed to build groups.",
+      "changeGroups": "Failed to change groups.",
+      "setEditingInstances": "Error when claiming the editing of groups."
     }
   },
   "maps": {
@@ -257,6 +269,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete",
+    "remove": "Remove",
     "edit": "Edit",
     "ok": "OK",
     "email": "Email",

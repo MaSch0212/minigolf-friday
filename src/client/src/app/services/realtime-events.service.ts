@@ -31,6 +31,7 @@ import {
   PlayerEventRegistrationChangedRealtimeEvent,
   UserSettingsChangedRealtimeEvent,
   PlayerEventTimeslotRegistrationChanged,
+  EventInstancesEditorChangedEvent,
 } from '../models/realtime-events';
 import { SignalrRetryPolicy } from '../signalr-retry-policy';
 import { onDocumentVisibilityChange$ } from '../utils/event.utils';
@@ -41,6 +42,7 @@ const MAP_CHANGED = 'mapChanged';
 const EVENT_CHANGED = 'eventChanged';
 const EVENT_TIMESLOT_CHANGED = 'eventTimeslotChanged';
 const EVENT_INSTANCES_CHANGED = 'eventInstancesChanged';
+const EVENT_INSTANCES_EDITOR_CHANGED = 'eventInstancesEditorChanged';
 const EVENT_PRECONFIGURATION_CHANGED = 'eventPreconfigurationChanged';
 const PLAYER_EVENT_CHANGED = 'playerEventChanged';
 const PLAYER_EVENT_REGISTRATION_CHANGED = 'playerEventRegistrationChanged';
@@ -58,6 +60,8 @@ export class RealtimeEventsService implements OnDestroy {
   public readonly eventChanged = new EventEmitter<EventChangedRealtimeEvent>();
   public readonly eventTimeslotChanged = new EventEmitter<EventTimeslotChangedRealtimeEvent>();
   public readonly eventInstancesChanged = new EventEmitter<EventInstancesChangedRealtimeEvent>();
+  public readonly eventInstancesEditorChanged =
+    new EventEmitter<EventInstancesEditorChangedEvent>();
   public readonly eventPreconfigurationChanged =
     new EventEmitter<EventPreconfigurationChangedRealtimeEvent>();
   public readonly playerEventChanged = new EventEmitter<PlayerEventChangedRealtimeEvent>();
@@ -141,6 +145,7 @@ export class RealtimeEventsService implements OnDestroy {
     this.on(connection, EVENT_CHANGED, this.eventChanged);
     this.on(connection, EVENT_TIMESLOT_CHANGED, this.eventTimeslotChanged);
     this.on(connection, EVENT_INSTANCES_CHANGED, this.eventInstancesChanged);
+    this.on(connection, EVENT_INSTANCES_EDITOR_CHANGED, this.eventInstancesEditorChanged);
     this.on(connection, EVENT_PRECONFIGURATION_CHANGED, this.eventPreconfigurationChanged);
     this.on(connection, PLAYER_EVENT_CHANGED, this.playerEventChanged);
     this.on(connection, PLAYER_EVENT_REGISTRATION_CHANGED, this.playerEventRegistrationChanged);
@@ -162,7 +167,7 @@ export class RealtimeEventsService implements OnDestroy {
           methodName: message.target,
           arguments: message.arguments,
         });
-        oldHandler.call(connection, message);
+        return oldHandler.call(connection, message);
       };
     } else {
       Logger.logWarn('RealtimeEventsService', 'Cannot hook into HubConnection._invokeClientMethod');

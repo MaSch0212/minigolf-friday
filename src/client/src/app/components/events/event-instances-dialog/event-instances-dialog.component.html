@@ -1,0 +1,125 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [resizable]="false"
+  [draggable]="false"
+  [header]="translations.events_instancesDialog_title()"
+  styleClass="max-w-full"
+>
+  <ng-template pTemplate="content">
+    <div class="flex h-full flex-row gap-8">
+      @for (x of instances(); track x.timeslot.id) {
+        <div class="flex flex-col gap-4">
+          <div
+            class="sticky -top-2 z-10 flex flex-row items-center gap-2 bg-surface-a px-2 text-lg font-semibold"
+          >
+            <span class="i-[mdi--clock-time-four-outline]"></span>
+            <span>
+              {{ x.timeslot.time.hour | number: '2.0-0' }}:{{
+                x.timeslot.time.minute | number: '2.0-0'
+              }}
+            </span>
+          </div>
+
+          @for (instance of x.instances; track $index) {
+            <div
+              class="flex flex-col gap-2 p-2"
+              [ngClass]="$index % 2 === 0 ? 'bg-surface-a' : 'bg-surface-b'"
+            >
+              <div class="flex flex-row items-center gap-2 font-semibold">
+                <span class="i-[mdi--pound]"></span>
+                <span class="grow uppercase">{{ instance.groupCode }}</span>
+                <p-button
+                  icon="i-[mdi--plus]"
+                  size="small"
+                  [text]="true"
+                  [rounded]="true"
+                  (onClick)="addPlayerPanel.show($event)"
+                />
+                <p-overlayPanel #addPlayerPanel class="hidden" styleClass="p-0">
+                  <ng-template pTemplate="content" styleClass="p-0">
+                    <p-listbox
+                      styleClass="border-none"
+                      [options]="unassignedUsers()[x.timeslot.id]"
+                      optionGroupLabel="label"
+                      optionGroupChildren="items"
+                      optionLabel="alias"
+                      optionValue="id"
+                      [group]="true"
+                      [filter]="true"
+                      (onChange)="
+                        addPlayer(x.timeslot.id, instance.id, $event.value); addPlayerPanel.hide()
+                      "
+                    >
+                      <ng-template let-user pTemplate="listItem">
+                        <app-user-item [user]="user" />
+                      </ng-template>
+                    </p-listbox>
+                  </ng-template>
+                </p-overlayPanel>
+              </div>
+              <div class="flex flex-col gap-1">
+                @for (playerId of instance.playerIds; track playerId; let pi = $index) {
+                  <div class="flex flex-row items-center gap-2">
+                    <div class="grow truncate">
+                      @if (allUsers()[playerId]; as user) {
+                        {{ user.alias }}
+                      } @else {
+                        &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
+                        <span class="opacity-50">({{ playerId }})</span>
+                      }
+                    </div>
+                    <p-button
+                      icon="i-[mdi--pencil]"
+                      size="small"
+                      [text]="true"
+                      [rounded]="true"
+                      (onClick)="editPlayerPanel.show($event)"
+                    />
+                    <p-overlayPanel #editPlayerPanel class="hidden" styleClass="p-0">
+                      <ng-template pTemplate="content" styleClass="p-0">
+                        <p-listbox
+                          styleClass="border-none"
+                          [options]="moveToInstanceOptions()[x.timeslot.id][instance.id]"
+                          optionLabel="groupCode"
+                          optionValue="id"
+                          (onChange)="
+                            movePlayer(x.timeslot.id, playerId, instance.id, $event.value);
+                            editPlayerPanel.hide()
+                          "
+                        >
+                          <ng-template let-instance pTemplate="listItem">
+                            <div class="flex flex-row items-center gap-2">
+                              @if (instance.id === '<remove>') {
+                                <span class="i-[mdi--delete]"></span>
+                                <span class="grow">{{ translations.shared_remove() }}</span>
+                              } @else {
+                                <span class="i-[mdi--arrow-right-bottom]"></span>
+                                <span class="grow uppercase">{{ instance.groupCode }}</span>
+                              }
+                            </div>
+                          </ng-template>
+                        </p-listbox>
+                      </ng-template>
+                    </p-overlayPanel>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </ng-template>
+
+  <p-footer>
+    <p-button
+      [disabled]="isBusy()"
+      [text]="true"
+      [label]="translations.shared_cancel()"
+      (onClick)="visible.set(false)"
+    />
+    <p-button [disabled]="isBusy()" [label]="translations.shared_save()" (onClick)="submit()" />
+  </p-footer>
+</p-dialog>

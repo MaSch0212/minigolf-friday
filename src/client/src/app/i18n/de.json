@@ -80,11 +80,16 @@
     "start": "Veranstaltung starten",
     "groups": "Gruppen",
     "buildGroups": "Gruppen bilden",
+    "editGroups": "Gruppen bearbeiten",
     "rebuildGroups": "Gruppen neu bilden",
     "commit": "Event freigeben",
     "staged": "vorbereitet",
     "facebookLink": "Facebook link",
     "visitFacebookLink": "Öffne Facebook Event",
+    "userIsEditingAlreadyTitle": "Bearbeitungsmodus belegt",
+    "userIsEditingAlready": "<b>{{alias}}</b> bearbeitet bereits die Gruppen der Veranstaltung.<br>Die Gruppen können nur von einer Person gleichzeitig bearbeitet werden.<br><br>Bitte sprich dich mit {{alias}} ab. Im Zweifel kannst du {{alias}} auch aus dem Bearbeitungsmodus entfernen.<br><br><b>Wichtig: </b>Bitte beachte, dass dabei alle Änderungen von {{alias}} verloren gehen.",
+    "removeUserFromEditing": "{{alias}} aus dem Bearbeitungsmodus entfernen",
+    "removeFromEditingBy": "Du wurdest von {{alias}} aus dem Bearbeitungsmodus entfernt.",
     "timeslot": {
       "notFound": "Dieser Zeitslot existiert nicht.",
       "preconfiguredGroups": "Vordefinierte Gruppen",
@@ -136,6 +141,11 @@
       "title": "Veranstaltung freigeben",
       "text": "Möchtest du die Veranstlaung {{date}} wirklich freigeben? Die Zeitfenster können nicht mehr angepasst werden und die Spieler werden über ein neues Event benachrichtigt"
     },
+    "instancesDialog": {
+      "title": "Veranstaltungs-Instanzen",
+      "registeredPlayers": "Angemeldete Spieler",
+      "unregisteredPlayers": "Nicht angemeldete Spieler"
+    },
     "warning": {
       "notStartableNoInstances": "Die Veranstaltung kann nicht gestartet werden, da die Gruppen noch nicht gebildet wurden.",
       "notStartableMissingMap": "Die Veranstaltung kann nicht gestartet werden, da nicht für alle gespielten Zeitslots eine Bahn festgelegt wurde."
@@ -149,7 +159,9 @@
       "deleteTimeslot": "Fehler beim Löschen des Zeitslots.",
       "deletePreconfig": "Fehler beim Löschen der vordefinierten Gruppe.",
       "start": "Fehler beim Starten der Veranstaltung.",
-      "buildGroups": "Fehler beim Bilden der Gruppen."
+      "buildGroups": "Fehler beim Bilden der Gruppen.",
+      "changeGroups": "Fehler beim Ändern der Gruppen.",
+      "setEditingInstances": "Fehler beim beanspruchen der Bearbeitung der Gruppen."
     }
   },
   "maps": {
@@ -257,6 +269,7 @@
     "cancel": "Abbrechen",
     "save": "Speichern",
     "delete": "Löschen",
+    "remove": "Entfernen",
     "edit": "Bearbeiten",
     "ok": "OK",
     "email": "E-Mail",

@@ -23,7 +23,13 @@ export function selectEventsActionState(action: keyof EventsFeatureState['action
 
 export function selectEvent(id: string | null | undefined) {
   return createDistinctSelector(selectEventsFeature, state =>
-    id ? state.entities[id] ?? null : null
+    id ? (state.entities[id] ?? null) : null
+  );
+}
+
+export function selectEventEditor(id: string | null | undefined) {
+  return createDistinctSelector(selectEventsFeature, state =>
+    id ? (state.entities[id]?.userIdEditingInstances ?? null) : null
   );
 }
 
@@ -33,7 +39,7 @@ export function selectEventTimeslot(
 ) {
   return createDistinctSelector(selectEventsFeature, state =>
     eventId && timeslotId
-      ? state.entities[eventId]?.timeslots.find(x => x.id === timeslotId) ?? null
+      ? (state.entities[eventId]?.timeslots.find(x => x.id === timeslotId) ?? null)
       : null
   );
 }

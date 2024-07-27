@@ -36,6 +36,7 @@ import { ifTruthy } from '../../../utils/common.utils';
 import { compareTimes } from '../../../utils/date.utils';
 import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
 import { EventFormComponent } from '../event-form/event-form.component';
+import { EventInstancesDialogComponent } from '../event-instances-dialog/event-instances-dialog.component';
 import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-timeslot-dialog.component';
 
 @Component({
@@ -47,6 +48,7 @@ import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-tim
     CardModule,
     CommonModule,
     EventFormComponent,
+    EventInstancesDialogComponent,
     EventTimeslotDialogComponent,
     FormsModule,
     InputGroupAddonModule,

@@ -73,41 +73,39 @@
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_facebookLink() }}</h2>
-        <div>
-          <p-inputGroup>
-            <button
-              type="button"
-              pButton
-              [label]="
-                externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
-                  ? translations.shared_edit()
-                  : translations.shared_add()
-              "
-              icon="i-[mdi--facebook]"
-              (click)="modifyExternalUriDialog.open(externalUri())"
-            ></button>
-            <button
-              type="button"
-              pButton
-              class="bg-surface-a text-primary"
-              icon="i-[mdi--arrow-right-circle]"
-              [disabled]="
-                externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
-                  ? false
-                  : true
-              "
-              (click)="openExternalUri()"
-            ></button>
-          </p-inputGroup>
-        </div>
+        <p-inputGroup class="w-auto">
+          <button
+            type="button"
+            pButton
+            [label]="
+              externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
+                ? translations.shared_edit()
+                : translations.shared_add()
+            "
+            icon="i-[mdi--facebook]"
+            (click)="modifyExternalUriDialog.open(externalUri())"
+          ></button>
+          <button
+            type="button"
+            pButton
+            [outlined]="true"
+            icon="i-[mdi--arrow-right-circle]"
+            [disabled]="
+              externalUri() && externalUri() !== undefined && externalUri()?.length !== 0
+                ? false
+                : true
+            "
+            (click)="openExternalUri()"
+          ></button>
+        </p-inputGroup>
       </div>
 
       <div class="mt-4 flex flex-row items-center gap-2">
         <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
         <span
-          class="inline-block rounded-full bg-primary pr-2 text-center font-bold text-primary-text"
+          class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
         >
-          <span class="i-[mdi--account] ml-2"></span> {{ playersAmount() }}
+          <span class="i-[mdi--account]"></span> {{ playersAmount() }}
         </span>
         @if (!event.startedAt && event.staged) {
           <p-button
@@ -154,19 +152,40 @@
       @if (canBuildInstances()) {
         <div class="flex flex-row items-center pt-4">
           <h2 class="m-0 grow">{{ translations.events_groups() }}</h2>
-          @if (!event.startedAt) {
-            <p-button
-              icon="i-[mdi--shuffle]"
-              [label]="
-                hasInstances()
-                  ? translations.events_rebuildGroups()
-                  : translations.events_buildGroups()
-              "
-              (onClick)="buildInstances()"
-              [loading]="isBuildBusy()"
-            />
-          }
+          <p-inputGroup class="w-auto">
+            @if (!event.startedAt) {
+              <button
+                pButton
+                icon="i-[mdi--shuffle]"
+                [label]="
+                  hasInstances()
+                    ? translations.events_rebuildGroups()
+                    : translations.events_buildGroups()
+                "
+                (click)="buildInstances()"
+                [loading]="isBuildBusy()"
+              ></button>
+            }
+            @if (hasInstances()) {
+              <button
+                pButton
+                icon="i-[mdi--pencil]"
+                [outlined]="true"
+                [pTooltip]="translations.events_editGroups()"
+                (click)="instancesDialog.open(event)"
+                [loading]="isBuildBusy()"
+              ></button>
+            }
+          </p-inputGroup>
         </div>
+        @if (event.userIdEditingInstances) {
+          <div
+            class="self-end rounded-full bg-primary px-2 text-center font-bold text-primary-text"
+          >
+            <span class="i-[mdi--pencil]"></span>
+            {{ allUsers()[event.userIdEditingInstances]?.alias }}
+          </div>
+        }
         <div class="flex shrink-0 flex-row overflow-auto text-xs">
           @for (timeslot of timeslots(); track timeslot.id) {
             <div class="flex w-1/3 min-w-28 shrink-0 flex-col gap-2 px-1">
@@ -234,3 +253,5 @@
     }
   }
 </div>
+
+<app-event-instances-dialog #instancesDialog />
