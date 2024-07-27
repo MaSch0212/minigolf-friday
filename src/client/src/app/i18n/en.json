@@ -155,7 +155,8 @@
       "deleteTimeslot": "Failed to delete timeslot.",
       "deletePreconfig": "Failed to delete preconfigured group.",
       "start": "Failed to start event.",
-      "buildGroups": "Failed to build groups."
+      "buildGroups": "Failed to build groups.",
+      "changeGroups": "Failed to change groups."
     }
   },
   "maps": {

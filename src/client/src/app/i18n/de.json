@@ -155,7 +155,8 @@
       "deleteTimeslot": "Fehler beim Löschen des Zeitslots.",
       "deletePreconfig": "Fehler beim Löschen der vordefinierten Gruppe.",
       "start": "Fehler beim Starten der Veranstaltung.",
-      "buildGroups": "Fehler beim Bilden der Gruppen."
+      "buildGroups": "Fehler beim Bilden der Gruppen.",
+      "changeGroups": "Fehler beim Ändern der Gruppen."
     }
   },
   "maps": {

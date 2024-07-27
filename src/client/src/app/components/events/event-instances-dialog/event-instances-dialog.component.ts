@@ -1,18 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { produce } from 'immer';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { ListboxModule } from 'primeng/listbox';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { filter } from 'rxjs';
 
+import { isActionBusy } from '../../../+state/action-state';
+import { selectEventsActionState, setEventInstancesAction } from '../../../+state/events';
 import { userSelectors } from '../../../+state/users';
 import { Event, EventInstance, EventTimeslot } from '../../../models/parsed-models';
 import { Logger } from '../../../services/logger.service';
 import { TranslateService } from '../../../services/translate.service';
 import { notNullish } from '../../../utils/common.utils';
-import { selectSignal } from '../../../utils/ngrx.utils';
+import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
 import { UserItemComponent } from '../../users/user-item/user-item.component';
 
 type EventInstances = { timeslot: EventTimeslot; instances: EventInstance[] }[];
@@ -33,6 +39,7 @@ type EventInstances = { timeslot: EventTimeslot; instances: EventInstance[] }[];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventInstancesDialogComponent {
+  private readonly _store = inject(Store);
   protected readonly translations = inject(TranslateService).translations;
 
   private readonly _removeItem: EventInstance = {
@@ -40,8 +47,10 @@ export class EventInstancesDialogComponent {
     groupCode: '',
     playerIds: [],
   };
+  private readonly _actionState = selectSignal(selectEventsActionState('setInstances'));
 
   protected readonly visible = signal(false);
+  protected readonly event = signal<Event | null>(null);
   protected readonly instances = signal<EventInstances>([]);
   protected readonly allUsers = selectSignal(userSelectors.selectEntities);
   protected readonly unassignedUsers = computed(() =>
@@ -90,9 +99,23 @@ export class EventInstancesDialogComponent {
     )
   );
 
-  protected readonly isBusy = signal(false);
+  protected readonly isBusy = computed(() => isActionBusy(this._actionState()));
+
+  constructor() {
+    errorToastEffect(this.translations.events_error_changeGroups, this._actionState);
+
+    const actions$ = inject(Actions);
+    actions$
+      .pipe(
+        ofType(setEventInstancesAction.success),
+        filter(({ props }) => props.eventId === this.event()?.id),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.visible.set(false));
+  }
 
   public open(event: Event) {
+    this.event.set(event);
     this.instances.set(
       event.timeslots.map(timeslot => ({ timeslot, instances: timeslot.instances }))
     );
@@ -138,7 +161,17 @@ export class EventInstancesDialogComponent {
   }
 
   protected submit() {
-    Logger.logDebug('EventInstancesDialogComponent', 'submit', { instances: this.instances() });
-    // TODO: Implement Server-side logic and dispatch action
+    const event = this.event();
+    const instances = this.instances();
+    Logger.logDebug('EventInstancesDialogComponent', 'submit', { event, instances });
+
+    if (!event) return;
+
+    this._store.dispatch(
+      setEventInstancesAction({
+        eventId: event.id,
+        instances: instances.map(x => ({ timeslotId: x.timeslot.id, instances: x.instances })),
+      })
+    );
   }
 }

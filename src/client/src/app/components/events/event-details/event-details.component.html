@@ -152,8 +152,8 @@
       @if (canBuildInstances()) {
         <div class="flex flex-row items-center pt-4">
           <h2 class="m-0 grow">{{ translations.events_groups() }}</h2>
-          @if (!event.startedAt) {
-            <p-inputGroup class="w-auto">
+          <p-inputGroup class="w-auto">
+            @if (!event.startedAt) {
               <button
                 pButton
                 icon="i-[mdi--shuffle]"
@@ -165,18 +165,18 @@
                 (click)="buildInstances()"
                 [loading]="isBuildBusy()"
               ></button>
-              @if (hasInstances()) {
-                <button
-                  pButton
-                  icon="i-[mdi--pencil]"
-                  [outlined]="true"
-                  [pTooltip]="translations.events_editGroups()"
-                  (click)="instancesDialog.open(event)"
-                  [loading]="isBuildBusy()"
-                ></button>
-              }
-            </p-inputGroup>
-          }
+            }
+            @if (hasInstances()) {
+              <button
+                pButton
+                icon="i-[mdi--pencil]"
+                [outlined]="true"
+                [pTooltip]="translations.events_editGroups()"
+                (click)="instancesDialog.open(event)"
+                [loading]="isBuildBusy()"
+              ></button>
+            }
+          </p-inputGroup>
         </div>
         <div class="flex shrink-0 flex-row overflow-auto text-xs">
           @for (timeslot of timeslots(); track timeslot.id) {
