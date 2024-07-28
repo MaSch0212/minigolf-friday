@@ -60,7 +60,8 @@ public class GetPlayerEventsTests
                     IsFallbackAllowed = x.IsFallbackAllowed,
                     Time = x.Time
                 })
-                .ToArray()
+                .ToArray(),
+            PlayerEventRegistrations = []
         });
     }
 }

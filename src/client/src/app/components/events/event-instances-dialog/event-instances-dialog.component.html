@@ -24,8 +24,8 @@
 
           @for (instance of x.instances; track $index) {
             <div
-              class="flex flex-col gap-2 p-2"
-              [ngClass]="$index % 2 === 0 ? 'bg-surface-a' : 'bg-surface-b'"
+              class="flex flex-col gap-2 rounded p-2"
+              [ngClass]="$index % 2 === 0 ? 'bg-surface-c' : 'bg-surface-b'"
             >
               <div class="flex flex-row items-center gap-2 font-semibold">
                 <span class="i-[mdi--pound]"></span>

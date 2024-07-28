@@ -33,7 +33,8 @@ public class GetPlayerEventTests
                             IsFallbackAllowed = x.IsFallbackAllowed,
                             Time = x.Time
                         })
-                        .ToArray()
+                        .ToArray(),
+                    PlayerEventRegistrations = []
                 }
             );
     }
@@ -85,7 +86,20 @@ public class GetPlayerEventTests
                     IsFallbackAllowed = x.IsFallbackAllowed,
                     Time = x.Time
                 })
-                .ToArray()
+                .ToArray(),
+            PlayerEventRegistrations =
+            [
+                new()
+                {
+                    UserAlias = user.User.Alias,
+                    RegisteredTimeslotIds =
+                    [
+                        @event.Timeslots.ElementAt(0).Id,
+                        @event.Timeslots.ElementAt(2).Id
+                    ],
+                    UserId = user.User.Id
+                }
+            ]
         };
         expectedPlayerEvent
             .Timeslots.Single(x => x.Id == @event.Timeslots.ElementAt(0).Id)
