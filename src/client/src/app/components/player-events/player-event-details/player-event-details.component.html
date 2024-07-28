@@ -208,7 +208,14 @@
         </div>
       }
 
-      <h2 class="m-0 pt-4">{{ translations.playerEvents_registeredPlayers() }}</h2>
+      <div class="mt-4 flex flex-row items-center gap-2">
+        <h2 class="m-0 grow">{{ translations.playerEvents_registeredPlayers() }}</h2>
+        <span
+          class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
+        >
+          <span class="i-[mdi--account]"></span> {{ eventRegistrations().length }}
+        </span>
+      </div>
       <p-card>
         <div
           class="grid gap-x-2"
