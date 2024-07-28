@@ -101,6 +101,13 @@ public class PutEventInstancesEndpoint(
             new RealtimeEvent.EventInstancesChanged(idService.Event.Encode(eventId)),
             ct
         );
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.PlayerEventChanged(
+                idService.Event.Encode(eventId),
+                RealtimeEventChangeType.Updated
+            ),
+            ct
+        );
 
         if (eventInfo.StartedAt != null)
         {
