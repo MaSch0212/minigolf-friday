@@ -19,6 +19,18 @@ public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
                 .Select(timeslot => Map(timeslot, userId))
                 .ToArray(),
             entity.StartedAt != null,
+            entity
+                .Timeslots.SelectMany(x => x.Registrations.Select(x => x.Player))
+                .DistinctBy(x => x.Id)
+                .Select(p => new PlayerEventRegistration(
+                    idService.User.Encode(p.Id),
+                    p.Alias,
+                    entity
+                        .Timeslots.Where(x => x.Registrations.Any(x => x.PlayerId == p.Id))
+                        .Select(x => idService.EventTimeslot.Encode(x.Id))
+                        .ToArray()
+                ))
+                .ToArray(),
             entity.ExternalUri
         );
     }
@@ -67,6 +79,7 @@ public class PlayerEventMapper(IIdService idService) : IPlayerEventMapper
         return events
             .Include(x => x.Timeslots)
             .ThenInclude(x => x.Registrations)
+            .ThenInclude(x => x.Player)
             .Include(x => x.Timeslots)
             .ThenInclude(x => x.Instances)
             .ThenInclude(x => x.Players)

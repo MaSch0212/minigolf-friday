@@ -16,7 +16,20 @@ public record PlayerEvent(
     [property: Required] DateTimeOffset RegistrationDeadline,
     [property: Required] PlayerEventTimeslot[] Timeslots,
     [property: Required] bool IsStarted,
+    PlayerEventRegistration[]? PlayerEventRegistrations,
     string? ExternalUri
+);
+
+/// <summary>
+/// Represents the timeslots for which a player has been registered.
+/// </summary>
+/// <param name="UserId">The id of the user.</param>
+/// <param name="UserAlias">The alias of the user.</param>
+/// <param name="RegisteredTimeslotIds">The ids of timeslots a player has been registered for.</param>
+public record PlayerEventRegistration(
+    [property: Required] string UserId,
+    string? UserAlias,
+    [property: Required] string[] RegisteredTimeslotIds
 );
 
 /// <summary>

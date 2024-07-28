@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
-import { EMPTY, merge, mergeMap, of } from 'rxjs';
+import { EMPTY, map, merge, mergeMap, of } from 'rxjs';
 
+import { eventTimeslotRegistrationChangedAction } from './actions/event-timeslot-registration-changed.action';
 import { loadPlayerEventAction, loadPlayerEventEffects } from './actions/load-player-event.action';
 import { loadPlayerEventsEffects } from './actions/load-player-events.action';
 import { updateEventRegistrationEffects } from './actions/update-event-registration.action';
@@ -31,6 +32,12 @@ export const PlayerEventsFeatureEffects: Effects[] = [
             return EMPTY;
           })
         )
+    ),
+
+    eventTimeslotRegistrationChanged$: createFunctionalEffect.dispatching(() =>
+      inject(RealtimeEventsService).playerEventTimeslotRegistrationChanged.pipe(
+        map(event => eventTimeslotRegistrationChangedAction(event))
+      )
     ),
 
     onServerReconnected$: createFunctionalEffect.dispatching(() =>

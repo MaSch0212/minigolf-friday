@@ -241,6 +241,7 @@
     "backToEvents": "Back to events",
     "registrationClosed": "The registration for this event is closed.",
     "registrations": "Registrations",
+    "registeredPlayers": "Registered players",
     "playerAmount": "Player count",
     "fallbackTimeslot": "Fallback timeslot",
     "fallbackTimeslotDescription": "This timeslot is not as popular as the others. It can happend that if too few peaple register for this timeslot, it will not take place. Therefore you can specify a fallback timeslot that will be used if this timeslot is canceled.",

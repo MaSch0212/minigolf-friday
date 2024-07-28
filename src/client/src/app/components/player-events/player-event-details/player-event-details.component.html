@@ -207,6 +207,34 @@
           />
         </div>
       }
+
+      <h2 class="m-0 pt-4">{{ translations.playerEvents_registeredPlayers() }}</h2>
+      <p-card>
+        <div
+          class="grid gap-2"
+          [style]="{ gridTemplateColumns: 'repeat(' + timeslots().length + ', auto) 1fr' }"
+        >
+          @for (timeslot of timeslots(); track timeslot.id) {
+            <div class="sticky top-0 text-xs">
+              {{ timeslot.time.hour | number: '2.0-0' }}:{{
+                timeslot.time.minute | number: '2.0-0'
+              }}
+            </div>
+          }
+          <div class="sticky top-0 text-xs">{{ translations.shared_name() }}</div>
+          @for (eventRegistration of eventRegistrations(); track eventRegistration.userId) {
+            @for (timeslot of timeslots(); track timeslot.id) {
+              <div
+                class="justify-self-center"
+                [class.i-[mdi--check]]="
+                  eventRegistration.registeredTimeslotIds.includes(timeslot.id)
+                "
+              ></div>
+            }
+            <div class="truncate">{{ eventRegistration.userAlias }}</div>
+          }
+        </div>
+      </p-card>
     </div>
   }
 </div>
