@@ -190,7 +190,7 @@ export class EventTimeslotComponent {
     }
   }
 
-  protected async addPlayer(player: User) {
+  protected async addPlayer(userId: string) {
     const eventId = this.eventId();
     const timeslotId = this.timeslotId();
 
@@ -198,12 +198,18 @@ export class EventTimeslotComponent {
 
     const response = await this._eventService.patchPlayerEventRegistrations({
       eventId,
-      body: { userId: player.id, timeslotId: timeslotId, isRegistered: true },
+      body: { userId: userId, timeslotId: timeslotId, isRegistered: true },
     });
     if (response.ok) {
       this._messageService.add({
         severity: 'success',
         summary: this.translations.events_timeslot_playerAdded(),
+        life: 2000,
+      });
+    } else {
+      this._messageService.add({
+        severity: 'error',
+        summary: this.translations.events_timeslot_error_playerAdded(),
         life: 2000,
       });
     }
