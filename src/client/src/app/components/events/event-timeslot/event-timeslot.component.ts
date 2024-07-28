@@ -6,11 +6,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'primeng/accordion';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
+import { ListboxModule } from 'primeng/listbox';
 import { MessagesModule } from 'primeng/messages';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
 import { map } from 'rxjs';
@@ -35,16 +37,26 @@ import {
   selectUsersActionState,
   userSelectors,
 } from '../../../+state/users';
-import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
+import { EventsService } from '../../../api/services';
+import {
+  EventInstance,
+  EventInstancePreconfiguration,
+  EventTimeslot,
+  User,
+} from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
-import { ifTruthy, isNullish } from '../../../utils/common.utils';
+import { ifTruthy, isNullish, notNullish } from '../../../utils/common.utils';
 import { dateWithTime, timeToString } from '../../../utils/date.utils';
 import { errorToastEffect, selectSignal } from '../../../utils/ngrx.utils';
+import { UserItemComponent } from '../../users/user-item/user-item.component';
 import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-timeslot-dialog.component';
 
 function asString(value: unknown): string | null {
   return typeof value === 'string' ? value : null;
 }
+
+type EventInstances = { timeslot: EventTimeslot; instances: EventInstance[] }[];
+type EventPlayer = Partial<User> & { id: string };
 
 @Component({
   selector: 'app-event-timeslot',
@@ -57,9 +69,12 @@ function asString(value: unknown): string | null {
     DropdownModule,
     EventTimeslotDialogComponent,
     FormsModule,
+    ListboxModule,
     MessagesModule,
+    OverlayPanelModule,
     ProgressSpinnerModule,
     TooltipModule,
+    UserItemComponent,
   ],
   templateUrl: './event-timeslot.component.html',
   styleUrl: './event-timeslot.component.scss',
@@ -71,6 +86,8 @@ export class EventTimeslotComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _translateService = inject(TranslateService);
   private readonly _confirmationService = inject(ConfirmationService);
+  private readonly _eventService = inject(EventsService);
+  private readonly _messageService = inject(MessageService);
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
@@ -110,10 +127,15 @@ export class EventTimeslotComponent {
       this.timeslot(),
       timeslot =>
         timeslot.playerIds
-          .map<Partial<User> & { id: string }>(x => this.allUsers()[x] ?? { id: x })
+          .map<EventPlayer>(x => this.allUsers()[x] ?? { id: x })
           .sort((a, b) => (a?.alias ?? '').localeCompare(b?.alias ?? '')),
       []
     )
+  );
+  protected readonly availablePlayers = computed(() =>
+    Object.values(this.allUsers())
+      .filter(notNullish)
+      .filter(u => !this.players().some(p => p.id === u.id))
   );
   protected readonly preconfigPlayerOptions = computed(() =>
     this.players().filter(
@@ -166,6 +188,61 @@ export class EventTimeslotComponent {
     if (hasActionFailed(this.loadUsersActionState())) {
       this._store.dispatch(loadUsersAction({ reload: true }));
     }
+  }
+
+  protected async addPlayer(player: User) {
+    const eventId = this.eventId();
+    const timeslotId = this.timeslotId();
+
+    if (isNullish(eventId) || isNullish(timeslotId)) return;
+
+    const response = await this._eventService.patchPlayerEventRegistrations({
+      eventId,
+      body: { userId: player.id, timeslotId: timeslotId, isRegistered: true },
+    });
+    if (response.ok) {
+      this._messageService.add({
+        severity: 'success',
+        summary: this.translations.events_timeslot_playerAdded(),
+        life: 2000,
+      });
+    }
+  }
+
+  protected async removeUser(user: EventPlayer) {
+    const eventId = this.eventId();
+    const timeslotId = this.timeslotId();
+
+    if (isNullish(eventId) || isNullish(timeslotId)) return;
+
+    this._confirmationService.confirm({
+      header: this.translations.events_timeslot_playerRemoveDialog_header(user),
+      message: this.translations.events_timeslot_playerRemoveDialog_message(),
+      acceptLabel: this.translations.shared_delete(),
+      acceptButtonStyleClass: 'p-button-danger',
+      acceptIcon: 'p-button-icon-left i-[mdi--delete]',
+      rejectLabel: this.translations.shared_cancel(),
+      rejectButtonStyleClass: 'p-button-text',
+      accept: async () => {
+        const response = await this._eventService.patchPlayerEventRegistrations({
+          eventId,
+          body: { userId: user.id, timeslotId: timeslotId, isRegistered: false },
+        });
+        if (response.ok) {
+          this._messageService.add({
+            severity: 'success',
+            summary: this.translations.events_timeslot_playerRemoveDialog_playerRemoved(),
+            life: 2000,
+          });
+        } else {
+          this._messageService.add({
+            severity: 'error',
+            summary: this.translations.events_timeslot_playerRemoveDialog_error_playerRemoved(),
+            life: 2000,
+          });
+        }
+      },
+    });
   }
 
   protected addPreconfig() {

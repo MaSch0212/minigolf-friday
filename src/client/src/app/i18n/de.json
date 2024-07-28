@@ -101,7 +101,19 @@
       "time": "Startzeit",
       "mapToPlay": "Zu spielende Bahn",
       "map": "Bahn",
-      "isFallbackAllowed": "Spieler können einen Ausweichzeitslot festlegen"
+      "isFallbackAllowed": "Spieler können einen Ausweichzeitslot festlegen",
+      "playerAdded": "Spieler wurde diesem Zeitslot hinzugefügt",
+      "playerRemoveDialog": {
+        "header": "Spieler \"{{alias}}\" entfernen?",
+        "message": "Möchtest du den Spieler wirklich aus dem Zeitslot entfernen?",
+        "playerRemoved": "Spieler wurde aus diesem Zeitslot entfernt",
+        "error": {
+          "playerRemoved": "Spieler wurde aus diesem Zeitslot nicht entfernt"
+        }
+      },
+      "error": {
+        "playerAdded": "Spieler wurde diesem Zeitslot nicht hinzugefügt"
+      }
     },
     "createDialog": {
       "title": "Veranstaltung erstellen",
