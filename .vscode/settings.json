@@ -40,7 +40,8 @@
   "task.autoDetect": "off",
   "[xml]": {
     "editor.defaultFormatter": "DotJoshJohnson.xml"
-  }
+  },
+  "cSpell.words": ["Minigolf", "Timeslot", "Timeslots"]
 
   // Remove comments if branch policies are used
   // "git.branchProtection": ["main", "master"],

@@ -38,9 +38,10 @@ export type PlayerEventRegistrationChangedRealtimeEvent = {
   eventId: string;
 };
 export type UserSettingsChangedRealtimeEvent = {};
-export type PlayerEventTimeslotRegistrationChanged = {
+export type PlayerEventTimeslotRegistrationChangedRealtimeEvent = {
   eventId: string;
   eventTimeslotId: string;
   userId: string;
+  userAlias: string | null | undefined;
   isRegistered: boolean;
 };

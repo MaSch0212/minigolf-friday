@@ -227,7 +227,11 @@ export class UserDialogComponent {
   }
 
   protected submit() {
-    if (Object.values(this._allUsers()).some(x => x?.alias === this.form.value.alias)) {
+    if (
+      Object.values(this._allUsers()).some(
+        x => x?.id !== this.userToUpdate()?.id && x?.alias === this.form.value.alias
+      )
+    ) {
       this._messageService.add({
         severity: 'error',
         summary: this.translations.users_dialog_error_exists({

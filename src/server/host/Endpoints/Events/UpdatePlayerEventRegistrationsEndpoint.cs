@@ -158,12 +158,17 @@ public class UpdatePlayerEventRegistrationsEndpoint(
             ),
             ct
         );
+        var userAlias = await databaseContext
+            .Users.Where(x => x.Id == userId)
+            .Select(x => x.Alias)
+            .FirstOrDefaultAsync(ct);
         var changeEvents = registrations
             .Where(x => !targetRegistrations.Any(y => y.TimeslotId == x.EventTimeslotId))
             .Select(x => new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
                 idService.Event.Encode(eventId),
                 idService.EventTimeslot.Encode(x.EventTimeslotId),
                 idService.User.Encode(userId),
+                userAlias,
                 false
             ))
             .Concat(
@@ -173,6 +178,7 @@ public class UpdatePlayerEventRegistrationsEndpoint(
                         idService.Event.Encode(eventId),
                         idService.EventTimeslot.Encode(x.TimeslotId),
                         idService.User.Encode(userId),
+                        userAlias,
                         true
                     ))
             );

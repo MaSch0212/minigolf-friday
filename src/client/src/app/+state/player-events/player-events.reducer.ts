@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { produce } from 'immer';
 
+import { eventTimeslotRegistrationChangedReducers } from './actions/event-timeslot-registration-changed.action';
 import { loadPlayerEventReducers } from './actions/load-player-event.action';
 import { loadPlayerEventsReducers } from './actions/load-player-events.action';
 import { playerEventRemovedReducers } from './actions/player-event-removed.action';
@@ -28,6 +29,7 @@ export const playerEventsReducer = createReducer<PlayerEventsFeatureState>(
   ...playerEventRemovedReducers,
   ...resetPlayerEventsActionStateReducers,
   ...updateEventRegistrationReducers,
+  ...eventTimeslotRegistrationChangedReducers,
 
   on(addEventAction.success, (state, { response }) =>
     state.actionStates.load.state === 'none'

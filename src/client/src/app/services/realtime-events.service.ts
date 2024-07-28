@@ -30,7 +30,7 @@ import {
   PlayerEventChangedRealtimeEvent,
   PlayerEventRegistrationChangedRealtimeEvent,
   UserSettingsChangedRealtimeEvent,
-  PlayerEventTimeslotRegistrationChanged,
+  PlayerEventTimeslotRegistrationChangedRealtimeEvent,
   EventInstancesEditorChangedEvent,
 } from '../models/realtime-events';
 import { SignalrRetryPolicy } from '../signalr-retry-policy';
@@ -69,7 +69,7 @@ export class RealtimeEventsService implements OnDestroy {
     new EventEmitter<PlayerEventRegistrationChangedRealtimeEvent>();
   public readonly userSettingsChanged = new EventEmitter<UserSettingsChangedRealtimeEvent>();
   public readonly playerEventTimeslotRegistrationChanged =
-    new EventEmitter<PlayerEventTimeslotRegistrationChanged>();
+    new EventEmitter<PlayerEventTimeslotRegistrationChangedRealtimeEvent>();
   public readonly isConnected = computed(() => !!this._isConnected());
   public readonly onReconnected$ = toObservable(this._isConnected).pipe(
     startWith(null),

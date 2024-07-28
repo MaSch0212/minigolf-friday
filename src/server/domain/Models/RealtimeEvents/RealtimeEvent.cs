@@ -123,6 +123,7 @@ public static class RealtimeEvent
         string EventId,
         string EventTimeslotId,
         string UserId,
+        string? UserAlias,
         bool IsRegistered
     ) : IGroupRealtimeEvent
     {
