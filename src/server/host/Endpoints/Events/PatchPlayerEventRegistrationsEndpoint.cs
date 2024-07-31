@@ -2,11 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using FluentValidation;
 using MaSch.Core.Extensions;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using MinigolfFriday.Data;
 using MinigolfFriday.Data.Entities;
-using MinigolfFriday.Domain.Models;
 using MinigolfFriday.Domain.Models.RealtimeEvents;
 using MinigolfFriday.Host.Common;
 using MinigolfFriday.Host.Services;
@@ -37,14 +35,13 @@ public class PatchPlayerEventRegistrationsRequestValidator
 public class PatchPlayerEventRegistrationsEndpoint(
     DatabaseContext databaseContext,
     IRealtimeEventsService realtimeEventsService,
-    IIdService idService,
-    IJwtService jwtService
+    IIdService idService
 ) : Endpoint<PatchPlayerEventRegistrationsRequest>
 {
     public override void Configure()
     {
         Patch("{eventId}/registrations");
-        Group<EventsGroup>();
+        Group<EventsAdministrationGroup>();
         this.ProducesErrors(
             EndpointErrors.UserIdNotInClaims,
             EndpointErrors.EventNotFound,
@@ -59,17 +56,7 @@ public class PatchPlayerEventRegistrationsEndpoint(
         CancellationToken ct
     )
     {
-        if (!jwtService.TryGetUserId(User, out var userId))
-        {
-            Logger.LogWarning(EndpointErrors.UserIdNotInClaims);
-            await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
-            return;
-        }
-        if (!jwtService.HasRole(User, Role.Admin))
-        {
-            return;
-        }
-        userId = idService.User.DecodeSingle(req.UserId);
+        var userId = idService.User.DecodeSingle(req.UserId);
 
         var user = await databaseContext.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);
         if (user == null)
@@ -166,25 +153,15 @@ public class PatchPlayerEventRegistrationsEndpoint(
             .Users.Where(x => x.Id == userId)
             .Select(x => x.Alias)
             .FirstOrDefaultAsync(ct);
-        var changeEvents = registrations
-            .Where(x => targetRegistration.TimeslotId == x.EventTimeslotId)
-            .Select(x => new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
+        await realtimeEventsService.SendEventAsync(
+            new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
                 idService.Event.Encode(eventId),
-                idService.EventTimeslot.Encode(x.EventTimeslotId),
+                idService.EventTimeslot.Encode(targetRegistration.TimeslotId),
                 idService.User.Encode(userId),
                 userAlias,
                 req.IsRegistered
-            ))
-            .Concat(
-                new RealtimeEvent.PlayerEventTimeslotRegistrationChanged(
-                    idService.Event.Encode(eventId),
-                    idService.EventTimeslot.Encode(targetRegistration.TimeslotId),
-                    idService.User.Encode(userId),
-                    userAlias,
-                    req.IsRegistered
-                )
-            );
-        foreach (var changeEvent in changeEvents)
-            await realtimeEventsService.SendEventAsync(changeEvent, ct);
+            ),
+            ct
+        );
     }
 }

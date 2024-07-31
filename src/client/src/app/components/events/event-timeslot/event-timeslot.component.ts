@@ -38,12 +38,7 @@ import {
   userSelectors,
 } from '../../../+state/users';
 import { EventsService } from '../../../api/services';
-import {
-  EventInstance,
-  EventInstancePreconfiguration,
-  EventTimeslot,
-  User,
-} from '../../../models/parsed-models';
+import { EventInstancePreconfiguration, User } from '../../../models/parsed-models';
 import { TranslateService } from '../../../services/translate.service';
 import { ifTruthy, isNullish, notNullish } from '../../../utils/common.utils';
 import { dateWithTime, timeToString } from '../../../utils/date.utils';
@@ -54,8 +49,6 @@ import { EventTimeslotDialogComponent } from '../event-timeslot-dialog/event-tim
 function asString(value: unknown): string | null {
   return typeof value === 'string' ? value : null;
 }
-
-type EventInstances = { timeslot: EventTimeslot; instances: EventInstance[] }[];
 type EventPlayer = Partial<User> & { id: string };
 
 @Component({

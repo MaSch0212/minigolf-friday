@@ -108,11 +108,11 @@
         "message": "Möchtest du den Spieler wirklich aus dem Zeitslot entfernen?",
         "playerRemoved": "Spieler wurde aus diesem Zeitslot entfernt",
         "error": {
-          "playerRemoved": "Spieler wurde aus diesem Zeitslot nicht entfernt"
+          "playerRemoved": "Fehler beim entfernen aufgetreten."
         }
       },
       "error": {
-        "playerAdded": "Spieler wurde diesem Zeitslot nicht hinzugefügt"
+        "playerAdded": "Fehler beim hinzufpgen aufgetreten."
       }
     },
     "createDialog": {

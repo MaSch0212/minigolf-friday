@@ -108,11 +108,11 @@
         "message": "Do you really want to remove the player from this timeslot?",
         "playerRemoved": "Player has been removed from this timeslot",
         "error": {
-          "playerRemoved": "Player has not been removed from this timeslot"
+          "playerRemoved": "Error while removing Ppayer from timeslot"
         }
       },
       "error": {
-        "playerAdded": "Player has not been added to this timeslot"
+        "playerAdded": "Error while adding player to timeslot"
       }
     },
     "createDialog": {
