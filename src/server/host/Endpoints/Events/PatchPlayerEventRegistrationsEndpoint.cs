@@ -83,29 +83,6 @@ public class PatchPlayerEventRegistrationsEndpoint(
             return;
         }
 
-        if (eventInfo.RegistrationDeadline < DateTimeOffset.Now)
-        {
-            Logger.LogWarning(
-                EndpointErrors.EventRegistrationElapsed,
-                eventId,
-                eventInfo.RegistrationDeadline
-            );
-            await this.SendErrorAsync(
-                EndpointErrors.EventRegistrationElapsed,
-                req.EventId,
-                eventInfo.RegistrationDeadline,
-                ct
-            );
-            return;
-        }
-
-        if (eventInfo.Started)
-        {
-            Logger.LogWarning(EndpointErrors.EventAlreadyStarted, eventId);
-            await this.SendErrorAsync(EndpointErrors.EventAlreadyStarted, req.EventId, ct);
-            return;
-        }
-
         var registrations = await databaseContext
             .EventTimeslotRegistrations.Where(x =>
                 x.Player.Id == userId && x.EventTimeslot.EventId == eventId
