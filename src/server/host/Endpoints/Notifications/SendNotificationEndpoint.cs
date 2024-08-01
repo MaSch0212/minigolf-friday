@@ -48,14 +48,12 @@ public class SendNotificationEndpoint(
             await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
             return;
         }
-        if (!req.UserId.IsNullOrEmpty() && jwtService.HasRole(User, Role.Admin))
+        if (req.UserId != null && jwtService.HasRole(User, Role.Admin))
         {
             userId = idService.User.DecodeSingle(req.UserId);
         }
 
-        var user = await databaseContext
-            .Users.Include(x => x.Settings)
-            .FirstOrDefaultAsync(x => x.Id == userId, ct);
+        var user = await databaseContext.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);
 
         if (user == null)
         {

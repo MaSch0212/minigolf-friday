@@ -101,7 +101,19 @@
       "time": "Start time",
       "mapToPlay": "Map to be played",
       "map": "Map",
-      "isFallbackAllowed": "Players can define a fallback timeslot"
+      "isFallbackAllowed": "Players can define a fallback timeslot",
+      "playerAdded": "Player has been added to this timeslot",
+      "playerRemoveDialog": {
+        "header": "Remove Player \"{{alias}}\"",
+        "message": "Do you really want to remove the player from this timeslot?",
+        "playerRemoved": "Player has been removed from this timeslot",
+        "error": {
+          "playerRemoved": "Error while removing Ppayer from timeslot"
+        }
+      },
+      "error": {
+        "playerAdded": "Error while adding player to timeslot"
+      }
     },
     "createDialog": {
       "title": "Create event",

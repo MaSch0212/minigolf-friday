@@ -186,21 +186,63 @@
             </p-accordion>
           }
 
-          <h2 class="m-0 mt-4">
-            {{ translations.events_timeslot_registeredPlayers() }} ({{ timeslot.playerIds.length }})
-          </h2>
+          <div class="mt-4 flex flex-row items-center gap-2">
+            <h2 class="m-0 grow">
+              {{ translations.events_timeslot_registeredPlayers() }}
+            </h2>
+            <span
+              class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
+            >
+              <span class="i-[mdi--account]"></span>{{ timeslot.playerIds.length }}
+            </span>
+            @if (!event.startedAt) {
+              <p-button
+                [label]="translations.shared_add()"
+                icon="i-[mdi--plus]"
+                [disabled]="isAddPreconfigBusy()"
+                (onClick)="addPlayerPanel.show($event)"
+              />
+              <p-overlayPanel #addPlayerPanel class="hidden" styleClass="p-0">
+                <ng-template pTemplate="content" styleClass="p-0">
+                  <p-listbox
+                    styleClass="border-none"
+                    [options]="availablePlayers()"
+                    optionLabel="alias"
+                    optionValue="id"
+                    [filter]="true"
+                    (onChange)="addPlayer($event.value); addPlayerPanel.hide()"
+                  >
+                    <ng-template let-user pTemplate="listItem">
+                      <app-user-item [user]="user" />
+                    </ng-template>
+                  </p-listbox>
+                </ng-template>
+              </p-overlayPanel>
+            }
+          </div>
+
           <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
             @for (player of players(); track player.id; let index = $index) {
               <div
-                class="min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 hover:bg-surface-c"
+                class="flex min-w-0 flex-row items-center gap-2 border-0 border-solid border-surface-d p-2 pl-4"
                 [class.border-t-[1px]]="index > 0"
               >
-                @if (player.alias) {
-                  {{ player.alias }}
-                } @else {
-                  &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
-                  <span class="opacity-50">({{ player.id }})</span>
-                }
+                <div class="min-w-0 grow">
+                  @if (player.alias) {
+                    {{ player.alias }}
+                  } @else {
+                    &lt;{{ translations.events_timeslot_unknownPlayer() }}&gt;
+                    <span class="opacity-50">({{ player.id }})</span>
+                  }
+                </div>
+                <p-button
+                  icon="i-[mdi--delete]"
+                  [rounded]="true"
+                  [text]="true"
+                  size="small"
+                  severity="danger"
+                  (onClick)="removeUser(player)"
+                />
               </div>
             }
             @if (timeslot.playerIds.length === 0) {
