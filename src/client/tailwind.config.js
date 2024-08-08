@@ -15,6 +15,9 @@ module.exports = {
         focus: '0 0 0 0.2rem',
       },
     },
+    screens: {
+      xs: '350px',
+    },
     colors: {
       transparent: 'transparent',
       white: '#ffffff',

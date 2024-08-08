@@ -1,7 +1,7 @@
 @if (events().length === 0 && isBusy()) {
   <p-progressSpinner class="m-8" />
 } @else {
-  <div class="flex h-full w-full max-w-[40rem] flex-col gap-1">
+  <div class="flex h-full w-full max-w-[40rem] flex-col gap-1 pt-4">
     @if (hasFailed()) {
       <p-messages severity="error">
         <ng-template pTemplate>
