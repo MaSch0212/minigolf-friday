@@ -14,9 +14,6 @@
   filter: blur(15px);
   -webkit-filter: blur(15px);
 
-  /* little overshoot to make blur edges invisible */
-  height: 110%;
-  width: 110%;
-  left: -5%;
-  top: -5%;
+  height: 100%;
+  width: 100%;
 }

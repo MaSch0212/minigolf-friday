@@ -29,30 +29,36 @@
     <div class="flex flex-col gap-2 overflow-auto py-4">
       @if (event(); as event) {
         <p-card>
-          <div class="flex flex-col gap-2">
-            <div class="flex flex-row flex-wrap gap-x-4">
-              <div class="font-semibold">{{ translations.events_date() }}:</div>
-              <div>
+          <div class="xs:grid-cols-2 xs:gap-2 grid grid-cols-1 gap-0">
+            <div class="rounded-md">
+              <p class="xs:text-right m-0 text-left font-semibold">
+                {{ translations.events_date() }}:
+              </p>
+            </div>
+            <div class="xs:pl-0 rounded-md pl-4">
+              <p class="m-0">
                 {{ event.date | date: 'mediumDate' : undefined : locale() }}
-              </div>
+              </p>
             </div>
-            <div class="flex flex-row flex-wrap gap-x-4">
-              <div class="font-semibold">{{ translations.events_registrationDeadline() }}:</div>
-              <div>
+            <div class="xs:pt-0 rounded-md pt-2">
+              <p class="xs:text-right m-0 text-left font-semibold">
+                {{ translations.events_registrationDeadline() }}:
+              </p>
+            </div>
+            <div class="xs:pl-0 rounded-md pl-4">
+              <p class="m-0">
                 {{ event.registrationDeadline | date: 'medium' : undefined : locale() }}
-              </div>
+              </p>
             </div>
-            <div class="flex flex-row flex-wrap gap-x-4">
-              @if (externalUri()) {
-                <div class="flex flex-col justify-center">
-                  <div class="font-semibold">Facebook Event:</div>
-                </div>
-                <p-button
-                  icon="i-[mdi--facebook] text-xl"
-                  (onClick)="openExternalUri()"
-                  [label]="translations.shared_open()"
-                ></p-button>
-              }
+            <div class="xs:pt-0 rounded-md pt-2">
+              <p class="xs:text-right m-0 text-left font-semibold">Facebook Event:</p>
+            </div>
+            <div class="xs:pl-0 rounded-md pl-4">
+              <p-button
+                icon="i-[mdi--facebook] text-xl"
+                (onClick)="openExternalUri()"
+                [label]="translations.shared_open()"
+              ></p-button>
             </div>
           </div>
         </p-card>
@@ -67,7 +73,11 @@
         }
 
         @if (canRegister() || !event.isStarted) {
-          <h2 class="m-0 pt-2">{{ translations.playerEvents_registrations() }}</h2>
+          <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
+            <div class="grow">
+              <h2 class="ml-4">{{ translations.playerEvents_registrations() }}</h2>
+            </div>
+          </div>
           <p-card>
             <div class="flex flex-col gap-2">
               @for (timeslot of timeslots(); track timeslot.id) {
@@ -118,7 +128,7 @@
                         {{ translations.playerEvents_fallbackTimeslotDescription() }}
                       </p-overlayPanel>
                       <p-dropdown
-                        class="ml-4 w-40"
+                        class="w-30"
                         appendTo="body"
                         [disabled]="!canRegister() || isChanginRegistration()"
                         [ngModel]="timeslot.chosenFallbackTimeslotId"
@@ -153,7 +163,11 @@
           </p-card>
         }
         @if (event.isStarted) {
-          <h2 class="m-0 pt-4">{{ translations.playerEvents_games() }}</h2>
+          <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
+            <div class="grow">
+              <h2 class="ml-4">{{ translations.playerEvents_games() }}</h2>
+            </div>
+          </div>
 
           @if (games().length === 0) {
             <p-messages severity="info">
@@ -215,8 +229,10 @@
         </div>
       }
 
-      <div class="mt-4 flex flex-row items-center gap-2">
-        <h2 class="m-0 grow">{{ translations.playerEvents_registeredPlayers() }}</h2>
+      <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
+        <div class="grow">
+          <h2 class="ml-4">{{ translations.playerEvents_registeredPlayers() }}</h2>
+        </div>
         <span
           class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
         >
@@ -229,13 +245,16 @@
           [style]="{ gridTemplateColumns: 'repeat(' + timeslots().length + ', auto) 1fr' }"
         >
           @for (timeslot of timeslots(); track timeslot.id) {
-            <div class="top-0 z-10 bg-surface-b px-1 py-2 text-xs">
+            <div
+              class="top-0 z-10 bg-surface-b px-1 py-2 text-xs"
+              [ngClass]="$index === 0 ? 'rounded-l-xl' : ''"
+            >
               {{ timeslot.time.hour | number: '2.0-0' }}:{{
                 timeslot.time.minute | number: '2.0-0'
               }}
             </div>
           }
-          <div class="top-0 z-10 bg-surface-b py-2 pl-1 text-xs">
+          <div class="top-0 z-10 rounded-r-xl bg-surface-b py-2 pl-1 text-xs">
             {{ translations.shared_name() }}
           </div>
           @for (
@@ -245,7 +264,10 @@
           ) {
             @for (timeslot of timeslots(); track timeslot.id) {
               <div
-                [ngClass]="row % 2 === 0 ? 'bg-surface-c' : ''"
+                [ngClass]="[
+                  row % 2 === 1 ? 'bg-surface-c' : '',
+                  $index === 0 ? 'rounded-l-xl' : '',
+                ]"
                 class="flex flex-row items-center justify-center"
               >
                 <span
@@ -256,8 +278,8 @@
               </div>
             }
             <div
-              class="flex flex-row items-center gap-4 py-1 pl-1"
-              [ngClass]="$index % 2 === 0 ? 'bg-surface-c' : ''"
+              class="flex flex-row items-center gap-4 rounded-r-xl py-1 pl-1"
+              [ngClass]="$index % 2 === 1 ? 'bg-surface-c' : ''"
             >
               <div class="overflow-auto">
                 {{ eventRegistration.userAlias }}

@@ -72,7 +72,7 @@
       </p-card>
 
       <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
-        <h2 class="m-0 grow">{{ translations.events_facebookLink() }}</h2>
+        <h2 class="grow">{{ translations.events_facebookLink() }}</h2>
         <p-inputGroup class="w-auto">
           <button
             type="button"
@@ -101,7 +101,7 @@
       </div>
 
       <div class="mt-4 flex flex-row items-center gap-2">
-        <h2 class="m-0 grow">{{ translations.events_timeslots() }}</h2>
+        <h2 class="grow">{{ translations.events_timeslots() }}</h2>
         <span
           class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
         >
@@ -151,7 +151,7 @@
 
       @if (canBuildInstances()) {
         <div class="flex flex-row items-center pt-4">
-          <h2 class="m-0 grow">{{ translations.events_groups() }}</h2>
+          <h2 class="grow">{{ translations.events_groups() }}</h2>
           <p-inputGroup class="w-auto">
             @if (!event.startedAt) {
               <button

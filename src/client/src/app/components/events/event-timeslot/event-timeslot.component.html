@@ -85,7 +85,7 @@
           <p-progressSpinner class="m-4 self-center" styleClass="h-16 w-16" strokeWidth="4" />
         } @else if (!hasUsersFailed()) {
           <div class="mt-4 flex flex-row flex-wrap items-center justify-end gap-2">
-            <h2 class="m-0 grow">
+            <h2 class="grow">
               {{ translations.events_timeslot_preconfiguredGroups() }}
             </h2>
             @if (!event.startedAt) {
@@ -187,7 +187,7 @@
           }
 
           <div class="mt-4 flex flex-row flex-wrap items-center justify-end gap-2">
-            <h2 class="m-0 grow">
+            <h2 class="grow">
               {{ translations.events_timeslot_registeredPlayers() }}
             </h2>
             <span
