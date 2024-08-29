@@ -303,7 +303,8 @@
     "none": "Keine",
     "send": "Senden",
     "sent": "Gesendet",
-    "done": "Fertig"
+    "done": "Fertig",
+    "open": "Öffnen"
   },
   "validation": {
     "required": "Darf nicht leer sein.",

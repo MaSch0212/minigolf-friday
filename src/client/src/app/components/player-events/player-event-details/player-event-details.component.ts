@@ -1,17 +1,11 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -72,6 +66,7 @@ export class PlayerEventDetailsComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _translateService = inject(TranslateService);
   private readonly _actions$ = inject(Actions);
+  private readonly _messageService = inject(MessageService);
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
@@ -121,7 +116,7 @@ export class PlayerEventDetailsComponent {
         )
       )
   );
-  protected readonly lastChangedTimeslotId = signal<string | null>(null);
+
   protected readonly games = computed(() =>
     this.timeslots()
       .filter(x => x.instance)

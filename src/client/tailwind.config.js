@@ -7,6 +7,9 @@ module.exports = {
   corePlugins: { preflight: false },
   darkMode: 'selector',
   theme: {
+    screens: {
+      xs: '20rem',
+    },
     extend: {
       fontSize: {
         '2xs': ['0.625rem', '0.875rem'],

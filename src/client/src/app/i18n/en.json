@@ -303,7 +303,8 @@
     "none": "None",
     "send": "Send",
     "sent": "Sent",
-    "done": "Done"
+    "done": "Done",
+    "open": "Open"
   },
   "validation": {
     "required": "Cannot be blank.",

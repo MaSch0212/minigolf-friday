@@ -1,4 +1,4 @@
-<div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto pb-4">
+<div class="flex h-full w-full max-w-[40rem] flex-col gap-4 overflow-auto py-4">
   <div class="flex flex-row">
     <p-button
       [label]="translations.shared_back()"
@@ -84,8 +84,8 @@
         @if (isUsersBusy()) {
           <p-progressSpinner class="m-4 self-center" styleClass="h-16 w-16" strokeWidth="4" />
         } @else if (!hasUsersFailed()) {
-          <div class="mt-4 flex flex-row items-center gap-2">
-            <h2 class="m-0 grow">
+          <div class="mt-4 flex flex-row flex-wrap items-center justify-end gap-2">
+            <h2 class="grow">
               {{ translations.events_timeslot_preconfiguredGroups() }}
             </h2>
             @if (!event.startedAt) {
@@ -186,8 +186,8 @@
             </p-accordion>
           }
 
-          <div class="mt-4 flex flex-row items-center gap-2">
-            <h2 class="m-0 grow">
+          <div class="mt-4 flex flex-row flex-wrap items-center justify-end gap-2">
+            <h2 class="grow">
               {{ translations.events_timeslot_registeredPlayers() }}
             </h2>
             <span
