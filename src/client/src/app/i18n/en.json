@@ -18,7 +18,6 @@
   },
   "nav": {
     "home": "Home",
-    "manage": "Manage",
     "events": "Events",
     "event": "Event",
     "eventTimeslot": "Timeslot",
