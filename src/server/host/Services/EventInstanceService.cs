@@ -58,9 +58,9 @@ public class EventInstanceService(DatabaseContext databaseContext, IIdService id
 
         var playerPairScores = new Dictionary<PlayerPair, int>();
         var instances = new List<EventTimeslotInstances>();
+        var groupCodeGenerator = new GroupCodeGenerator();
         foreach (var kv in timeslotPlayers)
         {
-            var groupCodeGenerator = new GroupCodeGenerator();
             var timeslot = kv.Key;
             var players = kv.Value;
             var groups = GeneratePlayerGroups(
