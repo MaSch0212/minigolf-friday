@@ -66,25 +66,19 @@ export class MenuComponent {
       routerLink: '/home',
     },
     {
-      label: this.translations.nav_manage(),
-      icon: 'i-[mdi--table-edit]',
-      items: [
-        {
-          label: this.translations.nav_maps(),
-          icon: 'i-[mdi--golf]',
-          routerLink: '/manage/maps',
-        },
-        {
-          label: this.translations.nav_users(),
-          icon: 'i-[mdi--account-multiple]',
-          routerLink: '/manage/users',
-        },
-        {
-          label: this.translations.nav_events(),
-          icon: 'i-[mdi--calendar]',
-          routerLink: '/manage/events',
-        },
-      ],
+      label: this.translations.nav_maps(),
+      icon: 'i-[mdi--golf]',
+      routerLink: '/manage/maps',
+    },
+    {
+      label: this.translations.nav_users(),
+      icon: 'i-[mdi--account-multiple]',
+      routerLink: '/manage/users',
+    },
+    {
+      label: this.translations.nav_events(),
+      icon: 'i-[mdi--calendar]',
+      routerLink: '/manage/events',
     },
     {
       label: this.translations.nav_settings(),

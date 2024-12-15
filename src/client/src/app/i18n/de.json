@@ -18,7 +18,6 @@
   },
   "nav": {
     "home": "Startseite",
-    "manage": "Verwalten",
     "events": "Veranstaltungen",
     "event": "Veranstaltung",
     "eventTimeslot": "Zeitslot",
