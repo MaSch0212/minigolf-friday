@@ -217,18 +217,6 @@
             </p-card>
           }
         }
-      } @else {
-        <div class="mt-16 flex flex-col items-center gap-8">
-          <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
-          <h1 class="m-0 text-center">{{ translations.playerEvents_notFound() }}</h1>
-          <p-button
-            [label]="translations.playerEvents_backToEvents()"
-            icon="i-[mdi--arrow-left]"
-            [routerLink]="['..']"
-          />
-        </div>
-      }
-
       <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
         <div class="grow">
           <h2 class="ml-4">{{ translations.playerEvents_registeredPlayers() }}</h2>
@@ -288,6 +276,17 @@
           }
         </div>
       </p-card>
+      } @else {
+        <div class="mt-16 flex flex-col items-center gap-8">
+          <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
+          <h1 class="m-0 text-center">{{ translations.playerEvents_notFound() }}</h1>
+          <p-button
+            [label]="translations.playerEvents_backToEvents()"
+            icon="i-[mdi--arrow-left]"
+            [routerLink]="['..']"
+          />
+        </div>
+      }
     </div>
   }
 </div>
