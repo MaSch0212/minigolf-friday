@@ -72,7 +72,7 @@
       </p-card>
 
       <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
-        <h2 class="grow">{{ translations.events_facebookLink() }}</h2>
+        <h2 class="ml-4 grow">{{ translations.events_facebookLink() }}</h2>
         <p-inputGroup class="w-auto">
           <button
             type="button"
@@ -101,7 +101,7 @@
       </div>
 
       <div class="mt-4 flex flex-row items-center gap-2">
-        <h2 class="grow">{{ translations.events_timeslots() }}</h2>
+        <h2 class="ml-4 grow">{{ translations.events_timeslots() }}</h2>
         <span
           class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
         >
@@ -118,29 +118,49 @@
 
       <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
         @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
-          <a
-            class="block min-w-0 truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+          <div
+            class="items-centertruncate flex min-w-0 flex-row border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
             [class.border-t-[1px]]="index > 0"
-            [routerLink]="['timeslots', timeslot.id]"
             pRipple
           >
-            <div class="flex flex-row items-center gap-2">
-              <span class="i-[mdi--clock-time-four-outline]"></span>
-              <span class="grow">
-                {{ timeslot.time.hour | number: '2.0-0' }}:{{
-                  timeslot.time.minute | number: '2.0-0'
-                }}</span
-              >
-              @if (timeslot.mapId) {
-                @if (maps()[timeslot.mapId]; as map) {
-                  <span class="i-[mdi--golf] ml-4"></span>
-                  <span class="truncate">{{ map.name }}</span>
+            <a
+              class="min-w-0 grow gap-4 text-text-color no-underline"
+              [routerLink]="['timeslots', timeslot.id]"
+            >
+              <div class="flex flex-row items-center gap-2">
+                <span class="i-[mdi--clock-time-four-outline]"></span>
+                @if (timeslot.isFallbackAllowed) {
+                  <span class="i-[mdi--arrow-up-down] -mx-2"></span>
                 }
-              }
-              <span class="i-[mdi--account] ml-2"></span>
-              <span>{{ timeslot.playerIds.length }}</span>
-            </div>
-          </a>
+                <span class="grow">
+                  {{ timeslot.time.hour | number: '2.0-0' }}:{{
+                    timeslot.time.minute | number: '2.0-0'
+                  }}</span
+                >
+                @if (timeslot.mapId) {
+                  @if (maps()[timeslot.mapId]; as map) {
+                    <span class="i-[mdi--golf]"></span>
+                    <span class="truncate">{{ map.name }}</span>
+                  }
+                }
+                <span
+                  class="inline-block min-w-fit rounded-full bg-primary px-2 text-center font-bold text-primary-text"
+                >
+                  <span class="i-[mdi--account]"></span> {{ timeslot.playerIds.length }}
+                </span>
+              </div>
+            </a>
+            <p-button
+              class="-mr-2"
+              icon="i-[mdi--pencil]"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              [pTooltip]="translations.shared_edit()"
+              (onClick)="editTimeslotDialog.open()"
+            />
+          </div>
+          <app-event-timeslot-dialog #editTimeslotDialog [event]="event" [timeslot]="timeslot" />
         }
         @if (event.timeslots.length === 0) {
           <div class="px-4 py-2 text-center leading-8">
@@ -151,7 +171,7 @@
 
       @if (canBuildInstances()) {
         <div class="flex flex-row items-center pt-4">
-          <h2 class="grow">{{ translations.events_groups() }}</h2>
+          <h2 class="ml-4 grow">{{ translations.events_groups() }}</h2>
           <p-inputGroup class="w-auto">
             @if (!event.startedAt) {
               <button
