@@ -14,7 +14,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - run: corepack enable
+      - name: Reset Corepack
+        run: |
+          npm uninstall -g corepack
+          npm install -g corepack
+          corepack enable
+
       - uses: actions/setup-node@v3
         with:
           node-version: 20
