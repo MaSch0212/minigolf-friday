@@ -119,7 +119,7 @@
       <div class="rounded-lg border-[1px] border-solid border-surface-d bg-surface-a">
         @for (timeslot of timeslots(); track timeslot.id; let index = $index) {
           <div
-            class="items-centertruncate flex min-w-0 flex-row border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
+            class="flex min-w-0 flex-row items-center truncate border-0 border-solid border-surface-d px-4 py-2 leading-8 text-text-color no-underline hover:bg-surface-c"
             [class.border-t-[1px]]="index > 0"
             pRipple
           >
