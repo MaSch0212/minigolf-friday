@@ -16,14 +16,6 @@ public record GetPlayerEventRequest([property: Required] string EventId);
 /// <param name="Event">The retrieved event.</param>
 public record GetPlayerEventResponse([property: Required] PlayerEvent Event);
 
-public class GetPlayerEventRequestValidator : Validator<GetPlayerEventRequest>
-{
-    public GetPlayerEventRequestValidator(IIdService idService)
-    {
-        RuleFor(x => x.EventId).NotEmpty().ValidSqid(idService.Event);
-    }
-}
-
 /// <summary>Get an event.</summary>
 public class GetPlayerEventEndpoint(
     DatabaseContext databaseContext,
@@ -47,14 +39,26 @@ public class GetPlayerEventEndpoint(
             await this.SendErrorAsync(EndpointErrors.UserIdNotInClaims, ct);
             return;
         }
-
-        var eventId = idService.Event.DecodeSingle(req.EventId);
-        var @event = await playerEventMapper
-            .AddIncludes(databaseContext.Events)
-            .Where(x => x.Id == eventId)
-            .Select(x => playerEventMapper.Map(x, userId))
-            .FirstOrDefaultAsync(ct);
-
+        PlayerEvent? @event = null;
+        var isEvent = idService.Event.TryDecodeSingle(req.EventId, out var eventId);
+        ;
+        if (req.EventId == "latest")
+        {
+            @event = await playerEventMapper
+                .AddIncludes(databaseContext.Events)
+                .Where(x => !x.Staged)
+                .OrderByDescending(x => x.Date)
+                .Select(x => playerEventMapper.Map(x, userId))
+                .FirstOrDefaultAsync(ct);
+        }
+        else if (isEvent)
+        {
+            @event = await playerEventMapper
+                .AddIncludes(databaseContext.Events)
+                .Where(x => x.Id == eventId)
+                .Select(x => playerEventMapper.Map(x, userId))
+                .FirstOrDefaultAsync(ct);
+        }
         if (@event == null)
         {
             Logger.LogWarning(EndpointErrors.EventNotFound, eventId);
