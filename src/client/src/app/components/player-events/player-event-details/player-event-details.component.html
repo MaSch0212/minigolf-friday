@@ -29,31 +29,31 @@
     <div class="flex flex-col gap-2 overflow-auto py-4">
       @if (event(); as event) {
         <p-card>
-          <div class="xs:grid-cols-2 xs:gap-2 grid grid-cols-1 gap-0">
+          <div class="grid grid-cols-1 gap-0 xs:grid-cols-2 xs:gap-2">
             <div class="rounded-md">
-              <p class="xs:text-right m-0 text-left font-semibold">
+              <p class="m-0 text-left font-semibold xs:text-right">
                 {{ translations.events_date() }}:
               </p>
             </div>
-            <div class="xs:pl-0 rounded-md pl-4">
+            <div class="rounded-md pl-4 xs:pl-0">
               <p class="m-0">
                 {{ event.date | date: 'mediumDate' : undefined : locale() }}
               </p>
             </div>
-            <div class="xs:pt-0 rounded-md pt-2">
-              <p class="xs:text-right m-0 text-left font-semibold">
+            <div class="rounded-md pt-2 xs:pt-0">
+              <p class="m-0 text-left font-semibold xs:text-right">
                 {{ translations.events_registrationDeadline() }}:
               </p>
             </div>
-            <div class="xs:pl-0 rounded-md pl-4">
+            <div class="rounded-md pl-4 xs:pl-0">
               <p class="m-0">
                 {{ event.registrationDeadline | date: 'medium' : undefined : locale() }}
               </p>
             </div>
-            <div class="xs:pt-0 rounded-md pt-2">
-              <p class="xs:text-right m-0 text-left font-semibold">Facebook Event:</p>
+            <div class="rounded-md pt-2 xs:pt-0">
+              <p class="m-0 text-left font-semibold xs:text-right">Facebook Event:</p>
             </div>
-            <div class="xs:pl-0 rounded-md pl-4">
+            <div class="rounded-md pl-4 xs:pl-0">
               <p-button
                 icon="i-[mdi--facebook] text-xl"
                 (onClick)="openExternalUri()"
@@ -217,65 +217,65 @@
             </p-card>
           }
         }
-      <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
-        <div class="grow">
-          <h2 class="ml-4">{{ translations.playerEvents_registeredPlayers() }}</h2>
-        </div>
-        <span
-          class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
-        >
-          <span class="i-[mdi--account]"></span> {{ eventRegistrations().length }}
-        </span>
-      </div>
-      <p-card>
-        <div
-          class="grid overflow-x-auto"
-          [style]="{ gridTemplateColumns: 'repeat(' + timeslots().length + ', auto) 1fr' }"
-        >
-          @for (timeslot of timeslots(); track timeslot.id) {
-            <div
-              class="top-0 z-10 bg-surface-b px-1 py-2 text-xs"
-              [ngClass]="$index === 0 ? 'rounded-l-xl' : ''"
-            >
-              {{ timeslot.time.hour | number: '2.0-0' }}:{{
-                timeslot.time.minute | number: '2.0-0'
-              }}
-            </div>
-          }
-          <div class="top-0 z-10 rounded-r-xl bg-surface-b py-2 pl-1 text-xs">
-            {{ translations.shared_name() }}
+        <div class="mt-4 flex flex-row flex-wrap items-center gap-2">
+          <div class="grow">
+            <h2 class="ml-4">{{ translations.playerEvents_registeredPlayers() }}</h2>
           </div>
-          @for (
-            eventRegistration of eventRegistrations();
-            track eventRegistration.userId;
-            let row = $index
-          ) {
+          <span
+            class="inline-block rounded-full bg-primary px-2 text-center font-bold text-primary-text"
+          >
+            <span class="i-[mdi--account]"></span> {{ eventRegistrations().length }}
+          </span>
+        </div>
+        <p-card>
+          <div
+            class="grid overflow-x-auto"
+            [style]="{ gridTemplateColumns: 'repeat(' + timeslots().length + ', auto) 1fr' }"
+          >
             @for (timeslot of timeslots(); track timeslot.id) {
               <div
-                [ngClass]="[
-                  row % 2 === 1 ? 'bg-surface-c' : '',
-                  $index === 0 ? 'rounded-l-xl' : '',
-                ]"
-                class="flex flex-row items-center justify-center"
+                class="top-0 z-10 bg-surface-b px-1 py-2 text-xs"
+                [ngClass]="$index === 0 ? 'rounded-l-xl' : ''"
               >
-                <span
-                  [class.i-[mdi--check]]="
-                    eventRegistration.registeredTimeslotIds.includes(timeslot.id)
-                  "
-                ></span>
+                {{ timeslot.time.hour | number: '2.0-0' }}:{{
+                  timeslot.time.minute | number: '2.0-0'
+                }}
               </div>
             }
-            <div
-              class="flex flex-row items-center gap-4 rounded-r-xl py-1 pl-1"
-              [ngClass]="$index % 2 === 1 ? 'bg-surface-c' : ''"
-            >
-              <div class="overflow-auto">
-                {{ eventRegistration.userAlias }}
-              </div>
+            <div class="top-0 z-10 rounded-r-xl bg-surface-b py-2 pl-1 text-xs">
+              {{ translations.shared_name() }}
             </div>
-          }
-        </div>
-      </p-card>
+            @for (
+              eventRegistration of eventRegistrations();
+              track eventRegistration.userId;
+              let row = $index
+            ) {
+              @for (timeslot of timeslots(); track timeslot.id) {
+                <div
+                  [ngClass]="[
+                    row % 2 === 1 ? 'bg-surface-c' : '',
+                    $index === 0 ? 'rounded-l-xl' : '',
+                  ]"
+                  class="flex flex-row items-center justify-center"
+                >
+                  <span
+                    [class.i-[mdi--check]]="
+                      eventRegistration.registeredTimeslotIds.includes(timeslot.id)
+                    "
+                  ></span>
+                </div>
+              }
+              <div
+                class="flex flex-row items-center gap-4 rounded-r-xl py-1 pl-1"
+                [ngClass]="$index % 2 === 1 ? 'bg-surface-c' : ''"
+              >
+                <div class="overflow-auto">
+                  {{ eventRegistration.userAlias }}
+                </div>
+              </div>
+            }
+          </div>
+        </p-card>
       } @else {
         <div class="mt-16 flex flex-col items-center gap-8">
           <span class="i-[mdi--close-octagon] text-[8rem] text-red-500"></span>
