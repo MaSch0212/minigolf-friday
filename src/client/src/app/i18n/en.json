@@ -237,7 +237,7 @@
       "title": "Welcome {{alias}}",
       "copyWelcomeMessage": "Copy welcome message",
       "copyPassword": "Copy password",
-      "welcomeMessage": "Hello dear minigolf friends!\nRegistration for Minigolf Friday is now possible via the web-based app, which you can download at:\n{{url}}.\nSave it as a bookmark or add it to your home screen so that you can access it at any time.\nPlease log in there with your password and register yourself for your game times.\nPlease still write in the Facebook post that you have registered so that the conversation is maintained there.\nHave fun playing mini golf!\nYour organization team",
+      "welcomeMessage": "🎉 Welcome, dear minigolf friends! ⛳\nIf you'd like to join us for Minigolf Friday, you can easily sign up through our web app:\n{{url}}\nBookmark the page or add it to your home screen so you can access it quickly anytime.\nJust log in with your password and register yourself for your preferred time slots.\n📢 Tip: Make sure to enable notifications in the app settings so you won't miss any updates or events!\n\nIt would be great if you could also mention in the Facebook post that you've signed up – this helps keep the conversation going there.\n\nHave fun putting and see you soon on the course!\nYour organizing team",
       "welcomeMessageCopied": "Welcome message copied"
     }
   },

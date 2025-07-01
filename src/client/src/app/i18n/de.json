@@ -237,7 +237,7 @@
       "title": "Willkommen {{alias}}",
       "copyWelcomeMessage": "Willkommensnachricht kopieren",
       "copyPassword": "Passwort kopieren",
-      "welcomeMessage": "Hallo Liebe Minigolffreunde!\nDie Anmeldung zum Minigolffreitag läuft ab jetzt über die Web-basierte App, welche du unter:\n{{url}}\naufrufen kannst.\nSpeichere sie dir als Lesezeichen, oder füge sie zu deinem Home-Bildschirm hinzu um jederzeit darauf zugreifen zu können.\nMelde dich dort bitte mit deinem Passwort an und registriere dich selber für deine Spielzeiten.\nBitte schreibe doch trotzdem im Facebook Beitrag, dass du dich registriert hast, damit dort die Konversation aufrecht erhalten wird.\nViel Spaß beim Minigolfen!\nDein Orga-Team",
+      "welcomeMessage": "🎉 Willkommen, liebe Minigolffreunde! ⛳\nWenn du beim Minigolffreitag mitspielen möchtest, kannst du dich ganz einfach über unsere Web-App anmelden:\n{{url}}\nSpeichere dir die Seite als Lesezeichen oder füge sie deinem Home-Bildschirm hinzu, damit du jederzeit schnell darauf zugreifen kannst.\nMelde dich dort mit deinem Passwort an und trage dich selbstständig für deine gewünschten Spielzeiten ein.\n📢 Tipp: Aktiviere in den Einstellungen der App die Benachrichtigungen, damit du keine Termine oder Infos mehr verpasst!\n\nEs wäre super, wenn du trotzdem im Facebook-Beitrag kurz erwähnst, dass du dich angemeldet hast – so bleibt die Unterhaltung dort lebendig.\n\nViel Spaß beim Putten und bis bald auf der Bahn!\nDein Orga-Team",
       "welcomeMessageCopied": "Willkommensnachricht kopiert"
     }
   },
