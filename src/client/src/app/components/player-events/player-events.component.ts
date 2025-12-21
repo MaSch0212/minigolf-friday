@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { ButtonModule } from 'primeng/button';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -9,7 +10,12 @@ import { TooltipModule } from 'primeng/tooltip';
 import { map, timer } from 'rxjs';
 
 import { hasActionFailed, isActionBusy } from '../../+state/action-state';
-import { playerEventSelectors, selectPlayerEventsActionState } from '../../+state/player-events';
+import {
+  loadPlayerEventsAction,
+  playerEventSelectors,
+  selectPlayerEventsContinuationToken,
+  selectPlayerEventsActionState,
+} from '../../+state/player-events';
 import { keepPlayerEventsLoaded } from '../../+state/player-events/player-events.utils';
 import { PlayerEvent } from '../../models/parsed-models';
 import { AuthService } from '../../services/auth.service';
@@ -36,6 +42,7 @@ const dayMillis = 24 * 60 * 60 * 1000;
 })
 export class PlayerEventsComponent {
   private readonly _translateService = inject(TranslateService);
+  private readonly _store = inject(Store);
 
   protected readonly translations = this._translateService.translations;
   protected readonly locale = this._translateService.language;
@@ -46,6 +53,7 @@ export class PlayerEventsComponent {
     initialValue: Date.now(),
   });
   private readonly loadActionState = selectSignal(selectPlayerEventsActionState('load'));
+  private readonly continuationToken = selectSignal(selectPlayerEventsContinuationToken);
 
   protected readonly hasEvents = computed(() => this.events().length > 0);
   protected readonly currentEvents = computed(
@@ -58,9 +66,21 @@ export class PlayerEventsComponent {
   );
   protected readonly isLoading = computed(() => isActionBusy(this.loadActionState()));
   protected readonly hasLoadFailed = computed(() => hasActionFailed(this.loadActionState()));
+  protected readonly hasMoreEvents = computed(() => this.continuationToken() !== null);
 
   constructor() {
     keepPlayerEventsLoaded();
+  }
+
+  protected onScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+    const threshold = 200; // Load more when within 200px of bottom
+    const position = element.scrollTop + element.clientHeight;
+    const height = element.scrollHeight;
+
+    if (position > height - threshold && this.hasMoreEvents() && !this.isLoading()) {
+      this._store.dispatch(loadPlayerEventsAction({ reload: false }));
+    }
   }
 
   protected getRegisteredTimeslotsCount(event: PlayerEvent) {

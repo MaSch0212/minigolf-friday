@@ -49,7 +49,7 @@ export const loadPlayerEventsEffects: Effects = {
         withLatestFrom(store.select(selectPlayerEventsContinuationToken)),
         switchMap(([{ props }, continuationToken]) =>
           toHttpAction(
-            getPlayerEvents(api, props, continuationToken),
+            getPlayerEvents(api, props, props.reload ? null : continuationToken),
             loadPlayerEventsAction,
             props
           )
