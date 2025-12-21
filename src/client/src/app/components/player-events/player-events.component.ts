@@ -24,6 +24,7 @@ import { areArraysEqual } from '../../utils/array.utils';
 import { selectSignal } from '../../utils/ngrx.utils';
 
 const dayMillis = 24 * 60 * 60 * 1000;
+const SCROLL_THRESHOLD_PX = 200; // Load more events when within this many pixels of bottom
 
 @Component({
   selector: 'app-player-events',
@@ -74,11 +75,10 @@ export class PlayerEventsComponent {
 
   protected onScroll(event: Event): void {
     const element = event.target as HTMLElement;
-    const threshold = 200; // Load more when within 200px of bottom
     const position = element.scrollTop + element.clientHeight;
     const height = element.scrollHeight;
 
-    if (position > height - threshold && this.hasMoreEvents() && !this.isLoading()) {
+    if (position > height - SCROLL_THRESHOLD_PX && this.hasMoreEvents() && !this.isLoading()) {
       this._store.dispatch(loadPlayerEventsAction({ reload: false }));
     }
   }
