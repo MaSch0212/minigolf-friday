@@ -54,7 +54,7 @@ export class EventFormComponent {
     this.form.controls.date.valueChanges.pipe(takeUntilDestroyed()).subscribe(date => {
       if (date !== null && this.form.controls.registrationDeadline.value === null) {
         const deadline = new Date(date.getTime());
-        deadline.setHours(19, 0);
+        deadline.setHours(19, 45);
         this.form.controls.registrationDeadline.setValue(deadline);
       }
     });
