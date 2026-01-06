@@ -30,7 +30,7 @@
         formControlName="time"
         appendTo="body"
         [timeOnly]="true"
-        [defaultDate]="event()!.registrationDeadline"
+        [defaultDate]="event()!.registrationDeadline.rounded"
         [touchUI]="hasTouchScreen"
       />
       <label>{{ translations.events_timeslot_time() }}</label>
