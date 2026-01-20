@@ -33,6 +33,7 @@ import {
   compareTimes,
   dateWithTime,
   getTimeFromDate,
+  roundToNextHour,
   timeToString,
 } from '../../../utils/date.utils';
 import { selectSignal } from '../../../utils/ngrx.utils';
@@ -73,6 +74,9 @@ export class EventTimeslotDialogComponent {
   protected readonly isBusy = computed(() => isActionBusy(this.actionState()));
   protected readonly visible = signal(false);
   protected readonly maps = this._store.selectSignal(mapSelectors.selectAll);
+  protected readonly roundedRegistrationDeadline = computed(() =>
+    roundToNextHour(this.event().registrationDeadline)
+  );
 
   protected readonly form = this._formBuilder.group({
     time: this._formBuilder.control<Date | null>(null, [
