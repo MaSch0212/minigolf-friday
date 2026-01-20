@@ -79,3 +79,10 @@ export function getTimeDifference(a: Time, b: Time): number {
   const dateB = dateWithTime(new Date(), b);
   return dateB.getTime() - dateA.getTime();
 }
+
+export function roundToNextHour(date: Date): Date {
+  const result = new Date(date);
+  result.setHours(result.getHours() + (result.getMinutes() > 0 ? 1 : 0));
+  result.setMinutes(0, 0, 0);
+  return result;
+}
