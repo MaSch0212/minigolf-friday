@@ -72,7 +72,7 @@
     "registrationDeadline": "Anmeldeschluss",
     "timeslots": "Zeitslots",
     "playerAmount": "{{amount}} Spieler",
-    "noEvents": "Keine Veranstaltungen verfügbar.",
+    "noEvents": "Nächster Termin kommt bald.",
     "noTimeslots": "Keine Zeitslots erstellt.",
     "deleteEvent": "Veranstaltung löschen",
     "deleteTimeslot": "Zeitslot löschen",
