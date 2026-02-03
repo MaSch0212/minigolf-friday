@@ -246,7 +246,7 @@
     "notFound": "Diese Veranstaltung existiert nicht.",
     "currentEvents": "Aktuelle Veranstaltungen",
     "pastEvents": "Vergangene Veranstaltungen",
-    "noEvents": "Keine Veranstaltungen verfügbar.",
+    "noEvents": "Nächster Termin kommt bald.",
     "notRegistered": "Nicht registriert",
     "registered": "Registriert ({{timeslots}} Zeitslot(s))",
     "backToEvents": "Zurück zu den Veranstaltungen",
