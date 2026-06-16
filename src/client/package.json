@@ -5,7 +5,7 @@
     "ng": "ng",
     "lint": "eslint ./src --ext .ts --ext .html",
     "prestart": "node tools/aspnetcore-https",
-    "prepare": "pnpm dev-cert && pnpm prestart && dotnet build ../server/host && pnpm run openapi",
+    "prepare": "pnpm prestart && dotnet build ../server/host && pnpm run openapi",
     "openapi": "tsx tools/openapi-gen.ts",
     "start": "run-script-os",
     "start:windows": "ng serve --port 4200 --ssl --ssl-cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --ssl-key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
@@ -13,7 +13,6 @@
     "start:sw": "run-script-os",
     "start:sw:windows": "http-server -p 4200 -c-1 dist/minigolf-friday/browser -P https://localhost:4200? --proxy-options.secure false --ssl --cert \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.pem\" --key \"%APPDATA%\\ASP.NET\\https\\%npm_package_name%.key\"",
     "start:sw:default": "http-server -p 4200 -c-1 dist/minigolf-friday/browser -P https://localhost:4200? --proxy-options.secure false --ssl --cert \"$HOME/.aspnet/https/${npm_package_name}.pem\" --key \"$HOME/.aspnet/https/${npm_package_name}.key\"",
-    "dev-cert": "dotnet dev-certs https --trust",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

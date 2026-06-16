@@ -1,7 +1,15 @@
 // This script sets up HTTPS for the application using the ASP.NET Core HTTPS certificate
-const spawn = require('child_process').spawn;
+const { spawnSync, spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs-extra');
+const process = require('process');
+
+if (process.env.CI !== undefined && process.env.CI.toLowerCase() === 'true') {
+  console.log('Running in CI environment, skipping ASP.NET Core HTTPS certificate setup.');
+  process.exit(0);
+}
+
+spawnSync('dotnet', ['dev-certs', 'https', '--trust'], { stdio: 'inherit' });
 
 const baseFolder =
   process.env.APPDATA !== undefined && process.env.APPDATA !== ''
