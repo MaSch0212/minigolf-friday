@@ -9,7 +9,7 @@ import { injectEx, OptionalInjector } from '../../utils/angular.utils';
 
 export function keepPlayerEventsLoaded(options?: OptionalInjector) {
   const store = injectEx(Store, options);
-  store.dispatch(loadPlayerEventsAction({ reload: false }));
+  store.dispatch(loadPlayerEventsAction({ reload: true }));
   store
     .select(selectPlayerEventsActionState('load'))
     .pipe(
